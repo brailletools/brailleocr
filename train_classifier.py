@@ -13,7 +13,7 @@ Output: /tmp/braille-crops/cell_classifier.pt  (state_dict)
         /tmp/braille-crops/training_log.csv
 """
 
-import csv, time
+import csv
 from pathlib import Path
 import torch
 import torch.nn as nn
@@ -202,7 +202,6 @@ def main():
 
     for epoch in range(1, EPOCHS + 1):
         model.train()
-        t0 = time.time()
         total_loss = 0.0
         for imgs, labels in train_dl:
             imgs, labels = imgs.to(device), labels.to(device)

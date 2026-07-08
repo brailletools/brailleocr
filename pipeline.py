@@ -40,6 +40,7 @@ import PIL.ImageEnhance
 import PIL.ImageFont
 import PIL.ImageOps
 from ultralytics import YOLO
+from spellchecker import SpellChecker
 
 MODEL_PATH    = '/tmp/yolov8-braille/yolov8m.pt'
 SAMPLE_DIR    = Path('/Users/jmankoff/Research/nonvisual/braille/braille2latex/sample-data')
@@ -716,7 +717,6 @@ def indicator_recovery(img, model, cells):
     if not cells:
         return []
 
-    avg_h = statistics.median(c['h'] for c in cells)
     avg_w = statistics.median(c['w'] for c in cells)
     lines = group_into_lines(cells)
 
@@ -770,7 +770,6 @@ def braille_to_text(braille_lines, table):
 
 # ─── post-translation cleanup ────────────────────────────────────────────────
 
-from spellchecker import SpellChecker
 _spell = SpellChecker()
 # Domain / short words the spell checker would otherwise mangle
 _spell.word_frequency.load_words([
@@ -1032,8 +1031,8 @@ def process_image(img_path, model, lang_table, search_contrast,
         ys = sorted(c['cy'] for c in hi_cells)
         n5  = max(0, len(xs) * 5  // 100)
         n95 = max(0, len(xs) * 95 // 100)
-        cx_min, cx_max = xs[n5]  - xs[0]  * 0.05, xs[n95]  + xs[0]  * 0.05
-        cy_min, cy_max = ys[n5]  - ys[0]  * 0.05, ys[n95]  + ys[0]  * 0.05
+        _cx_min, _cx_max = xs[n5]  - xs[0]  * 0.05, xs[n95]  + xs[0]  * 0.05
+        _cy_min, _cy_max = ys[n5]  - ys[0]  * 0.05, ys[n95]  + ys[0]  * 0.05
         avg_h = statistics.median(c['h'] for c in hi_cells)
         avg_w = statistics.median(c['w'] for c in hi_cells)
         # Generous margins: allow 3 cell-widths left/right, 2 heights top/bottom

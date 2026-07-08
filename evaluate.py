@@ -20,7 +20,8 @@ Usage:
 Matching: nearest predicted cell within distance < 0.5 * avg_gt_cell_width.
 """
 
-import sys, csv
+import sys
+import csv
 from pathlib import Path
 import numpy as np
 
@@ -118,7 +119,7 @@ def run_pipeline(img_path, clf_path=None):
 
 
 def main():
-    import argparse, time
+    import argparse
     ap = argparse.ArgumentParser(description='Evaluate OCR pipeline against labeled Braille images')
     ap.add_argument('--dataset',    required=True,
                     help='Directory of labeled images (each .jpg needs a matching .csv)')

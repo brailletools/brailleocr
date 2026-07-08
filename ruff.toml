@@ -1,0 +1,3 @@
+[lint]
+# E741: ambiguous variable names (l, t, r, b are standard in geometry/bounding-box code)
+ignore = ["E741"]

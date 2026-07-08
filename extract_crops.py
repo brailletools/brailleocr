@@ -13,9 +13,11 @@ Output:
     test/
 """
 
-import csv, random, sys
+import csv
+import random
 from pathlib import Path
-import PIL.Image, PIL.ImageOps
+import PIL.Image
+import PIL.ImageOps
 
 ANGELINA  = Path('/Users/jmankoff/Research/nonvisual/braille/AngelinaDataset')
 OUT_DIR   = Path('/tmp/braille-crops')
