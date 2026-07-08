@@ -1,23 +1,32 @@
 """
-Evaluate our YOLOv8 pipeline against the Angelina Dataset (uploaded/test2 subset).
+Evaluate the OCR pipeline against any labeled Braille image dataset.
+
+Dataset format (Angelina-compatible):
+  Each image <name>.jpg must have a corresponding <name>.csv with lines:
+    left;top;right;bottom;label
+  where coordinates are normalised [0,1] and label is an integer 1-63
+  (Braille cell encoded as 6 bits, bit0=dot1).
 
 Metrics:
   Detection recall  = GT cells matched by a predicted cell / total GT cells
   Detection precision = matched predicted cells / total predicted cells
-  Class accuracy    = predicted cells with correct 6-bit pattern / matched predicted cells
+  Class accuracy    = predicted cells with correct 6-bit pattern / matched cells
   F1                = harmonic mean of precision and recall
+
+Usage:
+  python evaluate.py --dataset /path/to/labeled/images
+  python evaluate.py --dataset /path/to/labeled/images --classifier cell_classifier.pt
 
 Matching: nearest predicted cell within distance < 0.5 * avg_gt_cell_width.
 """
 
-import sys, csv, json
+import sys, csv
 from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent))
-import test_braille_yolo as tb
+import pipeline as tb
 
-DATASET_DIR = Path('/Users/jmankoff/Research/nonvisual/braille/AngelinaDataset/uploaded/test2')
 MODEL = tb.YOLO(tb.MODEL_PATH)
 
 
@@ -110,26 +119,31 @@ def run_pipeline(img_path, clf_path=None):
 
 def main():
     import argparse, time
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--start', type=int, default=0)
-    ap.add_argument('--end',   type=int, default=None)
-    ap.add_argument('--out',   default=None)
+    ap = argparse.ArgumentParser(description='Evaluate OCR pipeline against labeled Braille images')
+    ap.add_argument('--dataset',    required=True,
+                    help='Directory of labeled images (each .jpg needs a matching .csv)')
+    ap.add_argument('--glob',       default='*.jpg',
+                    help='Glob pattern for images within --dataset (default: *.jpg)')
+    ap.add_argument('--start',      type=int, default=0)
+    ap.add_argument('--end',        type=int, default=None)
+    ap.add_argument('--out',        default=None, help='Append per-image CSV results to this file')
     ap.add_argument('--classifier', default=None,
-                    help='Path to cell_classifier.pt; auto-detected if omitted')
+                    help='Path to cell_classifier.pt (auto-detected if omitted)')
     args = ap.parse_args()
 
+    dataset_dir = Path(args.dataset)
     clf_path = args.classifier
     if clf_path is None and Path('/tmp/braille-crops/cell_classifier.pt').exists():
         clf_path = '/tmp/braille-crops/cell_classifier.pt'
         print(f"Using classifier: {clf_path}")
 
-    jpg_files = sorted(DATASET_DIR.glob('*.labeled.jpg'))
+    jpg_files = sorted(dataset_dir.glob(args.glob))
     if args.end is not None:
         jpg_files = jpg_files[args.start:args.end]
     else:
         jpg_files = jpg_files[args.start:]
     outfile = open(args.out, 'a') if args.out else None
-    print(f"Evaluating on {len(jpg_files)} images from {DATASET_DIR.name}/\n")
+    print(f"Evaluating on {len(jpg_files)} images from {dataset_dir.name}/\n")
 
     total_gt   = 0
     total_pred = 0
