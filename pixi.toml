@@ -1,0 +1,36 @@
+[workspace]
+name = "brailleocr"
+version = "0.1.0"
+description = "OCR pipeline for phone photos of embossed Braille pages"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "win-64"]
+
+[system-requirements]
+macos = "14.0"
+
+[dependencies]
+python = ">=3.11"
+pip = "*"
+
+[pypi-dependencies]
+ultralytics = ">=8.4"
+opencv-python = ">=5.0"
+pillow = ">=12.0"
+numpy = ">=2.0"
+torch = ">=2.12"
+torchvision = ">=0.27"
+pyspellchecker = ">=0.9"
+scipy = ">=1.15"
+# Path dependency during local development — switch to the git+tag form below
+# once https://github.com/brailletools/liblouis-env has a pushed, tagged commit:
+# liblouis-env = { git = "https://github.com/brailletools/liblouis-env.git", tag = "v0.1.0" }
+liblouis-env = { path = "../liblouis-env", editable = true }
+
+[feature.dev.dependencies]
+ruff = "*"
+
+[environments]
+dev = ["dev"]
+
+[tasks]
+lint = "ruff check ."
