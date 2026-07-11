@@ -41,11 +41,12 @@ import PIL.ImageFont
 import PIL.ImageOps
 from ultralytics import YOLO
 from spellchecker import SpellChecker
+from liblouis_env import get_lou_translate
 
 MODEL_PATH    = '/tmp/yolov8-braille/yolov8m.pt'
 SAMPLE_DIR    = Path('/Users/jmankoff/Research/nonvisual/braille/braille2latex/sample-data')
 OUT_DIR       = Path('/tmp/braille-yolo-results')
-LOU_TRANSLATE = '/opt/homebrew/bin/lou_translate'
+LOU_TRANSLATE = get_lou_translate()
 
 LOW_CONF   = 0.05   # first-pass threshold — collect everything above this
 HIGH_CONF  = 0.30   # threshold for "reliable" cells used to fit the grid

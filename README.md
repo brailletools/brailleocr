@@ -4,11 +4,16 @@ Python OCR pipeline for phone photos of embossed Braille pages. Detects Braille 
 
 ## Setup
 
-**Python 3.11+** required.
+Requires [pixi](https://pixi.sh).
 
 ```bash
-pip install -r requirements.txt
+pixi install
+pixi shell   # or prefix commands below with `pixi run`
 ```
+
+This also installs [liblouis-env](https://github.com/brailletools/liblouis-env), which
+fetches/locates the `lou_translate` binary for you (works on macOS, Linux, and Windows —
+see that repo for details). No manual liblouis install step needed.
 
 Download the YOLOv8 Braille model (first run will auto-download via ultralytics, or place manually):
 
