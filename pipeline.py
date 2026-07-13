@@ -42,15 +42,37 @@ import PIL.ImageOps
 from ultralytics import YOLO
 from spellchecker import SpellChecker
 from liblouis_env import get_lou_translate
+from container_detect import find_containers
+from dot_pattern_utils import REPOS_ROOT, make_tile_boxes, TILE_SIZE, TARGET_CELL_PX, MIN_NATIVE_TILE
 
-MODEL_PATH    = '/tmp/yolov8-braille/yolov8m.pt'
-SAMPLE_DIR    = Path('/Users/jmankoff/Research/nonvisual/braille/braille2latex/sample-data')
+MODEL_PATH    = str(REPOS_ROOT / 'dataset' / 'models' / 'cell_detector.pt')
+SAMPLE_DIR    = REPOS_ROOT / 'dataset' / 'data' / 'sample-images'
 OUT_DIR       = Path('/tmp/braille-yolo-results')
 LOU_TRANSLATE = get_lou_translate()
 
 LOW_CONF   = 0.05   # first-pass threshold — collect everything above this
 HIGH_CONF  = 0.30   # threshold for "reliable" cells used to fit the grid
 CROP_CONF  = 0.001  # threshold used when re-running on a single-cell crop
+
+CONTAINER_MIN_CANDIDATES = 3    # candidates below this are probably noise, not real cells
+CONTAINER_MIN_SIDE_PX    = 20   # containers smaller than this can't hold a real cell anyway
+
+# ─── scale normalisation + tiling ────────────────────────────────────────────
+# YOLO always resizes its input to a fixed size (imgsz, default 640) before
+# detecting, so "pixels per cell" depends on how large a native-pixel region
+# gets crammed into that fixed frame — which varies with how far away a photo
+# was taken. Cropping to a container (see container_detect.py) fixes wasted
+# *spatial* budget, but cells can still land far outside the density the
+# model saw in training.
+#
+# So: pick a native tile size L such that cropping an LxL region lands cells at TARGET_CELL_PX,
+# then tile the ORIGINAL (untouched) image at that native size — no explicit
+# imgsz override needed anywhere, ultralytics' default behaviour does the work.
+#
+# TILE_SIZE/TARGET_CELL_PX/MIN_NATIVE_TILE live in dot_pattern_utils.py,
+# shared with prepare_yolo_dataset.py — the detector must be trained on tiles
+# built the same way, or these two numbers drifting apart defeats the point.
+TILE_DEDUPE_IOU  = 0.5   # merge threshold for cells re-detected in tile overlap zones
 
 # Braille dot layout:  dot1 dot4 / dot2 dot5 / dot3 dot6
 DOT_POS = [(0,0),(1,0),(2,0),(0,1),(1,1),(2,1)]
@@ -59,6 +81,17 @@ DOT_POS = [(0,0),(1,0),(2,0),(0,1),(1,1),(2,1)]
 
 def bits_to_braille(bits6: str) -> str:
     return chr(0x2800 + int(bits6[::-1], 2))
+
+def yolo_class_to_bits6(model, cls):
+    """
+    A single-class (localization-only) detector's class name isn't a real
+    dot pattern — its own classification output is meaningless and gets
+    overwritten by reclassify_cells() downstream. Return a blank-cell
+    placeholder in that case rather than crash in bits_to_braille().
+    """
+    if len(model.names) == 1:
+        return '000000'
+    return model.names[int(cls)]
 
 def pil_to_cv(img):
     return cv2.cvtColor(np.array(img.convert('RGB')), cv2.COLOR_RGB2BGR)
@@ -292,7 +325,7 @@ def gap_pixel_recover(img, model, empties, hi_cells, known_cells=None):
                     dist = abs(bcx - cx_target) + abs(bcy - cy_target)
                     if dist < cw * scale * 0.6 and float(conf) > (
                             best_cell['conf'] if best_cell else -1):
-                        bits6 = model.names[int(cls)]
+                        bits6 = yolo_class_to_bits6(model, cls)
                         best_cell = {
                             'cx': ex, 'cy': ey, 'h': ch, 'w': cw,
                             'char':    bits_to_braille(bits6),
@@ -307,12 +340,11 @@ def gap_pixel_recover(img, model, empties, hi_cells, known_cells=None):
     return recovered
 
 
-def best_contrast(img_path, model, max_det):
+def best_contrast(original, model, max_det):
     """
     Try CLAHE + contrast multipliers; pick whichever gives the most cells
     at HIGH_CONF threshold. Uses temp files so YOLO resizes consistently.
     """
-    original = PIL.ImageOps.exif_transpose(PIL.Image.open(img_path)).convert('RGB')
     candidates = [('clahe', apply_clahe(original))]
     for c in CONTRAST_VALUES:
         candidates.append((f'contrast×{c}',
@@ -413,7 +445,7 @@ def low_conf_repass(img, model, cells, max_det):
             # Check it actually overlaps the cluster area
             if not (cx_min <= gcx <= cx_max and cy_min <= gcy <= cy_max):
                 continue
-            bits6 = model.names[int(cls)]
+            bits6 = yolo_class_to_bits6(model, cls)
             new_cells.append({
                 'cx': gcx, 'cy': gcy,
                 'h': by2 - by1, 'w': bx2 - bx1,
@@ -445,7 +477,7 @@ def run_detection(img, model, max_det):
                                results[0].boxes.cls,
                                results[0].boxes.conf):
         x1, y1, x2, y2 = box.tolist()
-        bits6 = model.names[int(cls)]
+        bits6 = yolo_class_to_bits6(model, cls)
         cells.append({
             'cx': (x1+x2)/2, 'cy': (y1+y2)/2,
             'h': y2-y1,       'w': x2-x1,
@@ -454,6 +486,73 @@ def run_detection(img, model, max_det):
             'rescued': False,
         })
     return cells
+
+
+
+def _cell_center_in_box(cell, box):
+    x0, y0, x1, y1 = box
+    return x0 <= cell['cx'] <= x1 and y0 <= cell['cy'] <= y1
+
+
+def _cell_iou(a, b):
+    ax0, ay0 = a['cx'] - a['w'] / 2, a['cy'] - a['h'] / 2
+    ax1, ay1 = a['cx'] + a['w'] / 2, a['cy'] + a['h'] / 2
+    bx0, by0 = b['cx'] - b['w'] / 2, b['cy'] - b['h'] / 2
+    bx1, by1 = b['cx'] + b['w'] / 2, b['cy'] + b['h'] / 2
+    ix0, iy0 = max(ax0, bx0), max(ay0, by0)
+    ix1, iy1 = min(ax1, bx1), min(ay1, by1)
+    if ix1 <= ix0 or iy1 <= iy0:
+        return 0.0
+    inter = (ix1 - ix0) * (iy1 - iy0)
+    area_a, area_b = (ax1 - ax0) * (ay1 - ay0), (bx1 - bx0) * (by1 - by0)
+    return inter / (area_a + area_b - inter)
+
+
+def _dedupe_cells(cells, iou_threshold=TILE_DEDUPE_IOU):
+    """Collapse duplicate detections of the same cell from overlapping tiles,
+    keeping the higher-confidence one."""
+    kept = []
+    for c in sorted(cells, key=lambda c: c['conf'], reverse=True):
+        if not any(_cell_iou(c, k) > iou_threshold for k in kept):
+            kept.append(c)
+    return kept
+
+
+TILE_EDGE_MARGIN_FRAC = 0.05  # fraction of native_tile_size — a cell straddling a tile's
+                              # own crop edge only gets a partial (truncated, falsely
+                              # narrow) view; drop it and rely on the overlapping
+                              # neighbour tile to detect that same cell away from its edge
+
+
+def run_detection_tiled(img, model, max_det, native_tile_size):
+    """
+    Like run_detection(), but splits img into overlapping native_tile_size
+    tiles first when img is larger than that (see module-level comment on
+    scale normalisation + tiling for why native_tile_size is computed the way
+    it is, not just set to TILE_SIZE). Falls back to a single call when img
+    already fits in one tile — no tiling overhead in the common case.
+    """
+    boxes = make_tile_boxes(img.width, img.height, native_tile_size)
+    if len(boxes) == 1:
+        return run_detection(img, model, max_det)
+
+    margin = native_tile_size * TILE_EDGE_MARGIN_FRAC
+    all_cells = []
+    for x0, y0, x1, y1 in boxes:
+        tile_cells = run_detection(img.crop((x0, y0, x1, y1)), model, max_det)
+        tw, th = x1 - x0, y1 - y0
+        for c in tile_cells:
+            lx0, ly0 = c['cx'] - c['w'] / 2, c['cy'] - c['h'] / 2
+            lx1, ly1 = c['cx'] + c['w'] / 2, c['cy'] + c['h'] / 2
+            if (lx0 < margin and x0 > 0) or (lx1 > tw - margin and x1 < img.width) or \
+               (ly0 < margin and y0 > 0) or (ly1 > th - margin and y1 < img.height):
+                continue
+            c['cx'] += x0
+            c['cy'] += y0
+            all_cells.append(c)
+
+    return _dedupe_cells(all_cells)
+
 
 def group_into_lines(cells):
     if not cells:
@@ -651,7 +750,7 @@ def crop_recover(img, model, empties):
                     dist = abs(bcx - cx_target) + abs(bcy - cy_target)
                     if dist < cw * scale * 0.6 and float(conf) > (
                             best_cell['conf'] if best_cell else -1):
-                        bits6 = model.names[int(cls)]
+                        bits6 = yolo_class_to_bits6(model, cls)
                         best_cell = {
                             'cx': ex, 'cy': ey,
                             'h': ch,  'w': cw,
@@ -975,6 +1074,38 @@ def reclassify_cells(img, cells, clf, clf_device, clf_tf):
     return cells
 
 
+def _strip_markout_runs(line, min_run=2):
+    """
+    Drop runs of min_run+ consecutive all-six-dot cells from a line.
+
+    UEB's word-sign for "for" happens to be all six dots, and Angelina's own
+    labeling scheme separately defines an all-six-dots cell as a dedicated
+    "markout" (transcriber delete/typo) marker, not real content — so a
+    correctly-detected run of these (confirmed against the actual photo, see
+    session notes) reads back as nonsense ("forforfor...") under literal
+    translation. A single "for" is a normal, common word and must not be
+    touched — only a *run* of 2+ adjacent all-dots cells is treated as a
+    markout, never an isolated one.
+
+    Opt-in only (see --exclude-markout): this changes what content survives
+    translation, which is a judgement call about transcriber convention, not
+    a pure detection-quality fix.
+    """
+    out = []
+    i = 0
+    while i < len(line):
+        if line[i].get('bits') == '111111':
+            j = i
+            while j < len(line) and line[j].get('bits') == '111111':
+                j += 1
+            if j - i >= min_run:
+                i = j
+                continue
+        out.append(line[i])
+        i += 1
+    return out
+
+
 def _init_classifier(path):
     global _CELL_CLASSIFIER, _CELL_CLF_DEVICE, _CELL_CLF_TRANSFORM
     if _CELL_CLASSIFIER is None:
@@ -982,17 +1113,55 @@ def _init_classifier(path):
         _CELL_CLASSIFIER, _CELL_CLF_DEVICE, _CELL_CLF_TRANSFORM = load_cell_classifier(path)
 
 
-def process_image(img_path, model, lang_table, search_contrast,
-                  spellcheck=True, max_det=2000, classifier_path=None):
-    if search_contrast:
-        img, n_hi, label = best_contrast(img_path, model, max_det)
-        print(f"  Best contrast: {label} → {n_hi} high-conf cells")
-    else:
-        img = PIL.ImageOps.exif_transpose(
-                PIL.Image.open(img_path)).convert('RGB')
+def process_container(img, stem, model, lang_table, search_contrast,
+                  spellcheck=True, max_det=2000, classifier_path=None,
+                  normalize_scale=True, exclude_markout=False):
+    """
+    img: an already-loaded, already-oriented PIL.Image — a whole photo, or a
+      single container crop from container_detect.find_containers().
+    stem: base filename (no extension) used to name this run's output files —
+      callers processing multiple containers from one photo should pass a
+      per-container stem (e.g. f'{photo_stem}_container{i}') so outputs don't
+      collide.
+    normalize_scale: tile detection at a native pixel size chosen so cells
+      land at TARGET_CELL_PX after ultralytics' standard resize (see the
+      module-level comment above TARGET_CELL_PX for why this can't just be
+      done by resizing the image). Disable to reproduce the older
+      single-pass-at-native-resolution behaviour, e.g. for comparison.
+    exclude_markout: drop runs of 2+ consecutive all-six-dot cells before
+      translation — see _strip_markout_runs(). Off by default.
 
-    # Collect all candidates (low threshold)
-    all_cells = run_detection(img, model, max_det)
+      A detector trained exclusively on tiles at TARGET_CELL_PX (see
+      prepare_yolo_dataset.py) is unreliable if asked to detect on a whole,
+      untiled page directly — hundreds of tiny cells at a scale it never saw
+      in training. Rather than requiring a second, scale-tolerant model just
+      for sizing (impractical for a browser deployment shipping one model),
+      we bootstrap from a first pass already tiled at the plain TILE_SIZE
+      default — always closer to TARGET_CELL_PX than the raw image, so the
+      same specialized model measures cell size reliably enough there — and
+      only re-tile at a refined size if that measurement says it matters.
+    """
+    if search_contrast:
+        img, n_hi, label = best_contrast(img, model, max_det)
+        print(f"  Best contrast: {label} → {n_hi} high-conf cells")
+
+    if normalize_scale:
+        initial_cells = run_detection_tiled(img, model, max_det, TILE_SIZE)
+        if len(initial_cells) < CONTAINER_MIN_CANDIDATES:
+            print("  No cells found.")
+            return None
+        initial_hi = [c for c in initial_cells if c['conf'] >= HIGH_CONF]
+        size_sample = initial_hi if len(initial_hi) >= CONTAINER_MIN_CANDIDATES else initial_cells
+        median_w = statistics.median(c['w'] for c in size_sample)
+        native_tile_size = max(MIN_NATIVE_TILE, round(median_w * TILE_SIZE / TARGET_CELL_PX))
+        if native_tile_size / TILE_SIZE > 1.5 or native_tile_size / TILE_SIZE < 0.67:
+            print(f"  Refining native tile size: {native_tile_size}px (median cell width {median_w:.1f}px)")
+            all_cells = run_detection_tiled(img, model, max_det, native_tile_size)
+        else:
+            all_cells = initial_cells
+    else:
+        all_cells = run_detection(img, model, max_det)
+
     n_all  = len(all_cells)
     n_hi   = sum(1 for c in all_cells if c['conf'] >= HIGH_CONF)
     print(f"  Candidates: {n_all} total, {n_hi} high-conf (≥{HIGH_CONF})")
@@ -1025,22 +1194,24 @@ def process_image(img_path, model, lang_table, search_contrast,
 
     # ── Margin filter ────────────────────────────────────────────────────────
     # Remove cells that land outside the text block (e.g. ⠿ in blank margins).
-    # Use 5th/95th percentile of high-conf cell positions as the bounding box.
+    # Bounding box is the true min/max of high-conf cell positions, not a
+    # percentile — a percentile cutoff (e.g. 5th/95th) discards genuine
+    # high-conf detections whenever more than that fraction of real cells
+    # sit at the true edge (e.g. a block whose lines run wider than the rest
+    # of the page). Min/max can never exclude a high-conf cell from its own
+    # reference set, so only low-conf rescued cells landing outside where any
+    # real line was actually found are at risk of being filtered.
     hi_cells = [c for c in cells if c['conf'] >= HIGH_CONF]
     if len(hi_cells) >= 20:
         xs = sorted(c['cx'] for c in hi_cells)
         ys = sorted(c['cy'] for c in hi_cells)
-        n5  = max(0, len(xs) * 5  // 100)
-        n95 = max(0, len(xs) * 95 // 100)
-        _cx_min, _cx_max = xs[n5]  - xs[0]  * 0.05, xs[n95]  + xs[0]  * 0.05
-        _cy_min, _cy_max = ys[n5]  - ys[0]  * 0.05, ys[n95]  + ys[0]  * 0.05
         avg_h = statistics.median(c['h'] for c in hi_cells)
         avg_w = statistics.median(c['w'] for c in hi_cells)
         # Generous margins: allow 3 cell-widths left/right, 2 heights top/bottom
-        x_lo = xs[n5]  - avg_w * 3
-        x_hi = xs[n95] + avg_w * 3
-        y_lo = ys[n5]  - avg_h * 2
-        y_hi = ys[n95] + avg_h * 2
+        x_lo = xs[0]  - avg_w * 3
+        x_hi = xs[-1] + avg_w * 3
+        y_lo = ys[0]  - avg_h * 2
+        y_hi = ys[-1] + avg_h * 2
         before = len(cells)
         cells = [c for c in cells
                  if x_lo <= c['cx'] <= x_hi and y_lo <= c['cy'] <= y_hi]
@@ -1064,9 +1235,11 @@ def process_image(img_path, model, lang_table, search_contrast,
                                  _CELL_CLASSIFIER, _CELL_CLF_DEVICE, _CELL_CLF_TRANSFORM)
 
     avg_cell_w = statistics.median(c['w'] for c in cells if not c.get('is_space'))
-    save_annotated(img, cells, img_path.stem)
+    save_annotated(img, cells, stem)
 
     lines = group_into_lines([c for c in cells if not c.get('is_space')])
+    if exclude_markout:
+        lines = [_strip_markout_runs(line) for line in lines]
     cells_with_spaces = []
     braille_lines = []
     for line in lines:
@@ -1074,7 +1247,7 @@ def process_image(img_path, model, lang_table, search_contrast,
         cells_with_spaces.extend(lws)
         braille_lines.append(''.join(c['char'] for c in lws))
 
-    save_dot_grid(cells_with_spaces, img_path.stem)
+    save_dot_grid(cells_with_spaces, stem)
 
     translated = braille_to_text(braille_lines, lang_table)
     cleaned    = [clean_translation(t, spellcheck=spellcheck) for t in translated]
@@ -1091,12 +1264,29 @@ def main():
     parser.add_argument('--no-spellcheck', action='store_true',
                         help='Disable spell-correction of lowercase words')
     parser.add_argument('--classifier', default=None,
-                        help='Path to MobileNetV2 cell_classifier.pt '
-                             '(default: /tmp/braille-crops/cell_classifier.pt if it exists)')
+                        help='Path to MobileNetV2 cell_classifier.pt (default: '
+                             'dataset/models/cell_classifier.pt, falling back to '
+                             '/tmp/braille-crops/cell_classifier.pt — a freshly-trained '
+                             'classifier not yet copied into dataset/models/ — if that '
+                             "doesn't exist)")
+    parser.add_argument('--no-container-detect', action='store_true',
+                        help='Skip container detection; process each whole photo as one region')
+    parser.add_argument('--no-scale-normalize', action='store_true',
+                        help='Skip rescaling cells to a target pixel size before detecting')
+    parser.add_argument('--exclude-markout', action='store_true',
+                        help='Drop runs of 2+ consecutive all-six-dot cells before translation '
+                             "(likely a transcriber's delete/typo mark, not real content — "
+                             'see _strip_markout_runs() docstring). Off by default since this '
+                             'is a judgement call about transcriber convention.')
     args = parser.parse_args()
 
-    if args.classifier is None and Path('/tmp/braille-crops/cell_classifier.pt').exists():
-        args.classifier = '/tmp/braille-crops/cell_classifier.pt'
+    if args.classifier is None:
+        durable = REPOS_ROOT / 'dataset' / 'models' / 'cell_classifier.pt'
+        scratch = Path('/tmp/braille-crops/cell_classifier.pt')
+        if durable.exists():
+            args.classifier = str(durable)
+        elif scratch.exists():
+            args.classifier = str(scratch)
 
     model  = YOLO(MODEL_PATH)
     inp    = Path(args.input)
@@ -1106,18 +1296,68 @@ def main():
     spellcheck = not args.no_spellcheck
     print(f"Language: {args.lang}  |  Contrast search: {not args.no_contrast_search}"
           f"  |  Spell-check: {spellcheck}")
+    print(f"Container detect: {not args.no_container_detect}  |  "
+          f"Scale normalize: {not args.no_scale_normalize}")
     print(f"Low-conf threshold: {LOW_CONF}  |  High-conf threshold: {HIGH_CONF}")
     print(f"Found {len(images)} image(s)\n{'='*60}")
 
     for img_path in images:
         print(f"\n--- {img_path.name} ---")
-        text = process_image(img_path, model, args.lang,
-                             not args.no_contrast_search,
-                             spellcheck=spellcheck,
-                             classifier_path=args.classifier)
-        if text:
-            print("Translated text:")
-            print(text[:800])
+        photo = PIL.ImageOps.exif_transpose(PIL.Image.open(img_path)).convert('RGB')
+
+        whole_image_box = (0, 0, photo.width, photo.height)
+        if args.no_container_detect:
+            containers = [whole_image_box]
+        else:
+            raw_containers = [
+                b for b in find_containers(photo)
+                if b[2] - b[0] >= CONTAINER_MIN_SIDE_PX and b[3] - b[1] >= CONTAINER_MIN_SIDE_PX
+            ]
+            if raw_containers:
+                # One cheap whole-photo pass instead of a full contrast-search
+                # per candidate: keep only containers that overlap at least
+                # one roughly-detected cell.
+                rough_cells = run_detection(photo, model, max_det=2000)
+                containers = [
+                    b for b in raw_containers
+                    if any(_cell_center_in_box(c, b) for c in rough_cells)
+                ]
+                print(f"  {len(raw_containers)} candidate container(s), "
+                      f"{len(containers)} contain a detected cell")
+            else:
+                containers = []
+            containers = containers or [whole_image_box]
+
+        found_any = False
+        for idx, box in enumerate(containers):
+            stem = img_path.stem if len(containers) == 1 else f'{img_path.stem}_container{idx}'
+            if len(containers) > 1:
+                print(f"\n  -- container {idx} {box} --")
+            crop = photo.crop(box)
+            text = process_container(crop, stem, model, args.lang,
+                                 not args.no_contrast_search,
+                                 spellcheck=spellcheck,
+                                 classifier_path=args.classifier,
+                                 normalize_scale=not args.no_scale_normalize,
+                                 exclude_markout=args.exclude_markout)
+            if text:
+                found_any = True
+                print("Translated text:")
+                print(text[:800])
+
+        # Container detection found candidates, but none actually had Braille
+        # on them — try the whole photo once more before giving up.
+        if not found_any and containers != [whole_image_box]:
+            print("\n  No Braille found in any candidate container — trying whole photo")
+            text = process_container(photo, img_path.stem, model, args.lang,
+                                 not args.no_contrast_search,
+                                 spellcheck=spellcheck,
+                                 classifier_path=args.classifier,
+                                 normalize_scale=not args.no_scale_normalize,
+                                 exclude_markout=args.exclude_markout)
+            if text:
+                print("Translated text:")
+                print(text[:800])
 
     print(f"\n{'='*60}")
     print(f"Results in: {OUT_DIR}")

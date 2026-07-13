@@ -1,0 +1,70 @@
+name: Check liblouis-env for new releases
+
+# liblouis-env.version is a hand-pinned tag that CI clones instead of a
+# local path dependency. This workflow only *detects* drift and files an
+# issue - it deliberately does not open a PR that bumps the pin
+# automatically, since a human should verify the new release before
+# rolling it forward.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # weekly, Monday 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare pinned liblouis-env.version against latest upstream tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PINNED_VERSION=$(cat liblouis-env.version)
+          if [ -z "$PINNED_VERSION" ]; then
+            echo "liblouis-env.version is empty" >&2
+            exit 1
+          fi
+
+          LATEST_TAG=$(gh api repos/brailletools/liblouis-env/tags --jq '.[0].name')
+          if [ -z "$LATEST_TAG" ]; then
+            echo "Could not fetch latest tag from GitHub API" >&2
+            exit 1
+          fi
+
+          echo "Pinned:  $PINNED_VERSION"
+          echo "Latest:  $LATEST_TAG"
+
+          if [ "$PINNED_VERSION" = "$LATEST_TAG" ]; then
+            echo "Up to date."
+            exit 0
+          fi
+
+          TITLE="liblouis-env has a new release (pinned liblouis-env.version is behind)"
+
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --search "in:title \"$TITLE\"" --state open --json number --jq '.[0].number' || true)
+          if [ -n "$EXISTING" ]; then
+            echo "Issue #$EXISTING already open, skipping."
+            exit 0
+          fi
+
+          BODY_FILE=$(mktemp)
+          {
+            printf '%s\n' "liblouis-env has a newer tag than what's pinned in \`liblouis-env.version\`."
+            printf '\n'
+            printf -- '- Pinned: \`%s\`\n' "$PINNED_VERSION"
+            printf -- '- Latest tag: \`%s\`\n' "$LATEST_TAG"
+            printf -- '- Compare: https://github.com/brailletools/liblouis-env/compare/%s...%s\n' "$PINNED_VERSION" "$LATEST_TAG"
+            printf '\n'
+            printf '%s\n' "Bumping this pin affects what CI checks out/installs for the test job."
+            printf '%s\n' "Run the test suite locally against the new tag before bumping."
+          } > "$BODY_FILE"
+
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file "$BODY_FILE"
