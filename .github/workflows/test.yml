@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout liblouis-env (local path dependency)
+        run: git clone https://github.com/brailletools/liblouis-env.git ${{ github.workspace }}/../liblouis-env
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install ultralytics opencv-python pillow numpy torch torchvision pyspellchecker scipy pytest
+          pip install -e ../liblouis-env/python
+
+      - name: Run tests
+        run: pytest tests/

@@ -14,70 +14,31 @@ Output:
 """
 
 import csv
-import random
 from pathlib import Path
 import PIL.Image
 import PIL.ImageOps
 
-ANGELINA  = Path('/Users/jmankoff/Research/nonvisual/braille/AngelinaDataset')
+from angelina_data import ANGELINA, collect_images, load_csv
+from dot_pattern_utils import unique_stem
+
 OUT_DIR   = Path('/tmp/braille-crops')
 CROP_SIZE = (64, 64)   # (w, h) — square, MobileNetV2-friendly
 PADDING   = 0.10       # extra fraction of cell dim added on each side
-SEED      = 42
 
 
-def label_to_bits6(label_int):
-    """Angelina int label → 6-char bits string (bit0=dot1 at position 0)."""
-    return format(label_int, '06b')[::-1]
-
-
-def load_csv(csv_path, img_w, img_h):
+def cells_with_pixel_bbox(csv_path, img_w, img_h):
+    """load_csv()'s fractional bboxes, padded and converted to pixel coords."""
     cells = []
-    with open(csv_path) as f:
-        for row in csv.reader(f, delimiter=';'):
-            if len(row) < 5:
-                continue
-            l, t, r, b, lbl = float(row[0]), float(row[1]), float(row[2]), float(row[3]), int(row[4])
-            # pixel bbox with padding
-            pw  = (r - l) * img_w * PADDING
-            ph  = (b - t) * img_h * PADDING
-            x0  = max(0, l * img_w - pw)
-            y0  = max(0, t * img_h - ph)
-            x1  = min(img_w, r * img_w + pw)
-            y1  = min(img_h, b * img_h + ph)
-            cells.append({'bbox': (x0, y0, x1, y1), 'label': lbl, 'bits6': label_to_bits6(lbl)})
+    for cell in load_csv(csv_path):
+        l, t, r, b = cell['frac_bbox']
+        pw = (r - l) * img_w * PADDING
+        ph = (b - t) * img_h * PADDING
+        x0 = max(0,  l * img_w - pw)
+        y0 = max(0,  t * img_h - ph)
+        x1 = min(img_w, r * img_w + pw)
+        y1 = min(img_h, b * img_h + ph)
+        cells.append({'bbox': (x0, y0, x1, y1), 'label': cell['label'], 'bits6': cell['bits6']})
     return cells
-
-
-def collect_images():
-    """Return list of (img_path, csv_path, intended_split)."""
-    entries = []
-
-    # handwritten — all go to train (search all subdirs recursively)
-    for jp in sorted((ANGELINA / 'handwritten').rglob('*.labeled.jpg')):
-        cp = jp.with_suffix('.csv')
-        if cp.exists():
-            entries.append((jp, cp, 'train'))
-
-    # uploaded/test2 — 70/15/15 split by image
-    test2_imgs = sorted((ANGELINA / 'uploaded' / 'test2').glob('*.labeled.jpg'))
-    test2_imgs = [p for p in test2_imgs if p.with_suffix('.csv').exists()]
-    random.seed(SEED)
-    random.shuffle(test2_imgs)
-    n = len(test2_imgs)
-    n_val  = max(1, round(n * 0.15))
-    n_test = max(1, round(n * 0.15))
-    for i, jp in enumerate(test2_imgs):
-        cp = jp.with_suffix('.csv')
-        if i < n_val:
-            split = 'val'
-        elif i < n_val + n_test:
-            split = 'test'
-        else:
-            split = 'train'
-        entries.append((jp, cp, split))
-
-    return entries
 
 
 def main():
@@ -95,12 +56,12 @@ def main():
     for img_path, csv_path, split in entries:
         img = PIL.ImageOps.exif_transpose(PIL.Image.open(img_path)).convert('RGB')
         iw, ih = img.size
-        cells = load_csv(csv_path, iw, ih)
+        cells = cells_with_pixel_bbox(csv_path, iw, ih)
         img_counts[split] += 1
 
         for idx, cell in enumerate(cells):
             crop = img.crop(cell['bbox']).resize(CROP_SIZE, PIL.Image.LANCZOS)
-            stem  = f"{img_path.stem}_{idx:04d}"
+            stem  = f"{unique_stem(img_path, ANGELINA)}_{idx:04d}"
             fname = f"{stem}.jpg"
             out_p = OUT_DIR / split / fname
             crop.save(out_p, quality=92)

@@ -28,6 +28,10 @@ liblouis-env = { path = "../liblouis-env/python", editable = true }
 
 [feature.dev.dependencies]
 ruff = "*"
+pytest = "*"
+
+[feature.dev.tasks]
+test = "pytest tests/"
 
 [feature.export.pypi-dependencies]
 onnx = "*"
