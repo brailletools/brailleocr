@@ -11,8 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout liblouis-env (local path dependency)
-        run: git clone https://github.com/brailletools/liblouis-env.git ${{ github.workspace }}/../liblouis-env
+      - name: Checkout liblouis-env (pinned release, see liblouis-env.version)
+        run: |
+          VERSION=$(cat liblouis-env.version)
+          git clone --branch "$VERSION" --depth 1 https://github.com/brailletools/liblouis-env.git "${{ github.workspace }}/../liblouis-env"
 
       - uses: actions/setup-python@v5
         with:
