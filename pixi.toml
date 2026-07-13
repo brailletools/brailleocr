@@ -29,6 +29,9 @@ liblouis-env = { path = "../liblouis-env", editable = true }
 [feature.dev.dependencies]
 ruff = "*"
 
+[feature.export.tasks]
+onnx = "python export_onnx.py"
+
 [environments]
 dev = ["dev"]
 

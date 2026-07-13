@@ -2,3 +2,9 @@ __pycache__/
 *.egg-info/
 .pixi/
 .ruff_cache/
+<<<<<<< Updated upstream
+=======
+CLAUDE.local.md
+*.pt
+node_modules/
+>>>>>>> Stashed changes
