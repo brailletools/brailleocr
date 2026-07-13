@@ -45,7 +45,7 @@ from liblouis_env import get_lou_translate
 from container_detect import find_containers
 from dot_pattern_utils import REPOS_ROOT, make_tile_boxes, TILE_SIZE, TARGET_CELL_PX, MIN_NATIVE_TILE
 
-MODEL_PATH    = '/tmp/yolov8-braille/yolov8m.pt'
+MODEL_PATH    = str(REPOS_ROOT / 'dataset' / 'models' / 'cell_detector.pt')
 SAMPLE_DIR    = REPOS_ROOT / 'dataset' / 'data' / 'sample-images'
 OUT_DIR       = Path('/tmp/braille-yolo-results')
 LOU_TRANSLATE = get_lou_translate()
@@ -1228,16 +1228,24 @@ def main():
     parser.add_argument('--no-spellcheck', action='store_true',
                         help='Disable spell-correction of lowercase words')
     parser.add_argument('--classifier', default=None,
-                        help='Path to MobileNetV2 cell_classifier.pt '
-                             '(default: /tmp/braille-crops/cell_classifier.pt if it exists)')
+                        help='Path to MobileNetV2 cell_classifier.pt (default: '
+                             'dataset/models/cell_classifier.pt, falling back to '
+                             '/tmp/braille-crops/cell_classifier.pt — a freshly-trained '
+                             'classifier not yet copied into dataset/models/ — if that '
+                             "doesn't exist)")
     parser.add_argument('--no-container-detect', action='store_true',
                         help='Skip container detection; process each whole photo as one region')
     parser.add_argument('--no-scale-normalize', action='store_true',
                         help='Skip rescaling cells to a target pixel size before detecting')
     args = parser.parse_args()
 
-    if args.classifier is None and Path('/tmp/braille-crops/cell_classifier.pt').exists():
-        args.classifier = '/tmp/braille-crops/cell_classifier.pt'
+    if args.classifier is None:
+        durable = REPOS_ROOT / 'dataset' / 'models' / 'cell_classifier.pt'
+        scratch = Path('/tmp/braille-crops/cell_classifier.pt')
+        if durable.exists():
+            args.classifier = str(durable)
+        elif scratch.exists():
+            args.classifier = str(scratch)
 
     model  = YOLO(MODEL_PATH)
     inp    = Path(args.input)

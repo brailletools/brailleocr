@@ -1304,7 +1304,7 @@ packages:
 - pypi: ../liblouis-env/python
   name: liblouis-env
   version: 0.1.0
-  sha256: c3ecfddc08f1814643525c21a27c3fc94c9fb4d922f726fdc9a6132c97f633bd
+  sha256: 633d2bf282285cdd1d43d1769b96df079ad6e08ac943b5ba97026355842cf980
   requires_dist:
   - platformdirs>=4.0
   - requests>=2.32
