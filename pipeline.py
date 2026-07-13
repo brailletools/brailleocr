@@ -1074,6 +1074,38 @@ def reclassify_cells(img, cells, clf, clf_device, clf_tf):
     return cells
 
 
+def _strip_markout_runs(line, min_run=2):
+    """
+    Drop runs of min_run+ consecutive all-six-dot cells from a line.
+
+    UEB's word-sign for "for" happens to be all six dots, and Angelina's own
+    labeling scheme separately defines an all-six-dots cell as a dedicated
+    "markout" (transcriber delete/typo) marker, not real content — so a
+    correctly-detected run of these (confirmed against the actual photo, see
+    session notes) reads back as nonsense ("forforfor...") under literal
+    translation. A single "for" is a normal, common word and must not be
+    touched — only a *run* of 2+ adjacent all-dots cells is treated as a
+    markout, never an isolated one.
+
+    Opt-in only (see --exclude-markout): this changes what content survives
+    translation, which is a judgement call about transcriber convention, not
+    a pure detection-quality fix.
+    """
+    out = []
+    i = 0
+    while i < len(line):
+        if line[i].get('bits') == '111111':
+            j = i
+            while j < len(line) and line[j].get('bits') == '111111':
+                j += 1
+            if j - i >= min_run:
+                i = j
+                continue
+        out.append(line[i])
+        i += 1
+    return out
+
+
 def _init_classifier(path):
     global _CELL_CLASSIFIER, _CELL_CLF_DEVICE, _CELL_CLF_TRANSFORM
     if _CELL_CLASSIFIER is None:
@@ -1083,7 +1115,7 @@ def _init_classifier(path):
 
 def process_container(img, stem, model, lang_table, search_contrast,
                   spellcheck=True, max_det=2000, classifier_path=None,
-                  normalize_scale=True):
+                  normalize_scale=True, exclude_markout=False):
     """
     img: an already-loaded, already-oriented PIL.Image — a whole photo, or a
       single container crop from container_detect.find_containers().
@@ -1096,6 +1128,8 @@ def process_container(img, stem, model, lang_table, search_contrast,
       module-level comment above TARGET_CELL_PX for why this can't just be
       done by resizing the image). Disable to reproduce the older
       single-pass-at-native-resolution behaviour, e.g. for comparison.
+    exclude_markout: drop runs of 2+ consecutive all-six-dot cells before
+      translation — see _strip_markout_runs(). Off by default.
 
       A detector trained exclusively on tiles at TARGET_CELL_PX (see
       prepare_yolo_dataset.py) is unreliable if asked to detect on a whole,
@@ -1204,6 +1238,8 @@ def process_container(img, stem, model, lang_table, search_contrast,
     save_annotated(img, cells, stem)
 
     lines = group_into_lines([c for c in cells if not c.get('is_space')])
+    if exclude_markout:
+        lines = [_strip_markout_runs(line) for line in lines]
     cells_with_spaces = []
     braille_lines = []
     for line in lines:
@@ -1237,6 +1273,11 @@ def main():
                         help='Skip container detection; process each whole photo as one region')
     parser.add_argument('--no-scale-normalize', action='store_true',
                         help='Skip rescaling cells to a target pixel size before detecting')
+    parser.add_argument('--exclude-markout', action='store_true',
+                        help='Drop runs of 2+ consecutive all-six-dot cells before translation '
+                             "(likely a transcriber's delete/typo mark, not real content — "
+                             'see _strip_markout_runs() docstring). Off by default since this '
+                             'is a judgement call about transcriber convention.')
     args = parser.parse_args()
 
     if args.classifier is None:
@@ -1297,7 +1338,8 @@ def main():
                                  not args.no_contrast_search,
                                  spellcheck=spellcheck,
                                  classifier_path=args.classifier,
-                                 normalize_scale=not args.no_scale_normalize)
+                                 normalize_scale=not args.no_scale_normalize,
+                                 exclude_markout=args.exclude_markout)
             if text:
                 found_any = True
                 print("Translated text:")
@@ -1311,7 +1353,8 @@ def main():
                                  not args.no_contrast_search,
                                  spellcheck=spellcheck,
                                  classifier_path=args.classifier,
-                                 normalize_scale=not args.no_scale_normalize)
+                                 normalize_scale=not args.no_scale_normalize,
+                                 exclude_markout=args.exclude_markout)
             if text:
                 print("Translated text:")
                 print(text[:800])
