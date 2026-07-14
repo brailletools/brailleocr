@@ -4,7 +4,7 @@ Export the detector and classifier in dataset/models/ to ONNX, for the
 client-side (onnxruntime-web) OCR path in webeditor.
 
 Usage:
-  pixi run -e export python export_onnx.py
+  pixi run -e export onnx
 
 Requires the `export` pixi environment (onnx + onnxruntime), separate from
 the default environment so these aren't a runtime dependency of pipeline.py.
