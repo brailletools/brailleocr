@@ -9,7 +9,6 @@ Usage:
 Requires the `export` pixi environment (onnx + onnxruntime), separate from
 the default environment so these aren't a runtime dependency of pipeline.py.
 """
-from pathlib import Path
 
 import torch
 import torch.nn as nn
