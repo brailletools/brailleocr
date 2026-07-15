@@ -4,3 +4,4 @@ __pycache__/
 .ruff_cache/
 CLAUDE.local.md
 *.pt
+node_modules/

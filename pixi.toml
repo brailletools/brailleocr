@@ -37,6 +37,9 @@ test = "pytest tests/"
 onnx = "*"
 onnxruntime = "*"
 
+[feature.export.tasks]
+onnx = "python export_onnx.py"
+
 [environments]
 dev = ["dev"]
 export = ["export"]
