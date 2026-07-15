@@ -34,7 +34,15 @@ export class CellDetector {
 		const input = new ort.Tensor('float32', chw, [1, 3, lb.h, lb.w]);
 		const outputs = await this.session.run({ [this.session.inputNames[0]]: input });
 		const raw = outputs[this.session.outputNames[0]];
-		const [, numAttrs, numAnchors] = raw.dims;
+
+		// Validate the layout BEFORE indexing into raw.data below -- the loop
+		// assumes exactly 5 attribute rows (cx,cy,w,h,conf), and reading it
+		// against a differently-shaped output would silently produce garbage
+		// (or read out of bounds) rather than fail loudly.
+		if (raw.dims.length !== 3 || raw.dims[1] !== 5) {
+			throw new Error(`Unexpected detector output shape: (${raw.dims.join(', ')})`);
+		}
+		const [, , numAnchors] = raw.dims;
 		const data = raw.data;
 
 		// Raw layout: (1, 5, numAnchors) — row 0-3 = cx,cy,w,h (already decoded
@@ -52,9 +60,6 @@ export class CellDetector {
 				h: data[3 * numAnchors + i],
 				conf
 			});
-		}
-		if (numAttrs !== 5) {
-			throw new Error(`Unexpected detector output shape: (_, ${numAttrs}, ${numAnchors})`);
 		}
 
 		const kept = nms(candidates, iouThreshold, maxDet);

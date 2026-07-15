@@ -87,6 +87,33 @@ export function letterbox(src, srcW, srcH, newW = 640, newH = 640, stride = 32, 
 	return { data: out, w: outW, h: outH, padLeft, padTop, scale: r };
 }
 
+/**
+ * Raw HWC sub-region copy (no resize/normalize) -- used by tiling.js to crop
+ * a tile out of a full page before running the detector on it. Bounds are
+ * clamped the same way classifier.js's _cropAndResize() clamps its padded
+ * crop: x0/y0 to the last valid pixel index (not just >= 0), x1/y1 derived
+ * to always be strictly greater, so a caller-supplied box that runs to or
+ * past the image edge can never produce an out-of-bounds read.
+ * @param {Float32Array} rgbHwc - HWC RGB, values 0-255
+ * @returns {{data: Float32Array, w: number, h: number}}
+ */
+export function cropRgbHwc(rgbHwc, imgW, imgH, x0, y0, x1, y1) {
+	const cx0 = Math.min(imgW - 1, Math.max(0, Math.round(x0)));
+	const cy0 = Math.min(imgH - 1, Math.max(0, Math.round(y0)));
+	const cx1 = Math.max(cx0 + 1, Math.min(imgW, Math.round(x1)));
+	const cy1 = Math.max(cy0 + 1, Math.min(imgH, Math.round(y1)));
+	const w = cx1 - cx0;
+	const h = cy1 - cy0;
+
+	const out = new Float32Array(w * h * 3);
+	for (let y = 0; y < h; y++) {
+		const srcRow = (cy0 + y) * imgW * 3 + cx0 * 3;
+		const dstRow = y * w * 3;
+		out.set(rgbHwc.subarray(srcRow, srcRow + w * 3), dstRow);
+	}
+	return { data: out, w, h };
+}
+
 /** HWC Float32Array (0-255) -> CHW Float32Array (0-1), NCHW batch of 1. */
 export function hwcToChwNormalized(hwc, w, h) {
 	const chw = new Float32Array(3 * w * h);

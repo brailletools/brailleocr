@@ -1,5 +1,5 @@
 /** IoU of two boxes given as {cx, cy, w, h}. */
-function iou(a, b) {
+export function iou(a, b) {
 	const ax0 = a.cx - a.w / 2,
 		ay0 = a.cy - a.h / 2,
 		ax1 = a.cx + a.w / 2,

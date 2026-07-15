@@ -55,12 +55,18 @@ export class CellClassifier {
 	_cropAndResize(rgbHwc, imgW, imgH, box) {
 		const padX = box.w * CROP_PAD_FRAC;
 		const padY = box.h * CROP_PAD_FRAC;
-		const x0 = Math.max(0, Math.round(box.cx - box.w / 2 - padX));
-		const y0 = Math.max(0, Math.round(box.cy - box.h / 2 - padY));
-		const x1 = Math.min(imgW, Math.round(box.cx + box.w / 2 + padX));
-		const y1 = Math.min(imgH, Math.round(box.cy + box.h / 2 + padY));
-		const cropW = Math.max(1, x1 - x0);
-		const cropH = Math.max(1, y1 - y0);
+		// x0/y0 are clamped to the last valid pixel index (not just >= 0), and
+		// x1/y1 are derived to always be strictly greater than x0/y0 -- a box
+		// extending to or past the image edge would otherwise let x0 === imgW
+		// (or y0 === imgH), one past the last valid column/row, which made the
+		// row-copy loop below read past the intended data and silently paste in
+		// a shorter/zero-filled subarray instead of real pixel data.
+		const x0 = Math.min(imgW - 1, Math.max(0, Math.round(box.cx - box.w / 2 - padX)));
+		const y0 = Math.min(imgH - 1, Math.max(0, Math.round(box.cy - box.h / 2 - padY)));
+		const x1 = Math.max(x0 + 1, Math.min(imgW, Math.round(box.cx + box.w / 2 + padX)));
+		const y1 = Math.max(y0 + 1, Math.min(imgH, Math.round(box.cy + box.h / 2 + padY)));
+		const cropW = x1 - x0;
+		const cropH = y1 - y0;
 
 		const cropped = new Float32Array(cropW * cropH * 3);
 		for (let y = 0; y < cropH; y++) {
