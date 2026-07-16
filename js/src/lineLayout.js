@@ -91,14 +91,20 @@ export function insertSpaces(lineCells, avgCellW) {
 	const medianGap = median(gaps);
 	const spaceThresh = medianGap + avgCellW * SPACE_GAP_EXTRA_FRAC;
 
+	const pyRound = (x) => {
+		const f = Math.floor(x);
+		const frac = x - f;
+		if (frac < 0.5) return f;
+		if (frac > 0.5) return f + 1;
+		return f % 2 === 0 ? f : f + 1;
+	};
+
 	const result = [line[0]];
 	for (let i = 1; i < line.length; i++) {
 		const gap = line[i].cx - line[i - 1].cx;
 		if (gap > spaceThresh) {
-			const nSpaces = Math.max(1, bankersRound((gap - medianGap) / avgCellW));
+			const nSpaces = Math.max(1, pyRound((gap - medianGap) / avgCellW));
 			for (let s = 0; s < nSpaces; s++) {
-				// cy of the cell AFTER the gap (line[i]), matching pipeline.py's
-				// insert_spaces() -- not line[i - 1], the cell before it.
 				result.push({ cx: null, cy: line[i].cy, bits: '000000', isSpace: true });
 			}
 		}
