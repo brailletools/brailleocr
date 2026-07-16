@@ -44,8 +44,8 @@ from spellchecker import SpellChecker
 from liblouis_env import get_lou_translate
 from container_detect import find_containers
 from dot_pattern_utils import REPOS_ROOT, make_tile_boxes, TILE_SIZE, TARGET_CELL_PX, MIN_NATIVE_TILE
+from model_fetch import resolve_model, resolve_classifier_path
 
-MODEL_PATH    = str(REPOS_ROOT / 'dataset' / 'models' / 'cell_detector.pt')
 SAMPLE_DIR    = REPOS_ROOT / 'dataset' / 'data' / 'sample-images'
 OUT_DIR       = Path('/tmp/braille-yolo-results')
 LOU_TRANSLATE = get_lou_translate()
@@ -1267,8 +1267,8 @@ def main():
                         help='Path to MobileNetV2 cell_classifier.pt (default: '
                              'dataset/models/cell_classifier.pt, falling back to '
                              '/tmp/braille-crops/cell_classifier.pt — a freshly-trained '
-                             'classifier not yet copied into dataset/models/ — if that '
-                             "doesn't exist)")
+                             'classifier not yet copied into dataset/models/ — then to '
+                             'fetching the pinned brailletools/dataset release)')
     parser.add_argument('--no-container-detect', action='store_true',
                         help='Skip container detection; process each whole photo as one region')
     parser.add_argument('--no-scale-normalize', action='store_true',
@@ -1281,14 +1281,9 @@ def main():
     args = parser.parse_args()
 
     if args.classifier is None:
-        durable = REPOS_ROOT / 'dataset' / 'models' / 'cell_classifier.pt'
-        scratch = Path('/tmp/braille-crops/cell_classifier.pt')
-        if durable.exists():
-            args.classifier = str(durable)
-        elif scratch.exists():
-            args.classifier = str(scratch)
+        args.classifier = str(resolve_classifier_path())
 
-    model  = YOLO(MODEL_PATH)
+    model  = YOLO(str(resolve_model('cell_detector.pt')))
     inp    = Path(args.input)
     images = (sorted(inp.glob('*.jpeg')) + sorted(inp.glob('*.jpg'))) \
              if inp.is_dir() else [inp]
