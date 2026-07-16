@@ -21,3 +21,10 @@ export {
 	NEIGHBOR_QUALITY_CONF,
 	SLOT_FIT_TOLERANCE_FRAC
 } from './tiling.js';
+export {
+	groupIntoLines,
+	insertSpaces,
+	layoutCellsIntoLines,
+	bitsToBraille,
+	layoutToUnicodeBraille
+} from './lineLayout.js';
