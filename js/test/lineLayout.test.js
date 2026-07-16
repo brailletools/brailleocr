@@ -64,6 +64,38 @@ test('insertSpaces does not insert a space for a single-cell line', () => {
 	assert.equal(result.length, 1);
 });
 
+test('insertSpaces takes a synthetic space marker\'s cy from the cell AFTER the gap, matching pipeline.py', () => {
+	// pipeline.py's insert_spaces() uses line[i]['cy'] (the cell after the gap),
+	// not the cell before it -- matters when a line isn't perfectly horizontal.
+	// Needs >=3 cells so medianGap (from all gaps) differs from the one wide gap
+	// being tested -- with only one gap, median(gap)==gap and no space ever fires.
+	const line = [
+		{ cx: 0, cy: 100, w: 25, h: 50, bits: '000000' },
+		{ cx: 30, cy: 100, w: 25, h: 50, bits: '000000' },
+		{ cx: 200, cy: 108, w: 25, h: 50, bits: '000000' }
+	];
+	const result = insertSpaces(line, 25);
+	const space = result.find((c) => c.isSpace);
+	assert.ok(space, 'expected a space marker for the wide 30->200 gap');
+	assert.equal(space.cy, 108, 'space marker cy should match the cell after the gap, not before it');
+});
+
+test('insertSpaces rounds ties the way Python\'s round() does (round-half-to-even), not Math.round()', () => {
+	// Math.round(2.5) is 3 (JS always rounds .5 up), but Python's round(2.5) is 2
+	// (ties go to the nearest EVEN integer -- 2, not 3). Construct a gap where
+	// (gap - medianGap) / avgCellW lands exactly on 2.5, so the two disagree.
+	const line = [
+		{ cx: 0, cy: 100, w: 20, h: 50, bits: '000000' },
+		{ cx: 30, cy: 100, w: 20, h: 50, bits: '000000' },
+		{ cx: 160, cy: 100, w: 20, h: 50, bits: '000000' }
+	];
+	// gaps: [30, 130] -> medianGap=80, spaceThresh=80+20*0.5=90 -- gap 130 exceeds it.
+	// (130-80)/20 = 2.5 -> Python round-half-to-even -> 2 (nearest even), not 3.
+	const result = insertSpaces(line, 20);
+	const spaces = result.filter((c) => c.isSpace);
+	assert.equal(spaces.length, 2, 'round-half-to-even: round(2.5) = 2, not 3');
+});
+
 test('layoutCellsIntoLines + layoutToUnicodeBraille produce two lines with a mid-line word gap', () => {
 	// Same shape as pipeline.py's process_container() wiring: group into
 	// lines, then infer spaces per line using one page-wide avgCellW.

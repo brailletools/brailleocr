@@ -12,6 +12,19 @@ function median(values) {
 	return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+// Python's round() is round-half-to-even ("banker's rounding"); JS's Math.round()
+// always rounds .5 up (and differs from Python on negative ties too, e.g.
+// round(-1.5): Python -> -2, Math.round -> -1). insertSpaces() below needs to
+// match pipeline.py's round() exactly since it's a direct port, or a tie can
+// produce a different number of inferred space markers than the reference.
+function bankersRound(x) {
+	const floor = Math.floor(x);
+	const diff = x - floor;
+	if (diff < 0.5) return floor;
+	if (diff > 0.5) return floor + 1;
+	return floor % 2 === 0 ? floor : floor + 1;
+}
+
 // Fraction of the page's median cell height a cell must fall within of the
 // *previous* cell added to the current line to join it — matches
 // pipeline.py's group_into_lines() exactly (chains off the last cell added,
