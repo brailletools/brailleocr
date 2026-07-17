@@ -38,11 +38,15 @@ def _download(url: str, dest: Path) -> None:
     # interrupted download must not leave a corrupt file sitting at `dest`
     # that a later run's dest.exists() check would treat as complete.
     tmp = dest.with_suffix(dest.suffix + '.part')
-    with requests.get(url, stream=True, timeout=60) as r:
-        r.raise_for_status()
-        with open(tmp, 'wb') as f:
-            shutil.copyfileobj(r.raw, f)
-    tmp.replace(dest)
+    try:
+        with requests.get(url, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            with open(tmp, 'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+        tmp.replace(dest)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
 
 
 def resolve_model(filename: str) -> Path:
