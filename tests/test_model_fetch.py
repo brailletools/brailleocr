@@ -1,11 +1,13 @@
 """
 Tests for model_fetch.py -- see https://github.com/brailletools/brailleocr/issues/4.
 
-The fetch-from-release path is exercised for real (not mocked): that's the
-whole point of this module (letting CI, or any checkout with no sibling
-`dataset` repo, actually resolve a working model), so a real network fetch
-against the pinned release is the only test that would have caught the repo's
-previous complete lack of a fallback.
+Exactly one test (test_resolve_model_fetches_and_caches_when_no_sibling_checkout_exists)
+does a real network fetch against the pinned brailletools/dataset release --
+that's the whole point of this module (letting CI, or any checkout with no
+sibling `dataset` repo, actually resolve a working model), so a real fetch is
+the only thing that would have caught the repo's previous complete lack of a
+fallback. Every other test that needs to reach the fetch tier mocks
+resolve_model() instead of re-downloading the same file for real.
 """
 
 import sys
@@ -90,14 +92,25 @@ def test_resolve_classifier_path_falls_back_to_scratch_when_no_durable_copy(tmp_
     assert mf.resolve_classifier_path(scratch=scratch_path) == scratch_path
 
 
-def test_resolve_classifier_path_falls_back_to_fetch_when_neither_exists(tmp_path, monkeypatch):
+def test_resolve_classifier_path_falls_back_to_resolve_model_when_neither_exists(tmp_path, monkeypatch):
+    # The real fetch mechanism is already exercised for real, once, by
+    # test_resolve_model_fetches_and_caches_when_no_sibling_checkout_exists
+    # above -- this test only needs to confirm resolve_classifier_path() falls
+    # through to resolve_model() as the last resort, not re-download the same
+    # file over the network a second time to prove the same thing again.
     fake_repos_root = tmp_path / 'repos'
     scratch_path = tmp_path / 'scratch' / 'cell_classifier.pt'  # never created
-
     monkeypatch.setattr(mf, 'REPOS_ROOT', fake_repos_root)
-    cache_root = tmp_path / 'cache'
-    monkeypatch.setattr(mf.platformdirs, 'user_cache_path', lambda name: cache_root / name)
+
+    sentinel = tmp_path / 'fetched-cell_classifier.pt'
+    calls = []
+
+    def fake_resolve_model(filename):
+        calls.append(filename)
+        return sentinel
+
+    monkeypatch.setattr(mf, 'resolve_model', fake_resolve_model)
 
     resolved = mf.resolve_classifier_path(scratch=scratch_path)
-    assert resolved == cache_root / 'brailleocr' / mf.DATASET_VERSION / 'cell_classifier.pt'
-    assert resolved.exists()
+    assert resolved == sentinel
+    assert calls == ['cell_classifier.pt']
