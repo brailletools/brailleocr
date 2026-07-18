@@ -21,6 +21,8 @@ torch = ">=2.12"
 torchvision = ">=0.27"
 pyspellchecker = ">=0.9"
 scipy = ">=1.15"
+platformdirs = ">=4.0"
+requests = ">=2.32"
 # Path dependency during local development — switch to the git+tag form below
 # once https://github.com/brailletools/liblouis-env has a pushed, tagged commit:
 # liblouis-env = { git = "https://github.com/brailletools/liblouis-env.git", tag = "v0.1.0", subdirectory = "python" }
@@ -32,6 +34,12 @@ pytest = "*"
 
 [feature.dev.tasks]
 test = "pytest tests/"
+# ruff is a dev-only dependency (declared above), not part of the default
+# environment -- this task must live here, not in the top-level [tasks]
+# table, or `pixi run lint` resolves against the default env and fails with
+# "ruff: command not found" (only caught because CI runs on a clean image;
+# a contributor with a stray system-wide `ruff` on PATH wouldn't notice).
+lint = "ruff check ."
 
 [feature.export.pypi-dependencies]
 onnx = "*"
@@ -43,6 +51,3 @@ onnx = "python export_onnx.py"
 [environments]
 dev = ["dev"]
 export = ["export"]
-
-[tasks]
-lint = "ruff check ."

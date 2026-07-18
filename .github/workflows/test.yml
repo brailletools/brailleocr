@@ -16,14 +16,9 @@ jobs:
           VERSION=$(cat liblouis-env.version)
           git clone --branch "$VERSION" --depth 1 https://github.com/brailletools/liblouis-env.git "${{ github.workspace }}/../liblouis-env"
 
-      - uses: actions/setup-python@v5
+      - uses: prefix-dev/setup-pixi@v0.10.0
         with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install ultralytics opencv-python pillow numpy torch torchvision pyspellchecker scipy pytest
-          pip install -e ../liblouis-env/python
+          environments: dev
 
       - name: Run tests
-        run: pytest tests/
+        run: pixi run -e dev test

@@ -32,11 +32,12 @@ _MODEL = None
 
 
 def _get_model():
-    """Lazy so `evaluate.py --help` works without the model file present
-    (e.g. in CI, which doesn't check out the sibling dataset repo)."""
+    """Lazy so `evaluate.py --help` works without resolving a model file at all
+    (resolve_model() itself is cheap when a sibling `dataset` checkout exists,
+    but may fetch over the network otherwise -- keep that off the --help path)."""
     global _MODEL
     if _MODEL is None:
-        _MODEL = tb.YOLO(tb.MODEL_PATH)
+        _MODEL = tb.YOLO(str(tb.resolve_model('cell_detector.pt')))
     return _MODEL
 
 
@@ -144,10 +145,8 @@ def main():
     args = ap.parse_args()
 
     dataset_dir = Path(args.dataset)
-    clf_path = args.classifier
-    if clf_path is None and Path('/tmp/braille-crops/cell_classifier.pt').exists():
-        clf_path = '/tmp/braille-crops/cell_classifier.pt'
-        print(f"Using classifier: {clf_path}")
+    clf_path = args.classifier or str(tb.resolve_classifier_path())
+    print(f"Using classifier: {clf_path}")
 
     jpg_files = sorted(dataset_dir.glob(args.glob))
     if args.end is not None:
