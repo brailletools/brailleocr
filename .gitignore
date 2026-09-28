@@ -5,3 +5,4 @@ __pycache__/
 CLAUDE.local.md
 *.pt
 node_modules/
+bench/

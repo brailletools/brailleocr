@@ -1,192 +1,155 @@
-# Braille OCR Model Setup Guide
+# Browser (client-side) Braille OCR setup
 
-This guide explains how to set up the Braille OCR functionality using the BRL-Slate-Reader model for the braille2latex application.
+How to get the Braille OCR models running in a browser via
+[onnxruntime-web](https://onnxruntime.ai/docs/tutorials/web/), with no backend
+server — suitable for a static/GitHub Pages deployment. The reference consumer
+is the `webeditor` app; the reusable pieces live in `js/` in this repo
+(`@brailletools/brailleocr-web`).
 
-## Overview
+For the Python CLI pipeline, see `README.md` instead.
 
-The OCR system runs entirely in the browser using:
-- **TensorFlow.js** for model inference
-- **Canvas API** for image preprocessing (no external image libraries needed!)
-- Works perfectly with GitHub Pages deployment without requiring a backend server
+## Architecture
 
-## Current Implementation
+Two models, matching `pipeline.py`'s two stages:
 
-The image processing pipeline is fully implemented using native browser APIs:
-- ✅ Image loading from files, URLs, or data URIs
-- ✅ Grayscale conversion
-- ✅ Contrast enhancement
-- ✅ Grid-based character segmentation
-- ✅ Ready for TensorFlow.js model integration
+| Model | What it is | Job |
+|---|---|---|
+| `cell_detector.onnx` | YOLOv8n, **single class** (localization only), ~3M params | Find Braille cell boxes |
+| `cell_classifier.onnx` | MobileNetV2, 6 independent sigmoid outputs | Read the 6 dot positions of each cell |
 
-**What's still needed:** The actual Braille recognition model (see conversion steps below).
+The detector deliberately does *not* classify dot patterns — it finds cells, and
+the classifier reads them. That split is what lets `braille_natural` (which has
+localization-only labels) contribute to detector training, and it keeps the
+detector small enough to ship to a browser.
 
-## Model Conversion
+Both checkpoints live in the [`brailletools/dataset`](https://github.com/brailletools/dataset)
+repo under `models/`, already exported alongside their `.pt` sources. You only
+need the export step below if you have retrained them.
 
-The BRL-Slate-Reader uses a PyTorch-based deep learning model trained on Perkins Brailler text. To use it in the browser, the model needs to be converted to TensorFlow.js format.
+## Step 1: get the models
 
-### Step 1: Obtain the Model
+Checked out as a sibling repo (the normal local-dev layout), the `.onnx` files
+are already there:
 
-Download the Perkins Brailler model from:
-- **Google Drive**: https://drive.google.com/drive/folders/1RNGUoBJOSamYOaO7ElFBeWIRVpHtlQpd?usp=sharing
-- Look for: `Model_Perkins_Brailler_acc9997` or similar
-
-### Step 2: Convert PyTorch to ONNX
-
-Use the following Python script to convert the PyTorch model to ONNX:
-
-```python
-import torch
-import torch.onnx
-
-# Load the PyTorch model
-model = torch.load('Model_Perkins_Brailler_acc9997.pth')
-model.eval()
-
-# Export to ONNX
-dummy_input = torch.randn(1, 1, 28, 28)  # Adjust dimensions as needed
-torch.onnx.export(
-    model, 
-    dummy_input, 
-    'braille_ocr.onnx',
-    export_params=True,
-    opset_version=12,
-    input_names=['input'],
-    output_names=['output'],
-    dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
-)
+```
+../dataset/models/cell_detector.onnx
+../dataset/models/cell_classifier.onnx
 ```
 
-### Step 3: Convert ONNX to TensorFlow.js
+Otherwise fetch them from the pinned release of the `dataset` repo (see
+`dataset.version`, which `model_fetch.py` reads).
 
-Use the ONNX.js or TensorFlow converter tools:
+Serve them as static assets from your app, e.g. `public/models/`.
 
-**Option A: Using ONNX.js**
+## Step 2: re-export, only if you retrained
+
 ```bash
-npm install -g onnx-converter-common onnxjs
-# Requires manual conversion, complex process
+pixi run -e export onnx
 ```
 
-**Option B: Using TensorFlow.js Converter (Recommended)**
+This runs `export_onnx.py`, which writes both `.onnx` files next to their `.pt`
+sources in `../dataset/models/`. The `export` pixi environment carries `onnx` +
+`onnxruntime` so they aren't runtime dependencies of `pipeline.py`.
 
-First convert ONNX to SavedModel format:
+Two export details that are load-bearing, not optimizations:
+
+- **`dynamic=True` for the detector.** A fixed-shape export changes
+  ultralytics' letterbox/aspect-ratio handling relative to the `.pt` model's
+  dynamic-shape default, which silently changes detection counts — 38 vs 50
+  boxes on the same image at the same threshold, back to exact parity once
+  re-exported with `dynamic=True`.
+- **`dynamo=False` for the classifier.** The `torch.export`-based exporter
+  (default since torch 2.9) needs `onnxscript`, which isn't in this repo's
+  deps. The legacy TorchScript exporter needs nothing extra and produces a
+  numerically equivalent graph (max abs logit diff 5.7e-6, 100% bit-level
+  agreement after `sigmoid > 0.5`).
+
+If you retrain the detector, recheck `TARGET_CELL_PX` / `TILE_SIZE` in
+`dot_pattern_utils.py` and `js/src/tiling.js` — see Step 4.
+
+## Step 3: use the JS package
+
 ```bash
-pip install onnx tensorflow onnx-tf
-
-# Convert ONNX → SavedModel
-python -m onnxruntime.transformers.onnx_model_bert --onnx_model braille_ocr.onnx --saved_model_path ./braille_ocr_saved_model
+cd js && npm install
 ```
 
-Then convert SavedModel to TensorFlow.js:
-```bash
-pip install tensorflowjs
+```js
+import {
+  CellDetector,
+  CellClassifier,
+  detectScaleNormalized,
+  layoutCellsIntoLines,
+  layoutToUnicodeBraille
+} from '@brailletools/brailleocr-web';
 
-pythonm tensorflowjs_converter \
-  --input_format tf_saved_model \
-  --output_format tfjs_graph_model \
-  ./braille_ocr_saved_model \
-  ./public/models/braille_ocr
+const detector = await CellDetector.load('/models/cell_detector.onnx');
+const classifier = await CellClassifier.load('/models/cell_classifier.onnx');
+
+// rgbHwc: Float32Array of HWC RGB pixels, values 0-255 (e.g. from a canvas
+// getImageData(), dropping the alpha channel).
+const boxes = await detectScaleNormalized(detector, rgbHwc, imgW, imgH);
+const bits = await classifier.classify(rgbHwc, imgW, imgH, boxes);
+
+const cells = boxes.map((b, i) => ({ ...b, bits: bits[i] }));
+const lines = layoutCellsIntoLines(cells);
+const braille = layoutToUnicodeBraille(lines); // Unicode U+2800 block, '\n' between lines
 ```
 
-### Step 4: Alternative - Use Existing Model in Browser
+Back-translation to English is **not** done in JS — hand the Unicode Braille to
+liblouis (`liblouis-env` on the server, or a WASM liblouis build in the browser).
 
-If model conversion is complex, consider these alternatives:
+Run the JS tests with `cd js && npm test` (node's built-in test runner).
 
-1. **Use ONNX Runtime JS** with the ONNX model directly:
-   ```bash
-   npm install onnxruntime-web
-   ```
+## Step 4: tiling is required, not optional
 
-2. **Use WebAssembly port** of the original model
+`detectScaleNormalized()` exists because the detector was trained *exclusively*
+on tiles where cells land at `TARGET_CELL_PX` (30px) after the resize to
+`TILE_SIZE` (640) — see `prepare_yolo_dataset.py`. Feeding it a whole untiled
+page puts cells far outside that distribution: box *count* degrades gracefully,
+but box *size* does not (roughly 3× oversized boxes, before `js/src/tiling.js`
+existed).
 
-3. **Train a new model using TensorFlow.js** specifically for this use case
+`detectScaleNormalized()` does a first tiled pass at the default `TILE_SIZE`,
+measures the median cell width, solves for the native tile size that would put
+cells at `TARGET_CELL_PX`, and re-tiles only if that estimate is more than ~50%
+off either way.
 
-## File Structure
+The constants in `js/src/tiling.js` mirror `dot_pattern_utils.py`. If they drift
+apart, the whole scheme silently stops doing anything useful.
 
-Once converted, place model files in:
-```
-public/
-├── models/
-│   └── braille_ocr/
-│       ├── model.json
-│       ├── weights.bin
-│       └── weights.*.bin (if multiple weight files)
-```
+## Parity notes (JS vs Python)
 
-## Model Details
+The JS side is a port, and a few places match Python deliberately rather than
+doing the idiomatic JS thing:
 
-- **Input**: 28×28 grayscale images of individual Braille cells
-- **Output**: Classification score for each of 64 Braille dot patterns (or 256 if 8-dot cells supported)
-- **Format**: Modern CNN architecture from BRL-Slate-Reader
+- **`imageOps.js` reimplements `cv2.resize(INTER_LINEAR)`** with half-pixel
+  centre sampling instead of using Canvas `drawImage` scaling. Browsers' image
+  smoothing doesn't match cv2 closely enough to reproduce ultralytics'
+  letterbox output, which the detector was tuned against. It's also why the
+  module is pure-JS with no DOM dependency — the same code runs in Node tests.
+- **`lineLayout.js` implements banker's rounding** (`bankersRound`) because
+  Python's `round()` is round-half-to-even while JS's `Math.round()` is not, and
+  `insertSpaces()` is a direct port where a tie changes the number of inferred
+  spaces.
+- **The classifier crops with 10% padding** to match `pipeline.py`'s
+  `reclassify_cells()`, and thresholds at `logit > 0` (equivalent to
+  `sigmoid > 0.5`).
 
-## Braille Character Mapping
+## What the JS path does NOT do
 
-The model outputs indices that map to Unicode Braille characters:
-- U+2800 to U+28FF: 6-dot Braille Unicode range
-- U+2800 to U+29FF: 8-dot Braille Unicode range
-
-## Usage in Application
-
-Once the model is set up:
-
-1. **Upload** a Braille image via the "Image" tab in the web interface
-2. **Click** "Recognize Text" to run OCR
-3. **Results** automatically populate the text input field
-4. **Convert** to LaTeX using the existing pipeline
+`pipeline.py`'s recovery machinery is out of scope for the browser port:
+contrast search, grid-guided rescue, single-cell crop re-detection, pixel-level
+gap recovery, indicator-gap recovery, container detection, spell-check cleanup.
+Expect lower accuracy than the CLI on difficult photos. Tiling was ported
+because it's load-bearing; the rest is robustness the browser path currently
+trades away.
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| "Model not ready" | Ensure model files are in `public/models/braille_ocr/` |
-| Poor recognition | Verify image is 300 dpi, landscape, properly lit |
-| Large file size | Consider quantization to reduce model size |
-| Slow processing | May need model optimization or web worker implementation |
-
-## Performance Optimization
-
-For production deployment to GitHub Pages:
-
-1. **Quantize the model** to reduce size:
-   ```bash
-   tensorflowjs_converter \
-     --quantization_dtype uint8 \
-     ...
-   ```
-
-2. **Use Web Workers** for browser responsiveness (see `src/lib/ocrWorker.js` when created)
-
-3. **Optimize image preprocessing** in JavaScript
-
-## Resources
-
-- [TensorFlow.js Model Conversion Guide](https://www.tensorflow.org/js/guide/conversion)
-- [BRL-Slate-Reader Repository](https://github.com/LPBeaulieu/Braille-OCR-BRL-Slate-Reader)
-- [ONNX.js Documentation](https://github.com/microsoft/onnxjs)
-- [ONNX Runtime Web](https://github.com/microsoft/onnxruntime/tree/master/js)
-- [Canvas API Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
-
-## Implementation Benefits
-
-### Browser-Native Approach
-The current implementation uses **Canvas API** for all image processing:
-- ✅ **Zero Dependencies**: No external image libraries (no Jimp, Pillow, OpenCV, etc.)
-- ✅ **Smaller Bundle**: Reduced JavaScript bundle size for faster loading
-- ✅ **Better Compatibility**: Works in all modern browsers without polyfills
-- ✅ **GitHub Pages Ready**: Pure client-side implementation, no backend needed
-
-### Image Processing Pipeline
-1. **Load**: Upload image from file, URL, or drag-and-drop
-2. **Preprocess**: Grayscale conversion, contrast enhancement via Canvas API
-3. **Segment**: Grid-based character detection (configurable for different slate sizes)
-4. **Recognize**: TensorFlow.js model inference (once model is added)
-5. **Output**: Unicode Braille text → LaTeX conversion pipeline
-
-## Next Steps
-
-1. Obtain and convert the model (see conversion steps above)
-2. Place model files in `public/models/braille_ocr/`
-3. Update `src/lib/brailleOCR.js` model path if needed
-4. Test with sample Braille images
-5. Fine-tune segmentation parameters for your specific slate dimensions
-6. Consider quantization for smaller model size
-7. Optimize for deployment to GitHub Pages
+| Symptom | Likely cause |
+|---|---|
+| Boxes ~3× too large | Detection run on the untiled image — use `detectScaleNormalized()` |
+| Detection counts differ from the `.pt` model | Detector exported without `dynamic=True` |
+| `onnxscript` import error on export | Missing `dynamo=False` on the classifier export |
+| Classifier output is noise | Input not normalized with ImageNet mean/std, or HWC not converted to CHW |
+| Model fails to load | `.onnx` not served as a static asset, or wrong MIME type |

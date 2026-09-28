@@ -52,7 +52,11 @@ LOU_TRANSLATE = get_lou_translate()
 
 LOW_CONF   = 0.05   # first-pass threshold — collect everything above this
 HIGH_CONF  = 0.30   # threshold for "reliable" cells used to fit the grid
-CROP_CONF  = 0.001  # threshold used when re-running on a single-cell crop
+CROP_CONF  = 0.001  # acceptance floor when re-checking a single expected cell
+                    # position. Only gap_pixel_recover still uses it; the
+                    # crop_recover stage that relied on it was removed after
+                    # measurement showed it produced only fabrications
+                    # (see RESEARCH.md, Experiments 1/5/6).
 
 CONTAINER_MIN_CANDIDATES = 3    # candidates below this are probably noise, not real cells
 CONTAINER_MIN_SIDE_PX    = 20   # containers smaller than this can't hold a real cell anyway
@@ -679,92 +683,6 @@ def grid_fill(all_cells):
     return reliable + rescued, empties
 
 
-def crop_recover(img, model, empties):
-    """
-    For 'edge' grid positions (extrapolated beyond a line's first/last
-    detected cell), crop the region, try every contrast level, and accept
-    whichever level produces the highest-confidence detection near the
-    expected centre.
-
-    Multi-contrast search is restricted to 'edge' positions because gap
-    positions (within a line) cannot be distinguished from word spaces by
-    confidence alone: contrast×3.0 on empty paper reliably scores above 0.05,
-    which is the same bar a faint real cell needs to clear.
-
-    CLAHE is excluded from the crop contrast variants — it amplifies paper
-    grain into false Braille cell detections on small crops.
-
-    Returns a list of newly recovered cells.
-    """
-    if not empties:
-        return []
-
-    recovered = []
-    img_w, img_h = img.size
-
-    for entry in empties:
-        ex, ey, cw, ch, source = entry[:5]
-
-        if source != 'edge':
-            continue
-
-        # Crop: 2 cells of context on each side, 1.5 cell above/below
-        pad_x, pad_y = cw * 2.0, ch * 1.5
-        x1 = max(0, int(ex - pad_x))
-        y1 = max(0, int(ey - pad_y))
-        x2 = min(img_w, int(ex + pad_x))
-        y2 = min(img_h, int(ey + pad_y))
-
-        crop = img.crop((x1, y1, x2, y2))
-
-        # Scale so the target cell is ~96 px wide in the crop
-        scale    = max(1.0, 96.0 / cw)
-        new_size = (int(crop.width * scale), int(crop.height * scale))
-
-        # Expected centre in crop-space (scaled)
-        cx_target = (ex - x1) * scale
-        cy_target = (ey - y1) * scale
-
-        # Try every contrast level; keep the highest-confidence detection
-        # that is within 0.6 cell-widths of the expected centre.
-        # CLAHE excluded — amplifies grain on small crops.
-        best_cell = None
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            for c in CONTRAST_VALUES:
-                variant = PIL.ImageEnhance.Contrast(crop).enhance(c)
-                crop_up = variant.resize(new_size, PIL.Image.LANCZOS)
-                tmp = Path(tmpdir) / 'crop.jpg'
-                crop_up.save(tmp, quality=95)
-                results = model(str(tmp), verbose=False,
-                                conf=CROP_CONF, max_det=20)
-
-                if results[0].boxes is None or len(results[0].boxes) == 0:
-                    continue
-
-                for box, cls, conf in zip(results[0].boxes.xyxy,
-                                           results[0].boxes.cls,
-                                           results[0].boxes.conf):
-                    bx1, by1, bx2, by2 = box.tolist()
-                    bcx, bcy = (bx1+bx2)/2, (by1+by2)/2
-                    dist = abs(bcx - cx_target) + abs(bcy - cy_target)
-                    if dist < cw * scale * 0.6 and float(conf) > (
-                            best_cell['conf'] if best_cell else -1):
-                        bits6 = yolo_class_to_bits6(model, cls)
-                        best_cell = {
-                            'cx': ex, 'cy': ey,
-                            'h': ch,  'w': cw,
-                            'char':    bits_to_braille(bits6),
-                            'bits':    bits6,
-                            'conf':    float(conf),
-                            'rescued': True,
-                        }
-
-        if best_cell and best_cell['conf'] >= CROP_CONF:
-            recovered.append(best_cell)
-
-    return recovered
-
 # ─── space inference ─────────────────────────────────────────────────────────
 
 def insert_spaces(line_cells, avg_cell_w):
@@ -805,48 +723,6 @@ UEB_INDICATORS = {'000001', '000011', '000110', '000111', '001111'}
 
 # Regex that matches any liblouis orphaned-indicator token e.g. \456/
 _ORPHAN_RE = re.compile(r'\\(\d+)/')
-
-def indicator_recovery(img, model, cells):
-    """
-    After main detection, look for UEB indicator cells whose immediately
-    following cell position has an abnormally large gap — the partner cell is
-    probably missing.  Run targeted crop recovery at that position.
-
-    Returns a list of newly recovered cells (same format as crop_recover).
-    """
-    if not cells:
-        return []
-
-    avg_w = statistics.median(c['w'] for c in cells)
-    lines = group_into_lines(cells)
-
-    targets = []   # (ex, ey, cw, ch, 'edge') for crop_recover
-    for line in lines:
-        sl = sorted(line, key=lambda c: c['cx'])
-        if len(sl) < 2:
-            continue
-        cs = _char_spacing(sl, avg_w)
-        if cs < avg_w * 0.6:
-            continue
-
-        for i, cell in enumerate(sl):
-            if cell['bits'] not in UEB_INDICATORS:
-                continue
-            if i + 1 < len(sl):
-                gap = sl[i + 1]['cx'] - cell['cx']
-                # More than one cell-width gap → partner cell likely missing
-                if gap > cs * 1.4:
-                    targets.append((cell['cx'] + cs, cell['cy'],
-                                    cell['w'], cell['h'], 'edge', CROP_CONF))
-            else:
-                # Indicator at line end — try the position immediately after
-                targets.append((cell['cx'] + cs, cell['cy'],
-                                cell['w'], cell['h'], 'edge', CROP_CONF))
-
-    if not targets:
-        return []
-    return crop_recover(img, model, targets)
-
 
 # ─── translation ─────────────────────────────────────────────────────────────
 
@@ -1179,12 +1055,6 @@ def process_container(img, stem, model, lang_table, search_contrast,
     print(f"  After grid fill: {len(cells)} cells "
           f"({n_rescued} rescued, {len(empties)} empty positions remain)")
 
-    # Edge crop recovery: multi-contrast YOLO on extrapolated line-end positions
-    crop_cells = crop_recover(img, model, empties)
-    cells += crop_cells
-    if crop_cells:
-        print(f"  Crop recovery: +{len(crop_cells)} additional cells rescued")
-
     # Gap pixel recovery: brightness-based dot detection to distinguish missed
     # mid-line cells from word spaces, then classify with YOLO
     gap_cells = gap_pixel_recover(img, model, empties, raw_hi_cells, known_cells=cells)
@@ -1218,15 +1088,6 @@ def process_container(img, stem, model, lang_table, search_contrast,
         n_removed = before - len(cells)
         if n_removed:
             print(f"  Margin filter: removed {n_removed} out-of-block cells")
-
-    # ── Indicator-gap recovery ───────────────────────────────────────────────
-    # For each UEB indicator cell (capital/number/grade-1 sign) that has an
-    # abnormally large gap after it, the partner cell is probably missing.
-    # Run targeted crop recovery there, then fold the result in.
-    ind_cells = indicator_recovery(img, model, cells)
-    if ind_cells:
-        cells += ind_cells
-        print(f"  Indicator recovery: +{len(ind_cells)} cells rescued")
 
     # ── Cell classifier ──────────────────────────────────────────────────────
     if classifier_path:

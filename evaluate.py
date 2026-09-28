@@ -101,15 +101,13 @@ def _get_clf(clf_path):
 
 
 def run_pipeline(img_path, clf_path=None):
-    """Full pipeline: contrast search + grid_fill + edge crop recovery + gap pixel recovery."""
+    """Full pipeline: contrast search + grid_fill + gap pixel recovery."""
     model = _get_model()
     original = tb.PIL.ImageOps.exif_transpose(tb.PIL.Image.open(img_path)).convert('RGB')
     img, _, _ = tb.best_contrast(original, model, 2000)
     all_cells = tb.run_detection(img, model, 2000)
     raw_hi    = [c for c in all_cells if c['conf'] >= tb.HIGH_CONF]
     cells, empties = tb.grid_fill(all_cells)
-    edge_cells = tb.crop_recover(img, model, empties)
-    cells += edge_cells
     gap_cells  = tb.gap_pixel_recover(img, model, empties, raw_hi, known_cells=cells)
     cells += gap_cells
     # Margin filter
