@@ -24,7 +24,17 @@ import csv
 
 from dot_pattern_utils import REPOS_ROOT, label_to_bits6
 
-ANGELINA = REPOS_ROOT / 'AngelinaDataset'
+# The dataset lives as a git submodule inside the `dataset` repo
+# (dataset/.gitmodules: data/angelina -> github.com/IlyaOvodov/AngelinaDataset),
+# alongside dsbi. An earlier layout had it cloned as a sibling of this repo, and
+# this module still pointed there — so on a checkout following the documented
+# layout the loader silently found nothing and Angelina dropped out of training
+# without any error. The sibling path is kept as a fallback for anyone with the
+# older layout.
+_ANGELINA_SUBMODULE = REPOS_ROOT / 'dataset' / 'data' / 'angelina'
+_ANGELINA_SIBLING = REPOS_ROOT / 'AngelinaDataset'
+ANGELINA = (_ANGELINA_SUBMODULE if _ANGELINA_SUBMODULE.exists()
+            else _ANGELINA_SIBLING)
 SEED     = 42
 
 

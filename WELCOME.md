@@ -114,7 +114,42 @@ from-scratch labels.
 
 ---
 
-## 5. Where we are
+## 5. Train/test protocol
+
+Detection and dot-finding share one protocol (`RESEARCH.md` "Unified train/test
+protocol"), so both stages are measured on identical pages:
+
+- **train** — each source's own train split
+- **val** — each source's own val split; DSBI publishes none, so ~15% of its
+  train *pages* are carved out (by page, never by cell — cells from one page are
+  near-duplicates and would leak)
+- **test** — all **88 DSBI test pages**, never trained or tuned on
+
+```bash
+python extract_crops.py --sources angelina,dsbi --out /tmp/braille-crops
+python train_classifier.py --crop-dir /tmp/braille-crops
+python experiments/classifier_on_gt.py --limit 0 --classifier /tmp/braille-crops/cell_classifier.pt
+python experiments/text_cer.py          --limit 0 --classifier /tmp/braille-crops/cell_classifier.pt
+```
+
+Nothing has been promoted into `../dataset/models/` — the pipeline still loads
+the **old** classifier until someone copies a new one there. That is deliberate:
+promoting a model is a decision, not a build step.
+
+---
+
+## 6. Where we are
+
+### Current accuracy
+
+See RESEARCH.md for latest results. 
+
+Read the caveats in `RESEARCH.md` before quoting these: DSBI train and test are
+the same books, so this is in-domain accuracy, not generalization. The old
+89.4% was a genuine cross-dataset number.
+
+**Always state the unit when quoting accuracy.** A cell is six binary
+decisions, so per-cell accuracy is roughly per-dot to the sixth power. It is possible for per dot to be competitive with published dot-level work; the same result quoted as per cell looks far worse against a paper that reported per-dot.
 
 ### Settled findings
 
@@ -135,43 +170,37 @@ from-scratch labels.
 
 ### Open problems
 
-1. **Front/back confusion.** The detector reads verso dots as readily as recto
-   and nothing separates them, so a double-sided page yields interleaved text.
-   Invisible to cell metrics. The classical fix is the shadow's *side*
-   (light-above-dark = recto). → "Limitation: the pipeline cannot separate front
-   from back"
-2. **`braille_natural` is contaminated.** At least one image (`img_116`) is a
+1. **`braille_natural` is contaminated.** At least one image (`img_116`) is a
    printed reference *table* of Braille patterns, not a photograph; a heuristic
    flags 16 of 212 as suspect. It is in the detector's training data. This is
    the dataset we added to fix real-photo generalization.
    → "Dataset contamination"
-3. **Possible training bug:** `dsbi_data.py` loads `+recto` and `+verso` as two
+2. **Possible training bug:** `dsbi_data.py` loads `+recto` and `+verso` as two
    independent images, but they are the *same scan* (identical md5). If that
    reaches `prepare_yolo_dataset.py`, the detector was taught that each side's
    real cells are background. **Unverified — check this early, it is cheap.**
-4. **No confidence reaches the user.** Rescued, spell-corrected and
+3. **No confidence reaches the user.** Rescued, spell-corrected and
    high-confidence text are typographically identical. For a blind user who
    cannot check the original, silent substitution is the worst failure mode.
-   → "Future work §1", the highest-priority item in the file.
-5. **Capture is unmeasured.** We evaluate recognition given a photo; the
+4. **Capture is unmeasured.** We evaluate recognition given a photo; the
    assistive-OCR literature finds capture conditions dominate. → "Future work §2"
-6. **`grid_fill` loses real cells** — 6 edge cells on one page in four.
+5. **`grid_fill` loses real cells** — 6 edge cells on one page in four.
    Unexplained.
 
+## 7. To do
 
-## To do:
-
-- [ ] Verify the DSBI recto/verso training question (#3)
-- [ ] Add a `.gitignore` entry or a decision about `bench/results/` — result JSON
-      is useful history but will accumulate
+- [ ] Verify the DSBI recto/verso training question 
 - [ ] Decide whether `labels/` belongs here or in the `dataset` repo
 
 ---
 
-## 6. Learnings
+## 8. Learnings
 
 Things that have already cost us time:
 
+- **A loader that finds nothing looks like a loader that found nothing important.**
+  `angelina_data.py` pointed at the wrong path and returned `[]` with no error,
+  silently dropping 231 training images from every pipeline that used it.
 - **Partial instrumentation lies.** An early `bench.py` measured 5 of 16 stages
   and reported "5.2s/image, 80% detection". The real figures were ~30s and 11%.
 - **DSBI `+recto.jpg` and `+verso.jpg` are the same file.** Scoring per side
@@ -187,7 +216,7 @@ Things that have already cost us time:
   training to it; both published methods key off *image resolution*. Read them
   before claiming novelty. → "Novelty check"
 
-## 7. Reading order
+## 9. Reading order
 
 1. `RESEARCH.md` — "Problem", "Process we've developed", "Pipeline flow"
 2. `RESEARCH.md` — "Measured cost" and Experiments 1–6

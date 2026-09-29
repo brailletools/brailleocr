@@ -97,7 +97,7 @@ def run_pipeline(img, stem, model, args):
     text = pipeline.process_container(
         img, stem, model, lang_table=args.lang, search_contrast=False,
         spellcheck=not args.no_spellcheck, max_det=args.max_det,
-        classifier_path=resolve_classifier_path())
+        classifier_path=(args.classifier or resolve_classifier_path()))
     return (text or ''), time.perf_counter() - t0
 
 
@@ -108,6 +108,8 @@ def main():
     ap.add_argument('--lang', default='en-ueb-g2.ctb')
     ap.add_argument('--max-det', type=int, default=2000)
     ap.add_argument('--no-spellcheck', action='store_true')
+    ap.add_argument('--classifier', default=None,
+                    help='path to a cell_classifier.pt (default: resolved copy)')
     ap.add_argument('--json')
     args = ap.parse_args()
 

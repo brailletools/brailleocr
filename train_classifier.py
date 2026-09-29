@@ -13,6 +13,7 @@ Output: /tmp/braille-crops/cell_classifier.pt  (state_dict)
         /tmp/braille-crops/training_log.csv
 """
 
+import argparse
 import csv
 from pathlib import Path
 import torch
@@ -21,7 +22,14 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import models, transforms
 from PIL import Image
 
-CROP_DIR   = Path('/tmp/braille-crops')
+# Crop directory is overridable so several training sets (e.g. a DSBI-only
+# ablation and the full angelina+dsbi set) can exist side by side without one
+# run rewriting the manifest another is reading.
+_ap = argparse.ArgumentParser(add_help=False)
+_ap.add_argument('--crop-dir', default='/tmp/braille-crops')
+_args, _ = _ap.parse_known_args()
+
+CROP_DIR   = Path(_args.crop_dir)
 MODEL_OUT  = CROP_DIR / 'cell_classifier.pt'
 LOG_OUT    = CROP_DIR / 'training_log.csv'
 CROP_SIZE  = 64
