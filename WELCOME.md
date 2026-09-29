@@ -189,6 +189,18 @@ decisions, so per-cell accuracy is roughly per-dot to the sixth power. It is pos
 
 ## 7. To do
 
+- [ ] **Sweep the sigmoid decision threshold** on the val split (18,330 crops,
+      `extract_crops.py` writes it). Every dot is hard-thresholded at 0.5 and
+      that number has never been tuned; about half of all wrong cells are wrong
+      by exactly *one* dot, which is the signature of a miscalibrated threshold
+      rather than a model that cannot see. Costs one evaluation pass, no
+      retraining. Tune on val, report on the 88 test pages — never tune on test.
+      → `RESEARCH.md` "Future work" item 2
+- [ ] **Look at the `Massage` book (`M+11` … `M+20`).** All ten pages score
+      63–95% while the other 78 test pages sit at 98.5–100%; those ten hold
+      ~80% of all classifier errors. Find out what is different about them
+      (embosser, paper, scan) before quoting any single average accuracy.
+      → `RESEARCH.md` "Error concentration"
 - [ ] Verify the DSBI recto/verso training question 
 - [ ] Decide whether `labels/` belongs here or in the `dataset` repo
 

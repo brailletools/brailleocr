@@ -104,7 +104,8 @@ def run_pipeline(img, stem, model, args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--limit', type=int, default=8)
+    ap.add_argument('--limit', type=int, default=8,
+                    help='number of physical pages to run; 0 = all')
     ap.add_argument('--lang', default='en-ueb-g2.ctb')
     ap.add_argument('--max-det', type=int, default=2000)
     ap.add_argument('--no-spellcheck', action='store_true')
@@ -118,7 +119,7 @@ def main():
     for jpg, txt, split in collect_images():
         if split == 'test':
             pages.setdefault(jpg.name.rsplit('+', 1)[0], [jpg, []])[1].append(txt)
-    entries = list(pages.values())[:args.limit]
+    entries = list(pages.values())[:args.limit or None]
     if not entries:
         raise SystemExit('No DSBI test-split images found.')
     print(f'{len(entries)} physical pages (both label sides unioned)')

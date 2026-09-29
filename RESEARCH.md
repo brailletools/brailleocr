@@ -460,6 +460,271 @@ model. Treat the multi-label head as a design detail that enables it. Do not
 claim cell-as-object detection, grid fitting, pixel-level dot thresholding, or
 slicing as novel; all are established.
 
+## Current accuracy (2026-09-28)
+
+4 held-out DSBI test pages, 2540 ground-truth cells, after `crop_recover`'s
+removal (`bench/results/2026-09-28-accuracy-by-side.json`).
+
+| metric | value |
+|---|---|
+| Detection recall | **99.7%** (2533/2540) |
+| Detection precision | **97.1%** (2478/2553) |
+| Dot accuracy, detector alone | 86.7% |
+| Dot accuracy, after classifier — **per cell** | **89.0%** |
+| Dot accuracy — **per dot** | **97.8%** (14540/14868) |
+| End-to-end cell accuracy (correct dots / all GT cells) | **86.8%** (2205/2540) |
+| Text-level CER | 0.4961 |
+
+By page side:
+
+| side | matched | correct dots |
+|---|---:|---:|
+| recto (front, dots toward camera) | 1262 | **94.3%** |
+| verso (back, dots away) | 1216 | **83.5%** |
+
+### What this says
+
+**Detection is solved; classification is the bottleneck.** We locate 99.7% of
+cells and read 89% of them. Every major design decision in this project — the
+tiling contract, scale normalization, the single-class detector — went into the
+stage that was already working. One cell in eight reaches the user with the
+wrong dots.
+
+This also re-prioritizes the labeling work: it produces *classifier* training
+data, which is now demonstrably the weak stage.
+
+**The classifier is worth only 2.3 points** over the detector's own reading
+(86.7% → 89.0%), which is less than its architecture would suggest. Worth
+investigating whether it is under-trained or whether its crops are the problem.
+
+**Front/back is an 11-point accuracy gap**, not just a text-ordering problem.
+A recto dot bulges toward the camera and casts a clean shadow; a verso dot is a
+depression whose shadow falls on the opposite side. Nothing tells the model
+which it is looking at. This strengthens the case for the recto/verso separation
+in "Limitation: the pipeline cannot separate front from back" — it would buy
+accuracy, not only correct ordering.
+
+**86.8% averages over a page type users rarely photograph.** For single-sided
+pages the relevant figure is nearer 94.3%.
+
+### Per-dot vs per-cell, and how we compare to published work
+
+```
+per-DOT accuracy   97.8%   (14540/14868)
+per-CELL accuracy  89.0%   (2205/2478)
+implied per-cell if dots were independent: 87.5%
+cells wrong by exactly one dot: 221/273 (81.0%) of all wrong cells
+```
+
+**Always state the unit.** A cell is six binary decisions, so per-cell accuracy
+is roughly the sixth power of per-dot accuracy: 97.8% per dot gives ~87.5% per
+cell if errors are independent. Our measured 89.0% is slightly *better* than
+that, so our errors cluster a little rather than spreading over more cells.
+Quoting 89% against a paper's 98% without checking the unit compares two
+different quantities.
+
+Published Braille numbers fall into three incomparable groups:
+
+| source | reported | actually measures |
+|---|---|---|
+| Deep Learning Strategy for BCR (2021) | ~98-99% | classification of **pre-segmented** crops |
+| Fly-LeNet (2024) | 95.2% EN / 98.3% ZH | ditto, multilingual |
+| Improved YOLOv11, natural scenes (2025) | mAP50 0.98 | **detection only** |
+| DSBI (2018) and successors | dot-detection rates | individual **dots** |
+| ours, `cell_detector.pt` | mAP50 0.995 | **detection only** |
+| ours, end to end | 97.8% per dot / 89.0% per cell / 86.8% of all GT cells | full page, located **and** read |
+
+Against dot-level work, 97.8% is in the same league. Against pre-segmented crop
+classification, our number is not comparable — those evaluations are handed
+cells someone else segmented, which skips the part that fails in practice.
+The fair comparison would be per-cell recognition on full pages, and the survey
+turned up little of it; the line-level Amharic paper is closest in spirit.
+
+*Correction to an earlier note in this file's history:* the classifier was
+described as "genuinely behind" published crop classifiers on the basis of the
+89% figure. That was a unit mismatch. The per-dot rate is competitive.
+
+### The error shape is the actionable finding
+
+**81% of wrong cells are wrong by exactly one dot.** This is not a model that
+misunderstands Braille; it is a model making one borderline call on one shadow.
+Three cheap leads follow:
+
+1. **Threshold calibration.** Every dot is hard-thresholded at sigmoid > 0.5,
+   which has never been tuned. Errors concentrated on single dots are exactly
+   what a miscalibrated threshold produces. Sweeping it costs one evaluation run
+   and no retraining.
+2. **Context correction.** A one-dot error usually produces a *valid but wrong*
+   cell, which liblouis cannot detect. This is where the post-OCR correction
+   literature (Cluster 4) stops being speculative.
+3. **The verso gap** (94.3% recto vs 83.5% per cell) is most likely one-dot
+   errors on inverted shadows — another reason to separate the two faces.
+
+### Why our accuracy looks lower than published work
+
+`experiments/classifier_on_gt.py`, same 4 DSBI test pages, classifier run on
+**ground-truth** crops — the setup published crop classifiers use
+(`bench/results/2026-09-28-classifier-on-gt.json`):
+
+```
+per-CELL accuracy   2270/2540 (89.4%)
+per-DOT accuracy    14926/15240 (97.9%)
+recto only          1207/1270 (95.0%)
+verso only          1063/1270 (83.7%)
+wrong by one dot    229/270 (84.8%) of wrong cells
+```
+
+**First result: the detector is not costing us accuracy.** 89.4% on perfect
+crops vs 89.0% on detector crops. Framing error is ~0.4 points. The classifier
+is the entire limit, and further detector work is wasted effort.
+
+Four reasons for the apparent gap with published numbers, largest first:
+
+1. **On the comparable slice we are not lower.** Papers report 95-99% per
+   character on single-sided data; our recto-only, ground-truth-crop, per-cell
+   figure is **95.0%**, inside that range. The unfavourable comparison was
+   ours-including-verso against theirs-excluding-it.
+2. **Verso costs 11 points and no surveyed benchmark contains it.** 83.7% vs
+   95.0%. A verso dot is a depression with an inverted shadow and nothing tells
+   the model which face it is reading.
+3. **We evaluate cross-dataset; they evaluate within-dataset.** `extract_crops.py`
+   imports only `angelina_data`, so the classifier is trained **exclusively on
+   Angelina crops** and tested here on **DSBI**. Published crop classifiers are
+   almost always trained and tested on splits of one dataset. Our 95.0% is a
+   cross-dataset number sitting inside a range of within-dataset numbers, which
+   is a harder test, not an easier one.
+4. **The decision threshold has never been tuned.** 84.8% of wrong cells are
+   wrong by exactly one dot, and every dot is hard-thresholded at sigmoid > 0.5.
+
+### Three cheap experiments this implies
+
+1. **Add DSBI (and later the labeled `braille_natural`) crops to
+   `extract_crops.py` and retrain.** The classifier has never seen a DSBI-style
+   image. This is the most likely large win and needs no new ideas.
+2. **Sweep the sigmoid threshold** on held-out data. One evaluation run, no
+   retraining; with errors concentrated on single dots, each dot fixed lifts a
+   whole cell.
+3. **Give the classifier a recto/verso signal** — either a side input or
+   separate heads. The 11-point gap is the largest single deficit we have
+   measured, and it is invisible to every cell-level metric in the literature.
+
+### Tested and refuted
+
+DSBI verso labels are NOT stored in a mirrored reading frame: scoring verso
+cells against mirrored labels gives 8.4% versus 83.5% as-labeled. So
+`dsbi_data.py` transcribes them correctly and the accuracy figures are not a
+label-frame artifact. (This does not settle the separate question of whether
+loading recto and verso as two independent training images confuses the
+detector — see "Limitation".)
+
+### What these numbers do NOT cover
+
+- **Phone photos and signage.** All of the above is flat page scans. One phone
+  photo (IMG_3153, 662 cells) was human-verified with zero errors; that is n=1.
+- **Text a user would accept.** CER 0.4961 is inflated by recto/verso
+  interleaving and a machine-built reference; it is a regression baseline, not a
+  quality figure.
+- **n=4.** See "Experiment 4" on how little four pages support.
+
+## Unified train/test protocol (2026-09-29)
+
+Detection and dot-finding now share one split protocol, so a paper describes one
+setup rather than two and the two stages are measured on identical pages.
+
+| split | contents | used for |
+|---|---|---|
+| train | each source's own train split | detector and classifier training |
+| val | each source's own val split; DSBI publishes none, so ~15% of its train **pages** are held out (`extract_crops.VAL_FRAC`, seeded) | threshold tuning, early stopping |
+| test | each source's own test split — for DSBI, all **88** `test.txt` pages | final evaluation of both stages; never trained or tuned on |
+
+Splits are carved by **page**, never by cell: cells from one page share paper,
+lighting and embosser, so a within-page split leaks. `prepare_yolo_dataset.py`
+already honoured each source's split, so the detector needed no change;
+`extract_crops.py` was rewritten to match it.
+
+Current training sources:
+
+| source | train images | notes |
+|---|---:|---|
+| angelina | 231 | single-sided labels; its 212 `books/` images are physically double-sided but only the front is labeled |
+| dsbi | ~22 pages (26 minus val) | the **only** source with labeled verso cells |
+| braille_natural | 0 | no dot labels until the labeling queue is worked through |
+
+### Bug found while doing this: Angelina was silently absent
+
+`angelina_data.py` resolved the dataset to `REPOS_ROOT / 'AngelinaDataset'`, but
+the documented layout has it as a git submodule at `dataset/data/angelina`
+(`dataset/.gitmodules`). On a checkout following the documented layout,
+`collect_images()` returned an **empty list with no error**, so Angelina dropped
+out of anything that used it — 231 training images, invisibly.
+
+Fixed (submodule path, with the sibling path as fallback). Consequence worth
+checking: `prepare_yolo_dataset.py` reads Angelina through the same loader, so
+the shipped `cell_detector.pt` was either trained on a machine with the older
+layout or trained without Angelina at all. `dataset/README.md` claims it was
+trained on angelina + dsbi + braille_natural; **that claim is unverified.**
+
+General lesson, worth applying to every loader here: a `collect_images()` that
+can return `[]` looks exactly like "this source contributed nothing important".
+Loaders that find zero files should say so loudly.
+
+## Classifier retraining (2026-09-29)
+
+All evaluated on the same 88 DSBI test pages, 71,250 cells, ground-truth crops
+(`experiments/classifier_on_gt.py --limit 0`).
+
+| model | training data | per-cell | per-dot | recto | verso | gap |
+|---|---|---:|---:|---:|---:|---:|
+| shipped (baseline) | Angelina-era, no verso | 89.4%* | 97.9%* | 95.0%* | 83.7%* | 11.3 |
+| DSBI-only | 17k crops, 50/50 sides | 96.6% | 98.9% | 99.5% | 93.7% | 5.8 |
+| angelina + dsbi | 85k crops, 10% verso | **97.1%** | **99.1%** | 99.4% | **94.7%** | 4.8 |
+
+\* baseline measured on 4 pages, not 88.
+
+**The verso gap was mostly missing data, not physics.** 11.3 points → 4.8.
+About 60% of it closed by showing the model verso cells at all. The ~5-point
+residual is plausibly the real cost of reading a depression's inverted shadow.
+
+**Variety mattered; volume did not.** 17k crops → 85k crops moved per-cell from
+96.6% to 97.1%. Five times the data for half a point; nearly the entire gain came
+from *having verso examples at all*. This is the argument for the
+`braille_natural` labeling being about a new **kind** of data rather than more of
+the same.
+
+**A prediction that was wrong:** class imbalance was expected to hurt — verso is
+only 10% of the combined training mix versus 50% in DSBI-only. The imbalanced
+model did *better* on verso (94.7% vs 93.7%). No oversampling needed.
+
+**What this does not show.** DSBI train and test are the same books (Massage
+1-10 vs 11-20, Math 1-10 vs 11-32), same embosser, paper and scanner. These are
+in-domain results. The baseline's 89.4% was a genuine *cross-dataset* number, so
+97.1% is not comparable to it as a generalization claim — it says the old
+classifier was out of domain on DSBI, which is exactly what
+"Why our accuracy looks lower than published work" predicted.
+
+## Train/inference preprocessing parity
+
+Found while comparing the two evaluation paths: the classifier scored **99.5%**
+on its own saved test crops but **96.6%** on the same cells cropped the way
+inference crops them. The model was being trained on images it would never see.
+
+Two mismatches, both in `extract_crops.py`:
+
+| | training (old) | inference |
+|---|---|---|
+| resize filter | LANCZOS | `transforms.Resize` → **bilinear** |
+| storage | JPEG quality 92 | none — cropped in memory |
+
+A JPEG artifact is about the size of a Braille dot's shadow, and LANCZOS vs
+bilinear on a ~130px → 64px downsample produces visibly different pixels. Fixed
+by saving crops with the same bilinear resize inference uses, losslessly as PNG
+(`RESAMPLE` / `CROP_EXT`). Everything above was measured **before** the fix, so
+all three models share the handicap equally; the re-run after the fix is pending.
+
+This is the same class of error as the tiling contract: train and inference must
+agree on what the model sees, and a silent disagreement costs accuracy without
+producing any error.
+
 ## Efficiency experiment backlog
 
 Prioritized against the measured profile (see `bench.py` and
