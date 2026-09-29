@@ -1,0 +1,63 @@
+{
+  "totals": {
+    "gt": 2540,
+    "gt_edge": 308,
+    "gt_interior": 2232,
+    "det_edge_hit": 304,
+    "det_interior_hit": 2229,
+    "grid_edge_hit": 298,
+    "crop_added": 230,
+    "crop_real": 0,
+    "crop_bits_ok": 0,
+    "gap_added": 29,
+    "gap_real": 0,
+    "gap_bits_ok": 0
+  },
+  "per_image": [
+    {
+      "image": "FM+1+recto.jpg",
+      "gt": 450,
+      "gt_edge": 58,
+      "det_edge_hit": 58,
+      "grid_edge_hit": 58,
+      "crop_added": 70,
+      "crop_real": 0,
+      "gap_added": 18,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "gt": 450,
+      "gt_edge": 58,
+      "det_edge_hit": 58,
+      "grid_edge_hit": 58,
+      "crop_added": 53,
+      "crop_real": 0,
+      "gap_added": 8,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "gt": 820,
+      "gt_edge": 96,
+      "det_edge_hit": 94,
+      "grid_edge_hit": 94,
+      "crop_added": 57,
+      "crop_real": 0,
+      "gap_added": 2,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "gt": 820,
+      "gt_edge": 96,
+      "det_edge_hit": 94,
+      "grid_edge_hit": 88,
+      "crop_added": 50,
+      "crop_real": 0,
+      "gap_added": 1,
+      "gap_real": 0
+    }
+  ],
+  "edge_k": 1
+}

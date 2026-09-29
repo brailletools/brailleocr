@@ -1,0 +1,79 @@
+{
+  "totals": {
+    "gt": 2540,
+    "gt_edge": 308,
+    "gt_interior": 2232,
+    "det_edge_hit": 304,
+    "det_interior_hit": 2229,
+    "det_matched": 2533,
+    "det_bits_ok": 2197,
+    "final_matched": 2478,
+    "final_bits_ok": 2205,
+    "final_predicted": 2553,
+    "grid_edge_hit": 298,
+    "gap_added": 31,
+    "gap_real": 0,
+    "gap_bits_ok": 0,
+    "recto_matched": 1262,
+    "recto_ok": 1190,
+    "recto_ok_mirrored": 113,
+    "verso_matched": 1216,
+    "verso_ok": 1015,
+    "verso_ok_mirrored": 102
+  },
+  "per_image": [
+    {
+      "image": "FM+1+recto.jpg",
+      "gt": 450,
+      "gt_edge": 58,
+      "det_edge_hit": 58,
+      "grid_edge_hit": 58,
+      "det_matched": 449,
+      "det_bits_ok": 423,
+      "final_matched": 446,
+      "final_bits_ok": 424,
+      "gap_added": 19,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "gt": 450,
+      "gt_edge": 58,
+      "det_edge_hit": 58,
+      "grid_edge_hit": 58,
+      "det_matched": 450,
+      "det_bits_ok": 425,
+      "final_matched": 450,
+      "final_bits_ok": 426,
+      "gap_added": 9,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "gt": 820,
+      "gt_edge": 96,
+      "det_edge_hit": 94,
+      "grid_edge_hit": 94,
+      "det_matched": 817,
+      "det_bits_ok": 676,
+      "final_matched": 793,
+      "final_bits_ok": 680,
+      "gap_added": 2,
+      "gap_real": 0
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "gt": 820,
+      "gt_edge": 96,
+      "det_edge_hit": 94,
+      "grid_edge_hit": 88,
+      "det_matched": 817,
+      "det_bits_ok": 673,
+      "final_matched": 789,
+      "final_bits_ok": 675,
+      "gap_added": 1,
+      "gap_real": 0
+    }
+  ],
+  "edge_k": 1
+}

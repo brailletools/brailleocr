@@ -1,0 +1,532 @@
+{
+  "pages": [
+    {
+      "image": "FM+1+recto.jpg",
+      "ref_chars": 832,
+      "cer": 0.35697115384615385,
+      "seconds": 26.834370624972507
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "ref_chars": 748,
+      "cer": 0.28475935828877,
+      "seconds": 17.882352250162512
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "ref_chars": 1418,
+      "cer": 0.5267983074753173,
+      "seconds": 26.194116957951337
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "ref_chars": 1395,
+      "cer": 0.6207885304659498,
+      "seconds": 19.95643704221584
+    },
+    {
+      "image": "FM+5+recto.jpg",
+      "ref_chars": 659,
+      "cer": 0.27769347496206376,
+      "seconds": 12.797576458193362
+    },
+    {
+      "image": "FM+6+recto.jpg",
+      "ref_chars": 665,
+      "cer": 0.24210526315789474,
+      "seconds": 16.08709645899944
+    },
+    {
+      "image": "FM+7+recto.jpg",
+      "ref_chars": 2171,
+      "cer": 0.6531552280055274,
+      "seconds": 36.155849999981
+    },
+    {
+      "image": "FM+8+recto.jpg",
+      "ref_chars": 2230,
+      "cer": 0.5865470852017938,
+      "seconds": 38.02269033296034
+    },
+    {
+      "image": "FM+9+recto.jpg",
+      "ref_chars": 1992,
+      "cer": 0.6531124497991968,
+      "seconds": 44.16313700005412
+    },
+    {
+      "image": "FM+10+recto.jpg",
+      "ref_chars": 1905,
+      "cer": 0.3784776902887139,
+      "seconds": 34.64611462503672
+    },
+    {
+      "image": "FM+11+recto.jpg",
+      "ref_chars": 2214,
+      "cer": 0.7014453477868112,
+      "seconds": 35.5250054160133
+    },
+    {
+      "image": "FM+12+recto.jpg",
+      "ref_chars": 2285,
+      "cer": 0.562363238512035,
+      "seconds": 55.805327208014205
+    },
+    {
+      "image": "FM+13+recto.jpg",
+      "ref_chars": 72,
+      "cer": 0.125,
+      "seconds": 3.3814394590444863
+    },
+    {
+      "image": "FM+14+verso.jpg",
+      "ref_chars": 71,
+      "cer": 0.29577464788732394,
+      "seconds": 3.7046572498511523
+    },
+    {
+      "image": "FM+15+recto.jpg",
+      "ref_chars": 2217,
+      "cer": 0.7262065854758682,
+      "seconds": 60.116179208038375
+    },
+    {
+      "image": "FM+16+recto.jpg",
+      "ref_chars": 2433,
+      "cer": 0.7940813810110974,
+      "seconds": 29.294791124993935
+    },
+    {
+      "image": "FM+17+recto.jpg",
+      "ref_chars": 2586,
+      "cer": 0.8136117556071152,
+      "seconds": 30.18766116700135
+    },
+    {
+      "image": "FM+18+recto.jpg",
+      "ref_chars": 2490,
+      "cer": 0.7646586345381526,
+      "seconds": 53.897022583987564
+    },
+    {
+      "image": "FM+19+recto.jpg",
+      "ref_chars": 1626,
+      "cer": 0.6328413284132841,
+      "seconds": 17.038735708920285
+    },
+    {
+      "image": "FM+20+recto.jpg",
+      "ref_chars": 1523,
+      "cer": 0.525279054497702,
+      "seconds": 29.8512050001882
+    },
+    {
+      "image": "M+11+recto.jpg",
+      "ref_chars": 1617,
+      "cer": 0.2628324056895485,
+      "seconds": 50.36767212487757
+    },
+    {
+      "image": "M+12+recto.jpg",
+      "ref_chars": 1553,
+      "cer": 0.2511268512556343,
+      "seconds": 37.72999320784584
+    },
+    {
+      "image": "M+13+recto.jpg",
+      "ref_chars": 1583,
+      "cer": 0.25773847125710675,
+      "seconds": 35.6422879579477
+    },
+    {
+      "image": "M+14+recto.jpg",
+      "ref_chars": 1595,
+      "cer": 0.28213166144200624,
+      "seconds": 34.6858469999861
+    },
+    {
+      "image": "M+15+recto.jpg",
+      "ref_chars": 1544,
+      "cer": 0.23898963730569947,
+      "seconds": 40.06786149996333
+    },
+    {
+      "image": "M+16+recto.jpg",
+      "ref_chars": 1600,
+      "cer": 0.228125,
+      "seconds": 41.90744237508625
+    },
+    {
+      "image": "M+17+recto.jpg",
+      "ref_chars": 1560,
+      "cer": 0.26282051282051283,
+      "seconds": 32.93149120802991
+    },
+    {
+      "image": "M+18+recto.jpg",
+      "ref_chars": 1573,
+      "cer": 0.21042593769866497,
+      "seconds": 36.926013708114624
+    },
+    {
+      "image": "M+19+recto.jpg",
+      "ref_chars": 1776,
+      "cer": 0.28153153153153154,
+      "seconds": 42.67711908300407
+    },
+    {
+      "image": "M+20+recto.jpg",
+      "ref_chars": 1569,
+      "cer": 0.28234544295729763,
+      "seconds": 30.54826549999416
+    },
+    {
+      "image": "math+11+recto.jpg",
+      "ref_chars": 1740,
+      "cer": 0.5580459770114943,
+      "seconds": 38.49150629108772
+    },
+    {
+      "image": "math+12+recto.jpg",
+      "ref_chars": 1773,
+      "cer": 0.4895657078398195,
+      "seconds": 34.388727915938944
+    },
+    {
+      "image": "math+13+recto.jpg",
+      "ref_chars": 1675,
+      "cer": 0.6316417910447761,
+      "seconds": 37.58637749985792
+    },
+    {
+      "image": "math+14+recto.jpg",
+      "ref_chars": 1752,
+      "cer": 0.6221461187214612,
+      "seconds": 34.33343929192051
+    },
+    {
+      "image": "math+15+recto.jpg",
+      "ref_chars": 1696,
+      "cer": 0.6061320754716981,
+      "seconds": 38.62040604208596
+    },
+    {
+      "image": "math+16+recto.jpg",
+      "ref_chars": 1652,
+      "cer": 0.5926150121065376,
+      "seconds": 32.43592400010675
+    },
+    {
+      "image": "math+17+recto.jpg",
+      "ref_chars": 1357,
+      "cer": 0.7199705232129698,
+      "seconds": 23.675187207991257
+    },
+    {
+      "image": "math+18+recto.jpg",
+      "ref_chars": 1410,
+      "cer": 0.7567375886524823,
+      "seconds": 35.72812108392827
+    },
+    {
+      "image": "math+19+recto.jpg",
+      "ref_chars": 1482,
+      "cer": 0.5863697705802969,
+      "seconds": 37.609437374863774
+    },
+    {
+      "image": "math+20+recto.jpg",
+      "ref_chars": 1466,
+      "cer": 0.5559345156889495,
+      "seconds": 27.757435000035912
+    },
+    {
+      "image": "math+21+recto.jpg",
+      "ref_chars": 1729,
+      "cer": 0.6986697513013302,
+      "seconds": 56.957998250145465
+    },
+    {
+      "image": "math+22+recto.jpg",
+      "ref_chars": 1614,
+      "cer": 0.7372986369268897,
+      "seconds": 38.12963416706771
+    },
+    {
+      "image": "math+23+recto.jpg",
+      "ref_chars": 1773,
+      "cer": 0.6598984771573604,
+      "seconds": 47.00763150001876
+    },
+    {
+      "image": "math+24+recto.jpg",
+      "ref_chars": 1774,
+      "cer": 0.7694475760992108,
+      "seconds": 43.657795834122226
+    },
+    {
+      "image": "math+25+recto.jpg",
+      "ref_chars": 1698,
+      "cer": 0.6236749116607774,
+      "seconds": 32.85365670803003
+    },
+    {
+      "image": "math+26+recto.jpg",
+      "ref_chars": 1676,
+      "cer": 0.6127684964200477,
+      "seconds": 19.58438895805739
+    },
+    {
+      "image": "math+27+recto.jpg",
+      "ref_chars": 1523,
+      "cer": 0.4576493762311228,
+      "seconds": 35.754382541868836
+    },
+    {
+      "image": "math+28+recto.jpg",
+      "ref_chars": 1551,
+      "cer": 0.5802707930367504,
+      "seconds": 24.81023895787075
+    },
+    {
+      "image": "math+29+recto.jpg",
+      "ref_chars": 1526,
+      "cer": 0.6697247706422018,
+      "seconds": 38.379934292053804
+    },
+    {
+      "image": "math+30+recto.jpg",
+      "ref_chars": 1640,
+      "cer": 0.7286585365853658,
+      "seconds": 59.04391283309087
+    },
+    {
+      "image": "math+31+recto.jpg",
+      "ref_chars": 1812,
+      "cer": 0.6324503311258278,
+      "seconds": 24.928686124971136
+    },
+    {
+      "image": "math+32+recto.jpg",
+      "ref_chars": 1749,
+      "cer": 0.5826186392224129,
+      "seconds": 26.740857125027105
+    },
+    {
+      "image": "OPD+4+recto.jpg",
+      "ref_chars": 1336,
+      "cer": 0.2776946107784431,
+      "seconds": 19.06867437483743
+    },
+    {
+      "image": "OPD+5+recto.jpg",
+      "ref_chars": 1548,
+      "cer": 0.23062015503875968,
+      "seconds": 31.38765983399935
+    },
+    {
+      "image": "OPD+6+recto.jpg",
+      "ref_chars": 1482,
+      "cer": 0.150472334682861,
+      "seconds": 18.31571462494321
+    },
+    {
+      "image": "SYF+6+recto.jpg",
+      "ref_chars": 1649,
+      "cer": 0.14432989690721648,
+      "seconds": 55.20443004090339
+    },
+    {
+      "image": "SYF+7+recto.jpg",
+      "ref_chars": 1820,
+      "cer": 0.13131868131868132,
+      "seconds": 55.952070749830455
+    },
+    {
+      "image": "SYF+8+recto.jpg",
+      "ref_chars": 1802,
+      "cer": 0.1492785793562708,
+      "seconds": 56.59437987487763
+    },
+    {
+      "image": "SVNGCB1+1+recto.jpg",
+      "ref_chars": 178,
+      "cer": 0.10112359550561797,
+      "seconds": 9.76805775007233
+    },
+    {
+      "image": "SVNGCB1+10+recto.jpg",
+      "ref_chars": 1530,
+      "cer": 0.4437908496732026,
+      "seconds": 42.22553024999797
+    },
+    {
+      "image": "SVNGCB1+11+recto.jpg",
+      "ref_chars": 1534,
+      "cer": 0.5104302477183833,
+      "seconds": 32.73976187501103
+    },
+    {
+      "image": "SVNGCB1+12+recto.jpg",
+      "ref_chars": 1605,
+      "cer": 0.5308411214953271,
+      "seconds": 36.74272625008598
+    },
+    {
+      "image": "SVNGCB1+13+recto.jpg",
+      "ref_chars": 1609,
+      "cer": 0.5400870105655686,
+      "seconds": 42.29469108302146
+    },
+    {
+      "image": "SVNGCB1+14+recto.jpg",
+      "ref_chars": 1626,
+      "cer": 0.6217712177121771,
+      "seconds": 26.771457167109475
+    },
+    {
+      "image": "SVNGCB1+15+recto.jpg",
+      "ref_chars": 1488,
+      "cer": 0.48185483870967744,
+      "seconds": 28.653737541055307
+    },
+    {
+      "image": "SVNGCB1+16+recto.jpg",
+      "ref_chars": 1509,
+      "cer": 0.5149105367793241,
+      "seconds": 22.502767040859908
+    },
+    {
+      "image": "SVNGCB1+17+recto.jpg",
+      "ref_chars": 1678,
+      "cer": 0.5762812872467223,
+      "seconds": 28.639517250005156
+    },
+    {
+      "image": "SVNGCB1+18+recto.jpg",
+      "ref_chars": 1711,
+      "cer": 0.5528930450029222,
+      "seconds": 34.43695170804858
+    },
+    {
+      "image": "SVNGCB1+19+recto.jpg",
+      "ref_chars": 1589,
+      "cer": 0.5632473253618628,
+      "seconds": 29.972169375047088
+    },
+    {
+      "image": "SVNGCB1+2+verso.jpg",
+      "ref_chars": 202,
+      "cer": 0.23267326732673269,
+      "seconds": 8.14165237499401
+    },
+    {
+      "image": "SVNGCB1+20+recto.jpg",
+      "ref_chars": 1580,
+      "cer": 0.5253164556962026,
+      "seconds": 23.92729983315803
+    },
+    {
+      "image": "SVNGCB1+3+recto.jpg",
+      "ref_chars": 2126,
+      "cer": 0.6561618062088429,
+      "seconds": 43.668512583943084
+    },
+    {
+      "image": "SVNGCB1+4+recto.jpg",
+      "ref_chars": 2178,
+      "cer": 0.6818181818181818,
+      "seconds": 26.470246667042375
+    },
+    {
+      "image": "SVNGCB1+5+recto.jpg",
+      "ref_chars": 1448,
+      "cer": 0.6567679558011049,
+      "seconds": 25.13012075005099
+    },
+    {
+      "image": "SVNGCB1+6+recto.jpg",
+      "ref_chars": 1390,
+      "cer": 0.597841726618705,
+      "seconds": 29.734235415933654
+    },
+    {
+      "image": "SVNGCB1+7+recto.jpg",
+      "ref_chars": 1571,
+      "cer": 0.5805219605346913,
+      "seconds": 26.10327420802787
+    },
+    {
+      "image": "SVNGCB1+8+recto.jpg",
+      "ref_chars": 1550,
+      "cer": 0.6477419354838709,
+      "seconds": 23.6418214160949
+    },
+    {
+      "image": "SVNGCB1+9+recto.jpg",
+      "ref_chars": 1428,
+      "cer": 0.34243697478991597,
+      "seconds": 36.404298041947186
+    },
+    {
+      "image": "SVNGCB2+1+recto.jpg",
+      "ref_chars": 184,
+      "cer": 0.08152173913043478,
+      "seconds": 6.4940839998889714
+    },
+    {
+      "image": "SVNGCB2+10+recto.jpg",
+      "ref_chars": 2204,
+      "cer": 0.5072595281306715,
+      "seconds": 33.26253900001757
+    },
+    {
+      "image": "SVNGCB2+2+verso.jpg",
+      "ref_chars": 198,
+      "cer": 0.17676767676767677,
+      "seconds": 6.977160583017394
+    },
+    {
+      "image": "SVNGCB2+3+recto.jpg",
+      "ref_chars": 1112,
+      "cer": 0.4847122302158273,
+      "seconds": 28.31572858407162
+    },
+    {
+      "image": "SVNGCB2+4+recto.jpg",
+      "ref_chars": 1010,
+      "cer": 0.16732673267326734,
+      "seconds": 39.293282333994284
+    },
+    {
+      "image": "SVNGCB2+5+recto.jpg",
+      "ref_chars": 1834,
+      "cer": 0.5627044711014176,
+      "seconds": 35.32900008303113
+    },
+    {
+      "image": "SVNGCB2+6+recto.jpg",
+      "ref_chars": 1718,
+      "cer": 0.5046565774155995,
+      "seconds": 24.60949079110287
+    },
+    {
+      "image": "SVNGCB2+7+recto.jpg",
+      "ref_chars": 2522,
+      "cer": 0.5329103885804917,
+      "seconds": 62.242248666938394
+    },
+    {
+      "image": "SVNGCB2+8+recto.jpg",
+      "ref_chars": 2486,
+      "cer": 0.501609010458568,
+      "seconds": 46.83795933285728
+    },
+    {
+      "image": "SVNGCB2+9+recto.jpg",
+      "ref_chars": 2198,
+      "cer": 0.6528662420382165,
+      "seconds": 42.163411624962464
+    }
+  ]
+}

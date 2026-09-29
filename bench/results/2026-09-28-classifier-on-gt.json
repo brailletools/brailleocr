@@ -1,0 +1,35 @@
+{
+  "totals": {
+    "cells": 2540,
+    "cell_ok": 2270,
+    "dots": 15240,
+    "dot_ok": 14926,
+    "recto": 1270,
+    "recto_ok": 1207,
+    "verso": 1270,
+    "verso_ok": 1063,
+    "off_by_one": 229
+  },
+  "per_page": [
+    {
+      "image": "FM+1+recto.jpg",
+      "cells": 450,
+      "correct": 426
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "cells": 450,
+      "correct": 430
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "cells": 820,
+      "correct": 712
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "cells": 820,
+      "correct": 702
+    }
+  ]
+}

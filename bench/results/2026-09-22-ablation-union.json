@@ -1,0 +1,40 @@
+{
+  "pages": [
+    {
+      "image": "FM+1+recto.jpg",
+      "ref_chars": 832,
+      "cer_with": 0.5372596153846154,
+      "cer_without": 0.41586538461538464,
+      "seconds_with": 43.72184820799157,
+      "seconds_without": 13.14787054201588,
+      "text_identical": false
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "ref_chars": 748,
+      "cer_with": 0.4425133689839572,
+      "cer_without": 0.3074866310160428,
+      "seconds_with": 34.44326824997552,
+      "seconds_without": 13.347984124906361,
+      "text_identical": false
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "ref_chars": 1418,
+      "cer_with": 0.6748942172073342,
+      "cer_without": 0.5980253878702397,
+      "seconds_with": 44.098677000030875,
+      "seconds_without": 22.92136387480423,
+      "text_identical": false
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "ref_chars": 1395,
+      "cer_with": 0.6896057347670251,
+      "cer_without": 0.6630824372759857,
+      "seconds_with": 36.129091083072126,
+      "seconds_without": 16.929654042003676,
+      "text_identical": false
+    }
+  ]
+}

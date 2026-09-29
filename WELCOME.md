@@ -142,7 +142,15 @@ promoting a model is a decision, not a build step.
 
 ### Current accuracy
 
-See RESEARCH.md for latest results. 
+Classifier on ground-truth crops, all 88 DSBI test pages, parity model
+(2026-09-29): **97.4% per cell, 99.2% per dot — 99.5% recto, 95.2% verso.**
+
+End-to-end text: **mean CER 0.4837** over the same 88 pages (0.4961 -> 0.4473
+on the four pages the old baseline used, so the retrain is worth ~5 points).
+
+Do not quote the average without the split. Recto is 98.6-100% on *every* test
+page; the entire deficit is verso, and it tracks how faint that page's scan is.
+See RESEARCH.md "Error concentration" for the full table.
 
 Read the caveats in `RESEARCH.md` before quoting these: DSBI train and test are
 the same books, so this is in-domain accuracy, not generalization. The old
@@ -196,11 +204,21 @@ decisions, so per-cell accuracy is roughly per-dot to the sixth power. It is pos
       rather than a model that cannot see. Costs one evaluation pass, no
       retraining. Tune on val, report on the 88 test pages — never tune on test.
       → `RESEARCH.md` "Future work" item 2
-- [ ] **Look at the `Massage` book (`M+11` … `M+20`).** All ten pages score
-      63–95% while the other 78 test pages sit at 98.5–100%; those ten hold
-      ~80% of all classifier errors. Find out what is different about them
-      (embosser, paper, scan) before quoting any single average accuracy.
-      → `RESEARCH.md` "Error concentration"
+- [ ] **Chase the verso-faintness deficit.** Recto is 98.6–100% on every test
+      page; all the loss is verso, concentrated in the `Massage` book (M+19 is
+      99.8% recto / 26.8% verso). Verso accuracy tracks how faint that page's
+      scan is (r = 0.82 against local contrast in the dot boxes), and the errors
+      are missed dots, not hallucinated ones. Try contrast normalization at
+      train+inference time. Do the threshold sweep first — it is cheaper and
+      addresses the same symptom. → `RESEARCH.md` "Error concentration"
+- [ ] **Explain the 97.4%-per-cell vs 0.48-CER gap.** These describe the same
+      pipeline and cannot both be the whole story. Suspects are line-grouping
+      divergence and Grade 2 back-translation amplifying single-cell errors --
+      both unverified. Cheap first cut: CER against a reference built from
+      *detected* positions with ground-truth dot patterns, which shares layout
+      and so isolates dot errors from layout errors. This decides whether
+      further classifier work is worth anything at all.
+      -> `RESEARCH.md` "End-to-end text CER after the parity re-run"
 - [ ] Verify the DSBI recto/verso training question 
 - [ ] Decide whether `labels/` belongs here or in the `dataset` repo
 

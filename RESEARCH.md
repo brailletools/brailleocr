@@ -473,9 +473,7 @@ removal (`bench/results/2026-09-28-accuracy-by-side.json`).
 | Dot accuracy, after classifier — **per cell** | **89.0%** |
 | Dot accuracy — **per dot** | **97.8%** (14540/14868) |
 | End-to-end cell accuracy (correct dots / all GT cells) | **86.8%** (2205/2540) |
-| Text-level CER | 0.4961 |
-
-By page side:
+| Text-level CER | 0.4837 (median 0.5365; range 0.08-0.81) |
 
 | side | matched | correct dots |
 |---|---:|---:|
@@ -484,14 +482,14 @@ By page side:
 
 ### What this says
 
-**Detection is solved; classification is the bottleneck.** We locate 99.7% of
+**Detection is solved.** We locate 99.7% of
 cells and read 89% of them. Every major design decision in this project — the
 tiling contract, scale normalization, the single-class detector — went into the
 stage that was already working. One cell in eight reaches the user with the
 wrong dots.
 
 This also re-prioritizes the labeling work: it produces *classifier* training
-data, which is now demonstrably the weak stage.
+data, which is weaker stage.
 
 **The classifier is worth only 2.3 points** over the detector's own reading
 (86.7% → 89.0%), which is less than its architecture would suggest. Worth
@@ -506,6 +504,8 @@ accuracy, not only correct ordering.
 
 **86.8% averages over a page type users rarely photograph.** For single-sided
 pages the relevant figure is nearer 94.3%.
+
+**The 97.4%-per-cell vs 0.48-CER gap is now the most important open question**. They describe the same pipeline and can't both be the whole story. I checked the harness: the reference and the prediction go through the same layout and liblioulis path, so recto/verso interleaving isn't penalized by itself. My two suspects are line-grouping divergence (a slightly shifted centroid re-splits a line and costs edit distance far beyond the cells actually misread) and Grade 2 back-translation turning a one-dot error into a multi-character edit. Neither is measured — I've written them into RESEARCH.md explicitly flagged as unverified hypotheses. There's a cheap decisive test: CER against a reference built from detected positions with ground-truth dot patterns, which shares layout and so isolates dot error from layout error. That's in WELCOME.md §7 as a to-do, because it determines whether any further classifier work is worth doing at all. 
 
 ### Per-dot vs per-cell, and how we compare to published work
 
@@ -534,11 +534,29 @@ Published Braille numbers fall into three incomparable groups:
 | ours, `cell_detector.pt` | mAP50 0.995 | **detection only** |
 | ours, end to end | 97.8% per dot / 89.0% per cell / 86.8% of all GT cells | full page, located **and** read |
 
-Against dot-level work, 97.8% is in the same league. Against pre-segmented crop
-classification, our number is not comparable — those evaluations are handed
-cells someone else segmented, which skips the part that fails in practice.
-The fair comparison would be per-cell recognition on full pages, and the survey
-turned up little of it; the line-level Amharic paper is closest in spirit.
+Against dot-level work, 97.8% is in the same league.
+
+**Updated 2026-09-29.** The parity model's **97.4% per cell (99.5%
+recto-only)** over 71,250 cells from 88 full pages is directly
+comparable to the 95-99% band those papers report. 
+
+1. **These are numbers from abstracts, not reproductions.** We have never run
+   any published model on our data or ours on theirs. Every comparison in this
+   table is number-vs-number.
+2. **It is an in-domain number.** DSBI train and test are the same books.
+   Published crop work is also in-domain, so the comparison is fair in kind, but
+   the older 89.4% was a genuine *cross-dataset* result and therefore a harder
+   test. We traded a hard number for a comparable one.
+3. **The average hides the verso spread** (see "Error concentration"): the same
+   97.4% covers pages ranging from 26.8% to 99.1% on the verso side. No
+   single-sided benchmark can surface this, which makes it both a contribution
+   and a liability.
+
+The fair comparison for the system as a whole would be per-cell recognition on
+full pages, and the survey turned up little of it; the line-level Amharic paper
+is closest in spirit. That remains the gap this project sits in: competitive on
+the two stages the literature measures, essentially unmeasured against anyone on
+the end-to-end task we actually built.
 
 *Correction to an earlier note in this file's history:* the classifier was
 described as "genuinely behind" published crop classifiers on the basis of the
@@ -593,8 +611,9 @@ Four reasons for the apparent gap with published numbers, largest first:
    almost always trained and tested on splits of one dataset. Our 95.0% is a
    cross-dataset number sitting inside a range of within-dataset numbers, which
    is a harder test, not an easier one.
-4. **The decision threshold has never been tuned.** 84.8% of wrong cells are
-   wrong by exactly one dot, and every dot is hard-thresholded at sigmoid > 0.5.
+4. **The decision threshold has never been tuned.** 84.8% of wrong cells were
+   wrong by exactly one dot at the time this was written (51.9% with the current
+   parity model), and every dot is hard-thresholded at sigmoid > 0.5.
 
 ### Three cheap experiments this implies
 
@@ -719,11 +738,145 @@ A JPEG artifact is about the size of a Braille dot's shadow, and LANCZOS vs
 bilinear on a ~130px → 64px downsample produces visibly different pixels. Fixed
 by saving crops with the same bilinear resize inference uses, losslessly as PNG
 (`RESAMPLE` / `CROP_EXT`). Everything above was measured **before** the fix, so
-all three models share the handicap equally; the re-run after the fix is pending.
+all three models share the handicap equally.
+
+### Result of the re-run (2026-09-29)
+
+Re-extracted with bilinear + PNG, retrained (30 epochs, 84,668 train crops from
+Angelina + DSBI), and re-evaluated on ground-truth crops from all 88 DSBI test
+pages (`bench/results/2026-09-29-clf-parity-gt.json`):
+
+| | pre-parity model | parity model |
+|---|---|---|
+| per cell | 97.1% | **97.4%** |
+| per dot | — | **99.2%** |
+| recto | 99.4% | **99.5%** |
+| verso | 94.7% | **95.2%** |
+
+The fix is worth about **+0.3 points per cell and +0.5 on verso** — small, but
+free, and it removes a discrepancy that would be awkward to defend in a paper.
+The more important effect is that the two evaluation paths now agree: 99.4% on
+the model's own held-out crops vs 97.4% on independently cropped ground-truth
+cells, where the gap used to be 99.5% vs 96.6% on crops differing *only* in
+preprocessing.
 
 This is the same class of error as the tiling contract: train and inference must
 agree on what the model sees, and a silent disagreement costs accuracy without
 producing any error.
+
+## End-to-end text CER after the parity re-run (2026-09-29)
+
+All 88 DSBI test pages, parity classifier
+(`bench/results/2026-09-29-text-cer-parity.json`):
+
+| | value |
+|---|---|
+| mean CER | **0.4837** |
+| median | 0.5365 |
+| min / max | 0.0815 / 0.8136 |
+| cost | 33.0 s/page (2903s total) |
+
+The 0.4961 baseline was measured on **4** pages, so the means are not
+comparable. On the same four pages, all four improved:
+
+| page | old | new | delta |
+|---|---|---|---|
+| FM+1 | 0.4159 | 0.3570 | -0.0589 |
+| FM+2 | 0.3075 | 0.2848 | -0.0227 |
+| FM+3 | 0.5980 | 0.5268 | -0.0712 |
+| FM+4 | 0.6631 | 0.6208 | -0.0423 |
+| mean | 0.4961 | **0.4473** | **-0.0488** |
+
+The retrain plus preprocessing parity is worth roughly 5 CER points, consistent
+across every page. No regression.
+
+### The gap between 97.4% per cell and 0.48 CER is the open question
+
+These two numbers describe the same pipeline and look irreconcilable. The cell
+metric says 97 of 100 cells are read correctly; the text metric says half the
+characters are wrong. `reference_text()` builds the reference from the union of
+both page sides and pushes it through the *same* `group_into_lines` /
+`insert_spaces` / liblouis path as the prediction, so both streams interleave
+recto and verso identically — interleaving alone is not penalized.
+
+Two mechanisms could amplify small cell errors into large edit distances.
+**Both are unverified hypotheses; neither has been measured:**
+
+1. **Line-grouping divergence.** Detected centroids sit slightly differently
+   from ground-truth boxes. If `group_into_lines` splits or merges a line
+   differently as a result, an entire line shifts and costs edit distance far
+   out of proportion to the cells actually misread.
+2. **Grade 2 amplification.** One wrong cell can turn a contraction into several
+   characters, so a single-dot error becomes a multi-character edit.
+
+The CER spread (0.08 to 0.81) is much wider than per-cell accuracy varies across
+the same pages, which is what a structural/layout cause would look like rather
+than a recognition one. **Diagnosing this is the highest-value next measurement
+in the project** — it decides whether remaining effort belongs in the classifier
+at all, or in layout and text assembly. A cheap first cut: compute CER against a
+reference built from *detected* cell positions with ground-truth dot patterns.
+That isolates dot errors from layout errors, because layout is then shared.
+
+## Error concentration: it is verso faintness, not bad pages (2026-09-29)
+
+The 97.4% average is misleading. The per-page breakdown shows 78 of 88 test
+pages at 98.5-100% and ten pages — `M+11` … `M+20`, the *Massage* book — at
+63-95%, holding roughly 80% of all classifier errors.
+
+Splitting those pages by side locates the problem precisely:
+
+| page | recto | verso |
+|---|---|---|
+| M+19 | 99.8% | **26.8%** |
+| M+16 | 99.8% | 52.0% |
+| M+12 | 99.4% | 52.2% |
+| M+14 | 99.3% | 57.6% |
+| M+20 | 98.7% | 58.3% |
+| M+15 | 99.4% | 78.0% |
+| M+17 | 99.3% | 80.0% |
+| M+18 | 100.0% | 89.7% |
+| M+11 | 99.6% | 90.9% |
+| M+13 | 99.6% | 99.1% |
+| math+11 | 99.1% | 99.7% |
+| FM+1 | 98.6% | 100.0% |
+| SVNGCB1+3 | 98.8% | 99.4% |
+
+**Recto is 98.6-100% on every page, including the worst ones.** There are no bad
+pages; there are bad *versos*. On M+19 the errors are 683 missed dots against
+only 83 hallucinated — the classifier reads embossed verso dots as flat paper.
+
+Two hypotheses tested:
+
+- **Shadow polarity / orientation.** Re-running the same verso crops rotated
+  180° scores 0.9-12.1% on every page, good and bad alike. Refuted — the model
+  is strongly orientation-bound, but that is not what distinguishes these pages.
+- **Scan faintness.** Mean local pixel standard deviation inside ground-truth
+  dot boxes, per page per side, correlates with verso accuracy at **r = 0.82**
+  (M+19: 12.35 → 26.8%; M+13: 15.03 → 99.1%; math+11: 16.45 → 99.7%). Recto
+  contrast is flat at 14.2-16.5 across all of them. Supported.
+
+So the deficit is a *capture* problem surfacing as a recognition problem: on
+these scans the verso impressions are genuinely close to the noise floor, and
+the amount by which they are fainter than the recto side predicts how much
+accuracy is lost. Note that *Massage* is in the DSBI **train** split as well as
+test, so this is not an unseen-book effect — the model has seen this book's
+verso and still cannot read the faint scans of it.
+
+What this changes:
+
+1. **Never quote a single average.** The honest statement is "99.5% recto,
+   95.2% verso, with verso accuracy tracking scan contrast (r = 0.82)."
+2. The **threshold sweep** (see Future work) is now the obvious first move: a
+   classifier systematically *missing* faint dots is what an over-conservative
+   decision threshold looks like, and 51.9% of wrong cells are wrong by exactly
+   one dot.
+3. Contrast-normalizing crops at train and inference time, or a per-page
+   contrast estimate fed to the classifier, is worth trying before any
+   architecture change.
+
+Reproduce with the scripts in the session scratchpad (`inspect_page.py`,
+`side_audit.py`, `contrast_audit.py`) — these are diagnostics, not committed
+experiments; fold them into `experiments/` if they get used more than once.
 
 ## Efficiency experiment backlog
 

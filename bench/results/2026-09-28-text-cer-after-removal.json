@@ -1,0 +1,28 @@
+{
+  "pages": [
+    {
+      "image": "FM+1+recto.jpg",
+      "ref_chars": 832,
+      "cer": 0.41586538461538464,
+      "seconds": 16.244559625163674
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "ref_chars": 748,
+      "cer": 0.3074866310160428,
+      "seconds": 13.881357708014548
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "ref_chars": 1418,
+      "cer": 0.5980253878702397,
+      "seconds": 24.369393874891102
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "ref_chars": 1395,
+      "cer": 0.6630824372759857,
+      "seconds": 17.479812916833907
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "pages": [
+    {
+      "image": "FM+1+recto.jpg",
+      "ref_chars": 130,
+      "cer_with": 5.315384615384615,
+      "cer_without": 4.369230769230769,
+      "seconds_with": 56.784975124988705,
+      "seconds_without": 23.546494459034875,
+      "text_identical": false
+    },
+    {
+      "image": "FM+1+verso.jpg",
+      "ref_chars": 701,
+      "cer_with": 0.6761768901569187,
+      "cer_without": 0.5092724679029957,
+      "seconds_with": 161.95167587511241,
+      "seconds_without": 44.129163125064224,
+      "text_identical": false
+    },
+    {
+      "image": "FM+2+recto.jpg",
+      "ref_chars": 608,
+      "cer_with": 0.4292763157894737,
+      "cer_without": 0.24835526315789475,
+      "seconds_with": 75.95028687501326,
+      "seconds_without": 37.29542937502265,
+      "text_identical": false
+    },
+    {
+      "image": "FM+2+verso.jpg",
+      "ref_chars": 139,
+      "cer_with": 4.913669064748201,
+      "cer_without": 4.151079136690647,
+      "seconds_with": 104.32539604208432,
+      "seconds_without": 28.81353266700171,
+      "text_identical": false
+    },
+    {
+      "image": "FM+3+recto.jpg",
+      "ref_chars": 703,
+      "cer_with": 1.3186344238975818,
+      "cer_without": 1.1379800853485065,
+      "seconds_with": 98.54438575007953,
+      "seconds_without": 30.07177266594954,
+      "text_identical": false
+    },
+    {
+      "image": "FM+3+verso.jpg",
+      "ref_chars": 714,
+      "cer_with": 1.4705882352941178,
+      "cer_without": 1.2955182072829132,
+      "seconds_with": 57.772301957942545,
+      "seconds_without": 26.27835729205981,
+      "text_identical": false
+    },
+    {
+      "image": "FM+4+recto.jpg",
+      "ref_chars": 714,
+      "cer_with": 1.2436974789915967,
+      "cer_without": 1.1288515406162465,
+      "seconds_with": 36.76462283381261,
+      "seconds_without": 16.097016457933933,
+      "text_identical": false
+    },
+    {
+      "image": "FM+4+verso.jpg",
+      "ref_chars": 685,
+      "cer_with": 1.5562043795620437,
+      "cer_without": 1.4423357664233576,
+      "seconds_with": 40.5288315420039,
+      "seconds_without": 21.616608042037115,
+      "text_identical": false
+    }
+  ]
+}
