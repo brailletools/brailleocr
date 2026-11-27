@@ -25,85 +25,160 @@ function bankersRound(x) {
 	return floor % 2 === 0 ? floor : floor + 1;
 }
 
-// Fraction of the page's median cell height a cell must fall within of the
-// *previous* cell added to the current line to join it — matches
-// pipeline.py's group_into_lines() exactly (chains off the last cell added,
-// not a running mean of the line, so a slight page skew doesn't make the
-// threshold drift away from consecutive real neighbors).
+// Fraction of the page's median cell height a cell may sit from where its line
+// is predicted to be and still join it.
 const LINE_BAND_FRAC = 0.55;
-// Extra fraction of the page's median cell width, added to a line's own
-// median cell-to-cell gap, that a gap must exceed before it's treated as a
-// word space rather than normal inter-cell spacing — matches pipeline.py's
-// insert_spaces().
-const SPACE_GAP_EXTRA_FRAC = 0.5;
+// How many of a line's most recent cells are used to estimate its local slope.
+const SLOPE_WINDOW = 6;
+// A line's local slope is only trusted once it spans this many cell widths;
+// over a shorter run, ordinary box jitter looks like a steep slope.
+const MIN_SLOPE_SPAN_CELLS = 3;
+// Largest local slope, left over after removing the page-wide tilt, that a line
+// is allowed to follow (perspective and page curl).
+const MAX_LOCAL_SLOPE = 0.15;
+// A gap this many cell pitches wide or wider contains at least one blank cell.
+const SPACE_GAP_PITCHES = 1.5;
+// A line needs this many gaps before its own pitch is preferred to the page's.
+const MIN_GAPS_FOR_LINE_PITCH = 5;
+// ...and its own pitch must be within this fraction of the page's to be believed.
+const LINE_PITCH_TOLERANCE = 0.25;
 
 /**
- * Groups cells into reading-order lines by y-position. Direct port of
- * pipeline.py's group_into_lines(): sorts by cy, then sequentially chains
- * each cell onto the current line if it's within LINE_BAND_FRAC * (page's
- * median cell height) of the *last cell added to that line* — not a running
- * mean — starting a new line otherwise. Lines are NOT sorted by cx here
- * (callers needing reading order within a line should sort, same as
- * insertSpaces() already does internally).
+ * Estimates the page's tilt, in radians (positive: lines run downward to the
+ * right), as the median direction from each cell to its nearest neighbor on the
+ * right. Works up to about 25 degrees; quarter and half turns are handled by
+ * orientation.js instead.
+ * @param {Array<{cx: number, cy: number}>} cells
+ * @returns {number}
+ */
+export function estimateSkew(cells) {
+	const angles = [];
+	for (const c of cells) {
+		let nearest = Infinity;
+		let angle = null;
+		for (const o of cells) {
+			const dx = o.cx - c.cx;
+			const dy = o.cy - c.cy;
+			if (dx <= 0 || Math.abs(dy) > 0.5 * dx) continue;
+			const dist = dx * dx + dy * dy;
+			if (dist < nearest) {
+				nearest = dist;
+				angle = Math.atan2(dy, dx);
+			}
+		}
+		if (angle !== null) angles.push(angle);
+	}
+	return angles.length ? median(angles) : 0;
+}
+
+/** Predicted y at x for a line of {x, y} points, following its local slope. */
+function predictY(line, cx, cellW) {
+	const recent = line.slice(-SLOPE_WINDOW);
+	const meanX = recent.reduce((sum, p) => sum + p.x, 0) / recent.length;
+	const meanY = recent.reduce((sum, p) => sum + p.y, 0) / recent.length;
+	let slope = 0;
+	if (recent[recent.length - 1].x - recent[0].x >= MIN_SLOPE_SPAN_CELLS * cellW) {
+		let num = 0;
+		let den = 0;
+		for (const p of recent) {
+			num += (p.x - meanX) * (p.y - meanY);
+			den += (p.x - meanX) ** 2;
+		}
+		slope = Math.max(-MAX_LOCAL_SLOPE, Math.min(MAX_LOCAL_SLOPE, num / den));
+	}
+	const last = line[line.length - 1];
+	// Anchor on the recent cells' mean rather than the last cell alone, so one
+	// badly placed box doesn't pull the rest of the line off course.
+	return slope ? meanY + slope * (cx - meanX) : last.y;
+}
+
+/**
+ * Groups cells into reading-order lines. The page-wide tilt is removed first,
+ * then cells are visited left to right and each joins the line whose predicted
+ * position it is closest to, so a line can bend gradually (perspective, curl).
+ * Mirrors pipeline.py's group_into_lines().
  * @param {Array<Cell>} cells
- * @returns {Array<Array<Cell>>}
+ * @returns {Array<Array<Cell>>} lines from top to bottom, cells left to right
  */
 export function groupIntoLines(cells) {
 	if (cells.length === 0) return [];
 
-	const avgH = median(cells.map((c) => c.h));
-	const thresh = avgH * LINE_BAND_FRAC;
-	const sortedByY = [...cells].sort((a, b) => a.cy - b.cy);
+	const angle = estimateSkew(cells);
+	const cos = Math.cos(angle);
+	const sin = Math.sin(angle);
+	// Positions in the de-tilted frame, each remembering the cell it came from.
+	const level = cells.map((cell) => ({
+		cell,
+		x: cell.cx * cos + cell.cy * sin,
+		y: cell.cy * cos - cell.cx * sin
+	}));
 
+	const thresh = median(cells.map((c) => c.h)) * LINE_BAND_FRAC;
+	const cellW = median(cells.map((c) => c.w));
 	const lines = [];
-	let current = [sortedByY[0]];
-	for (let i = 1; i < sortedByY.length; i++) {
-		const cell = sortedByY[i];
-		if (Math.abs(cell.cy - current[current.length - 1].cy) < thresh) {
-			current.push(cell);
-		} else {
-			lines.push(current);
-			current = [cell];
+	for (const point of level.sort((a, b) => a.x - b.x || a.y - b.y)) {
+		let best = null;
+		let bestDist = thresh;
+		for (const line of lines) {
+			const dist = Math.abs(point.y - predictY(line, point.x, cellW));
+			if (dist < bestDist) {
+				best = line;
+				bestDist = dist;
+			}
 		}
+		if (!best) {
+			best = [];
+			lines.push(best);
+		}
+		best.push(point);
 	}
-	lines.push(current);
-	return lines;
+	// Order by height at the page's left side: a bent line's mean height depends
+	// on how far across it reaches, its starting height much less so.
+	const startY = (line) => median(line.slice(0, SLOPE_WINDOW).map((p) => p.y));
+	return lines.sort((a, b) => startY(a) - startY(b)).map((line) => line.map((p) => p.cell));
+}
+
+function consecutiveGaps(sortedLine) {
+	return sortedLine.slice(1).map((c, i) => c.cx - sortedLine[i].cx);
 }
 
 /**
- * Sorts one line's cells into reading order and inserts space markers
- * ({ bits: '000000', isSpace: true }) wherever the gap between consecutive
- * cells is wide enough to be a word space rather than normal letter spacing.
- * Direct port of pipeline.py's insert_spaces(): medianGap is computed from
- * THIS line's own consecutive-cell gaps (robust to this line's own spacing
- * quirks); avgCellW is the page-wide median cell width, passed in by the
- * caller (computed once across every cell on the page, not per line).
- * @param {Array<Cell>} lineCells
+ * The page's cell pitch: the horizontal distance between neighboring cells in a
+ * word. Falls back to a multiple of cell width when no two cells share a line.
+ * @param {Array<Array<Cell>>} lines
  * @param {number} avgCellW
+ */
+export function estimatePitch(lines, avgCellW) {
+	const gaps = lines.flatMap((line) => consecutiveGaps([...line].sort((a, b) => a.cx - b.cx)));
+	return gaps.length ? median(gaps) : avgCellW * 1.4;
+}
+
+/**
+ * Sorts one line's cells into reading order and inserts a blank-cell marker
+ * ({ bits: '000000', isSpace: true }) for every empty cell position in a gap.
+ * Counted in cell pitches, not cell widths: boxes are narrower than the pitch,
+ * so dividing by width turned one blank cell into two.
+ * Mirrors pipeline.py's insert_spaces().
+ * @param {Array<Cell>} lineCells
+ * @param {number} pagePitch - from estimatePitch()
  * @returns {Array<Cell|SpaceMarker>}
  */
-export function insertSpaces(lineCells, avgCellW) {
+export function insertSpaces(lineCells, pagePitch) {
 	const line = [...lineCells].sort((a, b) => a.cx - b.cx);
 	if (line.length <= 1) return line;
 
-	const gaps = [];
-	for (let i = 1; i < line.length; i++) gaps.push(line[i].cx - line[i - 1].cx);
-	const medianGap = median(gaps);
-	const spaceThresh = medianGap + avgCellW * SPACE_GAP_EXTRA_FRAC;
-
-	const pyRound = (x) => {
-		const f = Math.floor(x);
-		const frac = x - f;
-		if (frac < 0.5) return f;
-		if (frac > 0.5) return f + 1;
-		return f % 2 === 0 ? f : f + 1;
-	};
+	const gaps = consecutiveGaps(line);
+	let pitch = pagePitch;
+	if (gaps.length >= MIN_GAPS_FOR_LINE_PITCH) {
+		const own = median(gaps);
+		if (Math.abs(own - pagePitch) <= pagePitch * LINE_PITCH_TOLERANCE) pitch = own;
+	}
 
 	const result = [line[0]];
 	for (let i = 1; i < line.length; i++) {
 		const gap = line[i].cx - line[i - 1].cx;
-		if (gap > spaceThresh) {
-			const nSpaces = Math.max(1, pyRound((gap - medianGap) / avgCellW));
+		if (gap >= pitch * SPACE_GAP_PITCHES) {
+			const nSpaces = Math.max(1, bankersRound(gap / pitch) - 1);
 			for (let s = 0; s < nSpaces; s++) {
 				result.push({ cx: null, cy: line[i].cy, bits: '000000', isSpace: true });
 			}
@@ -115,16 +190,16 @@ export function insertSpaces(lineCells, avgCellW) {
 
 /**
  * Convenience wrapper: groups cells into lines, then infers spaces within
- * each line, using one page-wide median cell width for every line's space
- * threshold (matches how pipeline.py's process_container() wires these two
- * functions together).
+ * each line, using one page-wide cell pitch (matches how pipeline.py's
+ * process_container() wires these functions together).
  * @param {Array<Cell>} cells
  * @returns {Array<Array<Cell|SpaceMarker>>}
  */
 export function layoutCellsIntoLines(cells) {
 	if (cells.length === 0) return [];
-	const avgCellW = median(cells.map((c) => c.w));
-	return groupIntoLines(cells).map((line) => insertSpaces(line, avgCellW));
+	const lines = groupIntoLines(cells);
+	const pitch = estimatePitch(lines, median(cells.map((c) => c.w)));
+	return lines.map((line) => insertSpaces(line, pitch));
 }
 
 /**

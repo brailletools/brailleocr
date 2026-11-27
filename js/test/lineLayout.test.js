@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { groupIntoLines, insertSpaces, layoutCellsIntoLines, bitsToBraille, layoutToUnicodeBraille } from '../src/lineLayout.js';
+import { estimateSkew, groupIntoLines, insertSpaces, layoutCellsIntoLines, bitsToBraille, layoutToUnicodeBraille } from '../src/lineLayout.js';
 
 test('bitsToBraille matches pipeline.py bits_to_braille() literal codepoints', () => {
 	// Cross-checked by hand against chr(0x2800 + int(bits6[::-1], 2)) for each
@@ -21,16 +21,63 @@ test('bitsToBraille matches pipeline.py bits_to_braille() literal codepoints', (
 	}
 });
 
-test('groupIntoLines chains off the previous cell added, not a running mean or the line\'s first cell', () => {
-	// Each consecutive step is 25px (< the 27.5px threshold for h=50 cells),
-	// but the first-to-last drift is 75px (> threshold). A "compare to the
-	// line's first cell" implementation would incorrectly split this into
-	// multiple lines partway through; chaining off the previous cell keeps
-	// it as one line, matching pipeline.py's group_into_lines() exactly.
-	const cells = [100, 125, 150, 175].map((cy) => ({ cx: 0, cy, w: 25, h: 50, bits: '000000' }));
-	const lines = groupIntoLines(cells);
-	assert.equal(lines.length, 1);
-	assert.equal(lines[0].length, 4);
+const cell = (cx, cy, bits = '100000') => ({ cx, cy, w: 25, h: 50, bits });
+
+/** A page of evenly pitched cells, then moved by `place`. */
+function page(nLines, nCells, place = (x, y) => [x, y]) {
+	const cells = [];
+	for (let l = 0; l < nLines; l++) {
+		for (let i = 0; i < nCells; i++) {
+			const [cx, cy] = place(100 + i * 35, 100 + l * 80);
+			cells.push({ ...cell(cx, cy), line: l, index: i });
+		}
+	}
+	return cells;
+}
+
+function assertLinesIntact(lines, nLines, nCells) {
+	assert.equal(lines.length, nLines);
+	lines.forEach((line, l) => {
+		assert.deepEqual(
+			line.map((c) => [c.line, c.index]),
+			Array.from({ length: nCells }, (_, i) => [l, i])
+		);
+	});
+}
+
+for (const degrees of [-10, -2, 1, 2, 5, 10]) {
+	test(`groupIntoLines keeps lines intact on a page tilted ${degrees} degrees`, () => {
+		const t = (degrees * Math.PI) / 180;
+		const cells = page(12, 40, (x, y) => [
+			x * Math.cos(t) - y * Math.sin(t),
+			x * Math.sin(t) + y * Math.cos(t)
+		]);
+		assert.ok(Math.abs(estimateSkew(cells) - t) < 0.005);
+		assertLinesIntact(groupIntoLines(cells), 12, 40);
+	});
+}
+
+test('groupIntoLines follows lines that converge, as under perspective', () => {
+	// Top line slopes down to the right and bottom line up: no single rotation levels both.
+	const cells = page(10, 40, (x, y) => [x, y + ((460 - y) / 360) * 0.05 * (x - 800)]);
+	assertLinesIntact(groupIntoLines(cells), 10, 40);
+});
+
+test('groupIntoLines follows a curled page', () => {
+	const cells = page(10, 40, (x, y) => [x, y + 60 * Math.sin((Math.PI * (x - 100)) / 1365)]);
+	assertLinesIntact(groupIntoLines(cells), 10, 40);
+});
+
+test('groupIntoLines returns the original cell objects, not de-tilted copies', () => {
+	const cells = page(2, 5);
+	assert.ok(groupIntoLines(cells).flat().every((c) => cells.includes(c)));
+});
+
+test('insertSpaces counts blank cells in pitches, not cell widths', () => {
+	// Pitch 50 with 34px boxes (the real-photo ratio): one blank cell is a 100px
+	// gap, which dividing by width reported as two.
+	const line = [0, 50, 100, 200, 250].map((cx) => ({ ...cell(cx, 100), w: 34 }));
+	assert.equal(insertSpaces(line, 50).filter((c) => c.isSpace).length, 1);
 });
 
 test('groupIntoLines starts a new line once the gap from the previous cell exceeds the threshold', () => {
@@ -42,21 +89,15 @@ test('groupIntoLines starts a new line once the gap from the previous cell excee
 	assert.equal(lines[1].length, 2);
 });
 
-test('insertSpaces leaves normally-spaced cells alone and inserts multiple markers across a wide gap', () => {
-	// avgCellW=25 (page-wide). Within this line: gaps [30,30,140,30], medianGap=30,
-	// spaceThresh=30+25*0.5=42.5 -- only the 140px gap exceeds it.
-	// nSpaces = round((140-30)/25) = round(4.4) = 4.
-	const line = [0, 30, 60, 200, 230].map((cx) => ({ cx, cy: 100, w: 25, h: 50, bits: '000000' }));
-	const result = insertSpaces(line, 25);
+test('insertSpaces leaves normally-spaced cells alone and fills a wide gap', () => {
+	// pitch 30; the 150px gap holds 150/30 - 1 = 4 blank cells.
+	const line = [0, 30, 60, 210, 240].map((cx) => cell(cx, 100));
+	const result = insertSpaces(line, 30);
 
-	const spaces = result.filter((c) => c.isSpace);
-	const nonSpaces = result.filter((c) => !c.isSpace);
-	assert.equal(spaces.length, 4);
-	assert.equal(nonSpaces.length, 5);
-	// Spaces must sit between the cx=60 and cx=200 cells, in order.
+	assert.equal(result.filter((c) => c.isSpace).length, 4);
 	const idx60 = result.findIndex((c) => c.cx === 60);
-	const idx200 = result.findIndex((c) => c.cx === 200);
-	assert.equal(idx200 - idx60, 5, 'expected 4 space markers directly between the two cells');
+	const idx210 = result.findIndex((c) => c.cx === 210);
+	assert.equal(idx210 - idx60, 5, 'expected 4 space markers directly between the two cells');
 });
 
 test('insertSpaces does not insert a space for a single-cell line', () => {
@@ -74,7 +115,7 @@ test('insertSpaces takes a synthetic space marker\'s cy from the cell AFTER the 
 		{ cx: 30, cy: 100, w: 25, h: 50, bits: '000000' },
 		{ cx: 200, cy: 108, w: 25, h: 50, bits: '000000' }
 	];
-	const result = insertSpaces(line, 25);
+	const result = insertSpaces(line, 30);
 	const space = result.find((c) => c.isSpace);
 	assert.ok(space, 'expected a space marker for the wide 30->200 gap');
 	assert.equal(space.cy, 108, 'space marker cy should match the cell after the gap, not before it');
@@ -84,22 +125,18 @@ test('insertSpaces rounds ties the way Python\'s round() does (round-half-to-eve
 	// Math.round(2.5) is 3 (JS always rounds .5 up), but Python's round(2.5) is 2
 	// (ties go to the nearest EVEN integer -- 2, not 3). Construct a gap where
 	// (gap - medianGap) / avgCellW lands exactly on 2.5, so the two disagree.
-	const line = [
-		{ cx: 0, cy: 100, w: 20, h: 50, bits: '000000' },
-		{ cx: 30, cy: 100, w: 20, h: 50, bits: '000000' },
-		{ cx: 160, cy: 100, w: 20, h: 50, bits: '000000' }
-	];
-	// gaps: [30, 130] -> medianGap=80, spaceThresh=80+20*0.5=90 -- gap 130 exceeds it.
-	// (130-80)/20 = 2.5 -> Python round-half-to-even -> 2 (nearest even), not 3.
-	const result = insertSpaces(line, 20);
-	const spaces = result.filter((c) => c.isSpace);
-	assert.equal(spaces.length, 2, 'round-half-to-even: round(2.5) = 2, not 3');
+	// pitch 40: gap 140 is 3.5 pitches -> round-half-to-even(3.5) - 1 = 3, and
+	// gap 100 is 2.5 pitches -> 2 - 1 = 1 (Math.round would give 2).
+	const spacesFor = (gap) =>
+		insertSpaces([cell(0, 100), cell(gap, 100)], 40).filter((c) => c.isSpace).length;
+	assert.equal(spacesFor(140), 3);
+	assert.equal(spacesFor(100), 1);
 });
 
 test('layoutCellsIntoLines + layoutToUnicodeBraille produce two lines with a mid-line word gap', () => {
 	// Same shape as pipeline.py's process_container() wiring: group into
 	// lines, then infer spaces per line using one page-wide avgCellW.
-	const line1 = [0, 30, 60, 200, 230].map((cx) => ({ cx, cy: 100, w: 25, h: 50, bits: '100000' }));
+	const line1 = [0, 30, 60, 210, 240].map((cx) => ({ cx, cy: 100, w: 25, h: 50, bits: '100000' }));
 	const line2 = [0, 30].map((cx) => ({ cx, cy: 250, w: 25, h: 50, bits: '000001' }));
 	const lines = layoutCellsIntoLines([...line1, ...line2]);
 
