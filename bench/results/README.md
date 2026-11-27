@@ -2,6 +2,11 @@
 
 Each `*.json` here is the output of one run of a script in this repo, kept as a record.
 
+**Commit a result only if the notes cite it, and add it with
+`python experiments/publish_results.py FULL.json bench/results/NAME.json`**, which removes
+dataset transcriptions we may not redistribute (and our reading of those images) and local
+file paths. Keep full copies, and trial runs, outside the repository.
+
 ## Withdrawn (2026-11-27)
 
 These were produced by `experiments/text_cer.py` / `ablate_crop_recover.py` (text error
@@ -28,6 +33,22 @@ Do not cite them.
   `eval/splits.json`, with the July ONNX models. Ground-truth boxes are in the old,
   unstandardized shape (DSBI and Angelina uploads narrow), so the "classifier on
   ground-truth boxes" figures for those two sets differ from a run on the current manifest.
+
+- `2026-11-27-shipped-july-models-wide-boxes.{json,txt}`: same run with ground-truth boxes in the
+  standardized (wide) shape. Compare with the narrow-boxes run above: detection barely changes,
+  classifying ground-truth boxes gets worse for the July classifier (AUDIT B4).
+- `2026-11-27-braillebench-july-models-{before,after}-small-image-fix.json`: BrailleBench
+  (259 real photos with English transcriptions) scored with `experiments/score_text.py`.
+- `2026-11-27-braillebench-july-models-layout-guard-nms{0.7,0.3}.json`: after the layout
+  guard against duplicate boxes, at two detector NMS thresholds (AUDIT G1, G5).
+
+- `2026-11-27-dev-nms{0.7,0.3,0.1}.json`: detector NMS threshold compared on development
+  sets only (AUDIT G5, I).
+
+**Matching rule changed on 2026-11-27.** The runs above matched detections within half a
+ground-truth box width, which depends on how the boxes were drawn; `js/eval` now uses 0.375 of
+the cell pitch. Do not compare their detection or cell-error figures with later runs (nor the
+narrow-box figures with the wide-box ones): rerun instead.
 
 ## Still valid
 

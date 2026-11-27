@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { bootstrapMean, editDistance, matchCells, selectItems, unturnCell } from '../eval/metrics.js';
+import { bootstrapMean, editDistance, matchCells, selectItems, standardBoxes, truthPitch, unturnCell } from '../eval/metrics.js';
 import { rotateImage } from '../src/orientation.js';
 
 test('editDistance counts insertions, deletions and substitutions', () => {
@@ -10,10 +10,33 @@ test('editDistance counts insertions, deletions and substitutions', () => {
 	assert.equal(editDistance('same', 'same'), 0);
 });
 
-test('matchCells pairs each cell once, nearest first, within half a cell width', () => {
-	const truth = [{ cx: 0, cy: 0, w: 20 }, { cx: 40, cy: 0, w: 20 }];
-	const predicted = [{ cx: 3, cy: 0 }, { cx: 4, cy: 0 }, { cx: 41, cy: 0 }, { cx: 200, cy: 0 }];
+/** A row of cells `pitch` apart, with boxes of the given width over pitch. */
+const row = (widthOverPitch, n = 6, pitch = 40) =>
+	Array.from({ length: n }, (_, i) => ({ cx: i * pitch, cy: 0, w: widthOverPitch * pitch, h: 1.12 * pitch }));
+
+test('matchCells pairs each cell once, nearest first, within a fraction of the pitch', () => {
+	const truth = row(0.75);
+	const predicted = [{ cx: 6, cy: 0 }, { cx: 8, cy: 0 }, { cx: 41, cy: 0 }, { cx: 900, cy: 0 }];
 	assert.deepEqual(matchCells(predicted, truth), [[2, 1], [0, 0]]);
+});
+
+test('ground truth drawn wide or narrow is matched with the same distance', () => {
+	// 12 px off centre: inside 0.375 of a 40 px pitch (15 px), but outside half of a narrow
+	// box (0.54 * 40 / 2 = 10.8 px), which is what a width-based rule would have used.
+	const predicted = row(0.75).map((c) => ({ cx: c.cx + 12, cy: 0 }));
+	const wide = matchCells(predicted, row(0.75));
+	const narrow = matchCells(predicted, row(0.54));
+	assert.equal(wide.length, 6);
+	assert.deepEqual(narrow, wide);
+	assert.equal(truthPitch(row(0.75)), truthPitch(row(0.54)));
+	assert.deepEqual(standardBoxes(row(0.75)), standardBoxes(row(0.54)));
+});
+
+test('truthPitch ignores the other side of the page and falls back to height when sparse', () => {
+	const front = row(0.75).map((c) => ({ ...c, side: 'recto' }));
+	const back = row(0.75).map((c) => ({ ...c, cx: c.cx + 15, side: 'verso' }));
+	assert.equal(truthPitch([...front, ...back]), 40);
+	assert.ok(Math.abs(truthPitch(row(0.75, 2)) - 40) < 1e-9);
 });
 
 for (const degrees of [0, 90, 180, 270]) {

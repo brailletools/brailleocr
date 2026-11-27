@@ -23,7 +23,7 @@ import { CellDetector } from '../src/detector.js';
 import { CellClassifier } from '../src/classifier.js';
 import { readPage } from '../src/orientation.js';
 import { layoutCellsIntoLines, layoutToUnicodeBraille } from '../src/lineLayout.js';
-import { bootstrapMean, editDistance, matchCells, selectItems, unturnCell } from './metrics.js';
+import { bootstrapMean, editDistance, matchCells, selectItems, standardBoxes, unturnCell } from './metrics.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -75,7 +75,7 @@ async function scoreItem(item, image, models, rotationOpt, detectOpts = {}) {
 			row.cellsWrong = matches.length - correct;
 			// Cell error rate: the same layout code on both sides, so what differs is the
 			// cells themselves (missed, extra, misread), not how they are arranged.
-			const ref = brailleOf(truth.map((c) => ({ ...c })));
+			const ref = brailleOf(standardBoxes(truth));
 			const hyp = brailleOf(predicted);
 			row.cellErrorRate = ref.length ? editDistance(ref, hyp) / ref.length : null;
 		}

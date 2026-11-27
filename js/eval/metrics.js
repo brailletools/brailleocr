@@ -16,14 +16,60 @@ export function editDistance(a, b) {
 	return prev[b.length];
 }
 
+// A prediction matches a ground-truth cell if their centres are closer than this fraction of
+// the page's cell pitch. (It equals half the width of a 'wide' box, 0.75 of the pitch.)
+export const MATCH_OVER_PITCH = 0.375;
+// Height of a cell relative to the pitch, for pages with too few neighbors to measure one.
+const HEIGHT_OVER_PITCH = 1.12;
+const MIN_NEIGHBOURS = 3;
+
+function middle(values) {
+	const sorted = [...values].sort((x, y) => x - y);
+	return sorted[sorted.length >> 1];
+}
+
 /**
- * One-to-one matching of predicted to ground-truth cells by centre distance,
- * nearest pairs first, within `fraction` of the mean ground-truth cell width.
+ * The cell pitch of a page measured from ground-truth cell CENTRES: the median distance to
+ * the nearest cell on the right in roughly the same row, per side of the page (front and
+ * back cells interleave). Box sizes are not used, because they are a labeling convention:
+ * measuring from them would match differently shaped ground truth with different distances,
+ * and so bias a comparison between models trained on different box shapes.
+ * Only a page with fewer than three such neighbors falls back to box height.
+ * @param {Array<{cx: number, cy: number, h: number, side?: string}>} truth
+ */
+export function truthPitch(truth) {
+	const gaps = [];
+	for (const c of truth) {
+		let nearest = Infinity;
+		for (const o of truth) {
+			const dx = o.cx - c.cx;
+			if (o.side !== c.side || dx <= 0 || Math.abs(o.cy - c.cy) > 0.3 * dx) continue;
+			nearest = Math.min(nearest, Math.hypot(dx, o.cy - c.cy));
+		}
+		if (nearest < Infinity) gaps.push(nearest);
+	}
+	if (gaps.length >= MIN_NEIGHBOURS) return middle(gaps);
+	return middle(truth.map((c) => c.h)) / HEIGHT_OVER_PITCH;
+}
+
+/**
+ * Ground-truth cells with one standard box size derived from the pitch, so that the
+ * reference text is laid out the same way whatever shape the labels were drawn in.
+ */
+export function standardBoxes(truth) {
+	if (!truth.length) return truth;
+	const pitch = truthPitch(truth);
+	return truth.map((c) => ({ ...c, w: 0.75 * pitch, h: 1.16 * pitch }));
+}
+
+/**
+ * One-to-one matching of predicted to ground-truth cells by centre distance, nearest pairs
+ * first, within `fraction` of the ground truth's cell pitch (see truthPitch).
  * @returns {Array<[number, number]>} [predictedIndex, groundTruthIndex]
  */
-export function matchCells(predicted, truth, fraction = 0.5) {
+export function matchCells(predicted, truth, fraction = MATCH_OVER_PITCH) {
 	if (!predicted.length || !truth.length) return [];
-	const limit = fraction * (truth.reduce((s, c) => s + c.w, 0) / truth.length);
+	const limit = fraction * truthPitch(truth);
 	const pairs = [];
 	for (let i = 0; i < predicted.length; i++) {
 		for (let j = 0; j < truth.length; j++) {

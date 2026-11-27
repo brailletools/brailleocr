@@ -36,7 +36,7 @@ EVAL_EXTRA=()
 if [ "${SMOKE:-0}" = 1 ]; then
     EPOCHS_DET=1; EPOCHS_CLF=1
     DET_EXTRA=(--fraction 0.01 --batch 4)
-    CLF_EXTRA=(--limit 200)
+    CLF_EXTRA=(--limit 200 --workers 0)
     EVAL_EXTRA=(--limit 2)
 fi
 

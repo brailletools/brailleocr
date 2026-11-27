@@ -32,6 +32,8 @@ _ap.add_argument('--epochs', type=int, default=30)
 _ap.add_argument('--seed', type=int, default=42, help='same seed for runs being compared')
 _ap.add_argument('--limit', type=int, default=0,
                  help='use only this many crops per split (for smoke tests)')
+_ap.add_argument('--workers', type=int, default=None,
+                 help='data-loading processes (default: 0 on Apple GPUs, else 4)')
 _ap.add_argument('--skip-test', action='store_true',
                  help='do not score the test crops (they are not development data, AUDIT section I)')
 _args, _ = _ap.parse_known_args()
@@ -201,7 +203,7 @@ def main():
     test_ds  = CellDataset(test_rows, val_tf)
 
     # num_workers=0 avoids macOS shared-memory timeout with MPS
-    nw = 0 if str(device) == 'mps' else 4
+    nw = _args.workers if _args.workers is not None else (0 if str(device) == 'mps' else 4)
     train_dl = DataLoader(train_ds, batch_size=BATCH, shuffle=True,  num_workers=nw, pin_memory=False)
     val_dl   = DataLoader(val_ds,   batch_size=BATCH, shuffle=False, num_workers=0,  pin_memory=False)
     test_dl  = DataLoader(test_ds,  batch_size=BATCH, shuffle=False, num_workers=0,  pin_memory=False)

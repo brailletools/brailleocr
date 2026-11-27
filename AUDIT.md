@@ -284,6 +284,9 @@ paired by page, with intervals. Run the seen sets afterwards, for the chosen sha
 record; skip the BrailleBench line until then. "Classifier on ground-truth boxes" differs between S by construction (different
 crops), so compare it only within a shape. Both models of a shape must be used together.
 
+Both arms are matched with the same distance (0.375 of the cell pitch measured from
+ground-truth centres) and share one reference layout for the cell error rate, so box shape
+cannot change the scoring itself (`js/eval/metrics.js`).
 The script scores development sets only and ends with a paired comparison
 (`experiments/compare_results.py`). One training seed per shape: a small difference could be
 run-to-run variation, so repeat with another seed before claiming one.
