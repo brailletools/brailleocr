@@ -10,6 +10,10 @@ Requires the `export` pixi environment (onnx + onnxruntime), separate from
 the default environment so these aren't a runtime dependency of reader.py.
 """
 
+import argparse
+import shutil
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -20,7 +24,7 @@ from dot_pattern_utils import REPOS_ROOT
 MODELS_DIR = REPOS_ROOT / 'dataset' / 'models'
 
 
-def export_detector():
+def export_detector(src=None, out_dir=None):
     """
     dynamic=True is required, not optional: a fixed-shape export changes
     ultralytics' letterbox/aspect-ratio handling relative to the .pt model's
@@ -28,21 +32,24 @@ def export_detector():
     38 vs 50 boxes on the same image at the same conf threshold, collapsing
     to exact parity once re-exported with dynamic=True). See scoping notes.
     """
-    src = MODELS_DIR / 'cell_detector.pt'
+    src = Path(src or MODELS_DIR / 'cell_detector.pt')
     model = YOLO(str(src))
-    out_path = model.export(format='onnx', simplify=True, imgsz=640, dynamic=True)
+    # ultralytics writes next to the .pt file; move it if another folder was asked for
+    out_path = Path(model.export(format='onnx', simplify=True, imgsz=640, dynamic=True))
+    if out_dir:
+        out_path = Path(shutil.move(str(out_path), str(Path(out_dir) / 'cell_detector.onnx')))
     print(f'Detector exported: {out_path}')
 
 
-def export_classifier():
+def export_classifier(src=None, out_dir=None):
     """
     Rebuilds the exact architecture from reader.py's load_cell_classifier()
     — the .pt file is a bare state_dict, not a scriptable checkpoint, so the
     module structure has to match exactly or load_state_dict silently fails
     to load some/all layers depending on strictness.
     """
-    src = MODELS_DIR / 'cell_classifier.pt'
-    dst = MODELS_DIR / 'cell_classifier.onnx'
+    src = Path(src or MODELS_DIR / 'cell_classifier.pt')
+    dst = Path(out_dir or MODELS_DIR) / 'cell_classifier.onnx'
 
     net = models.mobilenet_v2(weights=None)
     net.classifier = nn.Sequential(nn.Dropout(0.2), nn.Linear(net.last_channel, 6))
@@ -65,7 +72,22 @@ def export_classifier():
     print(f'Classifier exported: {dst}')
 
 
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--detector', help='detector .pt (default: dataset/models/cell_detector.pt)')
+    ap.add_argument('--classifier', help='classifier .pt (default: dataset/models/cell_classifier.pt)')
+    ap.add_argument('--out-dir', help='where to write the .onnx files (default: dataset/models, '
+                    'which promotes them -- use another folder for experiments)')
+    args = ap.parse_args()
+    if (args.detector or args.classifier) and not args.out_dir:
+        ap.error('--out-dir is required with --detector/--classifier, so an experiment '
+                 'cannot overwrite the published models')
+    out_dir = Path(args.out_dir) if args.out_dir else MODELS_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    export_detector(args.detector, args.out_dir)
+    export_classifier(args.classifier, out_dir)
+
+
 if __name__ == '__main__':
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    export_detector()
-    export_classifier()
+    main()

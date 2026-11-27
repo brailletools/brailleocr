@@ -57,9 +57,13 @@ def bits6_to_label(bits6):
 # box, and the classifier crops whatever box the detector draws. Narrow-convention images
 # are rescaled about each box's centre to the wide convention, which most of the data
 # already uses. Images that are already wide, or too sparse to measure, are untouched.
-CANONICAL_W_OVER_PITCH = 0.75
-CANONICAL_H_OVER_PITCH = 1.16
-NARROW_W_OVER_PITCH = 0.62     # a measured width/pitch below this is the narrow convention
+# Target shapes (width/pitch, height/pitch). 'wide' is the default. 'narrow' exists so the
+# two can be compared by retraining (AUDIT B4): classifying ground-truth boxes with the old,
+# mixed-data classifier was better on narrow boxes, but that classifier had learned narrow
+# crops, so it does not say which shape is better.
+BOX_SHAPES = {'wide': (0.75, 1.16), 'narrow': (0.54, 1.08)}
+DEFAULT_BOX_SHAPE = 'wide'
+BOX_SHAPE_TOLERANCE = 0.12     # a page already within this fraction of the target is left alone
 MIN_CELLS_TO_MEASURE = 20
 
 
@@ -86,13 +90,21 @@ def box_shape_over_pitch(cells, img_w, img_h):
     return _median(w_over), _median(h_over)
 
 
-def canonical_boxes(cells, img_w, img_h):
-    """Return `cells` with narrow-convention boxes rescaled to the canonical shape."""
-    shape = box_shape_over_pitch(cells, img_w, img_h)
-    if shape is None or shape[0] >= NARROW_W_OVER_PITCH:
+def canonical_boxes(cells, img_w, img_h, shape=DEFAULT_BOX_SHAPE):
+    """Return `cells` with boxes rescaled, about their centres, to the target shape.
+    `shape` is a key of BOX_SHAPES, or None to leave the labels as the dataset drew them.
+    Pages already close to the target, or too sparse to measure, are returned unchanged."""
+    if shape is None:
         return cells
-    scale_x = CANONICAL_W_OVER_PITCH / shape[0]
-    scale_y = CANONICAL_H_OVER_PITCH / shape[1]
+    target_w, target_h = BOX_SHAPES[shape]
+    measured = box_shape_over_pitch(cells, img_w, img_h)
+    if measured is None:
+        return cells
+    if abs(measured[0] - target_w) <= BOX_SHAPE_TOLERANCE * target_w \
+            and abs(measured[1] - target_h) <= BOX_SHAPE_TOLERANCE * target_h:
+        return cells
+    scale_x = target_w / measured[0]
+    scale_y = target_h / measured[1]
     out = []
     for c in cells:
         l, t, r, b = c['frac_bbox']

@@ -24,10 +24,13 @@ background image, since we can't tell "truly empty" from "not annotated".
 """
 
 import hashlib
+import random
 
 from dot_pattern_utils import REPOS_ROOT, bits6_to_label
 
 DSBI = REPOS_ROOT / 'dataset' / 'data' / 'dsbi'
+VAL_PAGES = 4     # of the train pages, held out for development
+VAL_SEED = 42
 PADDING = 0.15  # fraction of each span added as bbox margin (see module docstring)
 
 
@@ -53,9 +56,30 @@ def _page_names(list_file):
     return names
 
 
+def _fully_labeled(sides):
+    """True if one image carries all of a page's labels (see collect_pages)."""
+    return len(sides) == 1 or _same_file(sides[0][1], sides[1][1])
+
+
+def val_page_names():
+    """
+    The development pages held out from DSBI's training list (it publishes no validation
+    split). Chosen by page, never by cell, from the fully labeled train pages, so the same
+    pages serve as validation for the detector (which needs fully labeled images) and the
+    classifier. Seeded, so it is the same on every machine. Settings are chosen on these
+    pages, never on test pages (AUDIT section I).
+    """
+    candidates = sorted(name for name in _page_names('train.txt')
+                        if _fully_labeled(_side_paths(name)))
+    random.Random(VAL_SEED).shuffle(candidates)
+    return set(candidates[:VAL_PAGES])
+
+
 def collect_images():
-    """Return list of (img_path, txt_path, split) for every labeled DSBI side-image.
-    A page in the split lists with no labeled side at all is an error (AUDIT B7)."""
+    """Return list of (img_path, txt_path, split) for every labeled DSBI side-image, with
+    split 'train', 'val' (see val_page_names) or 'test'. A page in the split lists with no
+    labeled side at all is an error (AUDIT B7)."""
+    val = val_page_names()
     entries = []
     for split, list_file in (('train', 'train.txt'), ('test', 'test.txt')):
         for name in _page_names(list_file):
@@ -63,7 +87,7 @@ def collect_images():
             if not sides:
                 raise FileNotFoundError(f'DSBI page {name!r} has no labeled side')
             for txt, jpg in sides:
-                entries.append((jpg, txt, split))
+                entries.append((jpg, txt, 'val' if split == 'train' and name in val else split))
     return entries
 
 

@@ -27,6 +27,8 @@ Angelina loader re-splits the authors' test images into train/val/test -- AUDIT 
                       "no dots on that side") is fully labeled and valid for detection.
   braille-natural-test  48 signage photos, boxes only (no dot labels)
   not-braille         44 images with no Braille; any detection is a false alarm
+  braillebench        259 real photos with English transcriptions (external; see
+                      braillebench_items). Scored as text, not as cells.
 
 Usage:
   python experiments/export_eval_manifest.py --cells-out /tmp/eval-cells.json
@@ -46,7 +48,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import angelina_data                                      # noqa: E402
 import braille_natural_data                               # noqa: E402
 import dsbi_data                                          # noqa: E402
-from dot_pattern_utils import REPOS_ROOT, canonical_boxes   # noqa: E402
+from dot_pattern_utils import BOX_SHAPES, DEFAULT_BOX_SHAPE, REPOS_ROOT, canonical_boxes   # noqa: E402
+
+BOX_SHAPE = DEFAULT_BOX_SHAPE   # set from --box-shape in main()
 
 DATA_ROOT = REPOS_ROOT / 'dataset' / 'data'
 SPLITS_OUT = Path(__file__).resolve().parent.parent / 'eval' / 'splits.json'
@@ -81,7 +85,7 @@ def to_pixels(cells, width, height, keep_side=False):
 
 def item(set_name, image, cells, **extra):
     width, height = oriented_size(image)
-    cells = canonical_boxes(cells, width, height)   # same box shape the training data uses
+    cells = canonical_boxes(cells, width, height, BOX_SHAPE)   # same box shape the training data uses
     return {'set': set_name, 'id': f'{set_name}:{rel(image)}', 'image': rel(image),
             'sha256': sha256(image), 'width': width, 'height': height,
             'cells': to_pixels(cells, width, height), **extra}
@@ -110,10 +114,12 @@ def angelina_items():
 
 def dsbi_items():
     """One item per fully labeled image, from dsbi_data.collect_pages() -- the same logic
-    that decides which DSBI pages may train the detector (AUDIT B3)."""
+    that decides which DSBI pages may train the detector (AUDIT B3). Test pages form
+    'dsbi-test'; the pages held out from training form 'dsbi-val'."""
     for page in dsbi_data.collect_pages():
-        if page['split'] != 'test':
+        if page['split'] not in ('test', 'val'):
             continue
+        set_name = f"dsbi-{page['split']}"
         if page['kind'] == 'side':
             members = [(side, jpg, [txt]) for side, (jpg, txt) in page['sides'].items()]
         else:
@@ -125,8 +131,8 @@ def dsbi_items():
             for txt in txts:
                 tag = 'verso' if '+verso' in txt.name else 'recto'
                 cells += [{**c, 'side': tag} for c in dsbi_data.load_txt(txt, width, height)]
-            cells = canonical_boxes(cells, width, height)
-            yield {'set': 'dsbi-test', 'id': f'dsbi-test:{rel(jpg)}', 'image': rel(jpg),
+            cells = canonical_boxes(cells, width, height, BOX_SHAPE)
+            yield {'set': set_name, 'id': f'{set_name}:{rel(jpg)}', 'image': rel(jpg),
                    'sha256': sha256(jpg), 'width': width, 'height': height,
                    'cells': to_pixels(cells, width, height, keep_side=True),
                    'kind': page['kind'], 'detection': page['kind'] != 'side'}
@@ -144,19 +150,83 @@ def negative_items():
         yield item('not-braille', jpg, [])
 
 
+EXTERNAL = REPOS_ROOT / 'external' / 'BrailleBench' / 'real-braille-images'
+
+
+def braillebench_items():
+    """BrailleBench (Jangra et al., arXiv 2610.36195; github.com/Kartik0806/BrailleBench):
+    259 real photos with manually verified English transcriptions, 215 Grade 1 and 44
+    Grade 2. Images are small crops of a line or a few words, not whole pages. Downloaded
+    separately into external/BrailleBench/ (the repo declares no licence, so it is not
+    redistributed here); this set is skipped when that folder is absent.
+
+    Items carry `text` (the reference) and `grade`; scored by experiments/score_text.py."""
+    labels = EXTERNAL / 'benchmark' / 'labels.jsonl'
+    if not labels.exists():
+        print(f'  braillebench: {labels} not found -- skipping')
+        return
+    for line in labels.read_text().splitlines():
+        row = json.loads(line)
+        jpg = EXTERNAL / 'benchmark' / row['image_path']
+        width, height = oriented_size(jpg)
+        yield {'set': 'braillebench', 'id': f"braillebench:{row['image_path']}",
+               'root': str(EXTERNAL.relative_to(REPOS_ROOT) / 'benchmark'),
+               'image': row['image_path'], 'sha256': sha256(jpg), 'width': width,
+               'height': height, 'cells': [], 'text': row['ground_truth'],
+               'grade': row['grade'], 'kind': 'text', 'detection': False}
+
+
+def braillebook_items():
+    """The 142 'book-dataset' photos in the BrailleBench repository, kept as a held-out set:
+    they had not been run through the reader when this set was defined (2026-11-27), and
+    js/eval/run.mjs leaves held-out sets alone unless --final is given."""
+    labels = EXTERNAL / 'book-dataset' / 'labels.json'
+    if not labels.exists():
+        print(f'  braillebook: {labels} not found -- skipping')
+        return
+    for row in json.loads(labels.read_text()):
+        image = EXTERNAL / 'book-dataset' / row['image_path']
+        width, height = oriented_size(image)
+        yield {'set': 'braillebook', 'id': f"braillebook:{row['image_path']}",
+               'root': str(EXTERNAL.relative_to(REPOS_ROOT) / 'book-dataset'),
+               'image': row['image_path'], 'sha256': sha256(image), 'width': width,
+               'height': height, 'cells': [], 'text': row['ground_truth'],
+               'grade': row.get('grade'), 'kind': 'text', 'detection': False}
+
+
+# What each set may be used for (AUDIT section I):
+#   dev       settings and models are chosen on these
+#   test      report only; never choose anything by these scores (none at present: every
+#             would-be test set has been looked at, so it is 'seen')
+#   seen      meant as a test, but results were looked at while changing the reader
+#   held-out  not yet run; scored once, at the end
+ROLES = {'angelina-books-val': 'dev', 'angelina-hand-val': 'dev', 'dsbi-val': 'dev',
+         'angelina-uploaded': 'seen', 'dsbi-test': 'seen', 'braille-natural-test': 'seen',
+         'not-braille': 'seen', 'braillebench': 'seen', 'braillebook': 'held-out'}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--cells-out', required=True, help='large manifest with ground-truth cells')
     ap.add_argument('--splits-out', default=str(SPLITS_OUT))
+    ap.add_argument('--box-shape', default=DEFAULT_BOX_SHAPE, choices=[*BOX_SHAPES, 'none'],
+                    help='shape of the ground-truth boxes; match the models being scored')
     args = ap.parse_args()
+    global BOX_SHAPE
+    BOX_SHAPE = None if args.box_shape == 'none' else args.box_shape
 
-    items = [*angelina_items(), *dsbi_items(), *natural_items(), *negative_items()]
+    items = [*angelina_items(), *dsbi_items(), *natural_items(), *negative_items(),
+             *braillebench_items(), *braillebook_items()]
+    for it in items:
+        it['role'] = ROLES[it['set']]      # a set without a role is an error, on purpose
     sets = {}
     for it in items:
         sets.setdefault(it['set'], []).append(it)
 
-    splits = {name: [{k: v for k, v in it.items() if k not in ('cells',)} | {'n_cells': len(it['cells'])}
+    # The committed split list names files and hashes only: no ground truth, and in particular
+    # no transcriptions from datasets we are not licensed to redistribute (AUDIT D4).
+    splits = {name: [{k: v for k, v in it.items() if k not in ('cells', 'text')} | {'n_cells': len(it['cells'])}
                      for it in members] for name, members in sets.items()}
     Path(args.splits_out).write_text(json.dumps(
         {'data_root': 'dataset/data', 'sets': splits}, indent=1) + '\n')

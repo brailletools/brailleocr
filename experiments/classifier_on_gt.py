@@ -38,6 +38,7 @@ import PIL.ImageOps
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import reader                                        # noqa: E402
+from dot_pattern_utils import BOX_SHAPES, DEFAULT_BOX_SHAPE, canonical_boxes  # noqa: E402
 from dsbi_data import collect_images, load_txt       # noqa: E402
 from model_fetch import resolve_classifier_path      # noqa: E402
 
@@ -56,8 +57,11 @@ def main():
     ap.add_argument('--classifier', default=None,
                     help='path to a cell_classifier.pt (default: resolved copy)')
     ap.add_argument('--batch', type=int, default=256)
+    ap.add_argument('--box-shape', default=DEFAULT_BOX_SHAPE, choices=[*BOX_SHAPES, 'none'],
+                    help='shape of the ground-truth boxes to cut crops from; match the classifier')
     ap.add_argument('--json')
     args = ap.parse_args()
+    box_shape = None if args.box_shape == 'none' else args.box_shape
 
     import torch
 
@@ -85,7 +89,8 @@ def main():
         img = PIL.ImageOps.exif_transpose(PIL.Image.open(jpg)).convert('RGB')
         side = 'verso' if '+verso' in txt.name else 'recto'
         cells = []
-        for c in load_txt(txt, img.width, img.height):
+        for c in canonical_boxes(load_txt(txt, img.width, img.height), img.width, img.height,
+                                 box_shape):
             left, top, right, bottom = c['frac_bbox']
             cells.append({'box': (left * img.width, top * img.height,
                                   right * img.width, bottom * img.height),

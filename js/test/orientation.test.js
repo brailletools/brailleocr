@@ -30,21 +30,25 @@ function fakes(upright, nCells = 30) {
 	const SIZE = 64;
 	const image = { rgb: new Float32Array(SIZE * SIZE * 3), width: SIZE, height: SIZE };
 	image.rgb[0] = 1; // marks the original top-left corner
-	const turnOf = (rgb) => {
-		const at = (x, y) => rgb[(y * SIZE + x) * 3] === 1;
+	// `stride` is the buffer's row width: the reader may hand the detector the image on a
+	// larger canvas, with the image in the top-left corner.
+	const turnOf = (rgb, stride = SIZE) => {
+		const at = (x, y) => rgb[(y * stride + x) * 3] === 1;
 		if (at(0, 0)) return 0;
 		if (at(SIZE - 1, 0)) return 90;
 		if (at(SIZE - 1, SIZE - 1)) return 180;
 		return 270;
 	};
 	const detector = {
-		async detect(rgb) {
-			const sideways = (turnOf(rgb) - upright + 360) % 180 !== 0;
+		async detect(rgb, stride) {
+			const sideways = (turnOf(rgb, stride) - upright + 360) % 180 !== 0;
 			return Array.from({ length: nCells }, (_, i) => ({
-				cx: 2 + i * 2,
+				// 30 px wide: already at the detector's target density, so the reader does not
+				// re-scale the image (which would move the marker pixels the fakes look for)
+				cx: 20 + i * 35,
 				cy: 32,
-				w: 1,
-				h: 2,
+				w: 30,
+				h: 46,
 				conf: sideways && i % 2 ? 0.1 : 0.9
 			}));
 		}

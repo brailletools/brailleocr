@@ -1,4 +1,4 @@
-export { CellDetector } from './detector.js';
+export { CellDetector, NMS_IOU } from './detector.js';
 export { CellClassifier } from './classifier.js';
 export { letterbox, bilinearResize, hwcToChwNormalized, cropRgbHwc } from './imageOps.js';
 export { nms, iou } from './nms.js';

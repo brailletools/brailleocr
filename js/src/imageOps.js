@@ -125,3 +125,55 @@ export function hwcToChwNormalized(hwc, w, h) {
 	}
 	return chw;
 }
+
+/**
+ * Average-pools by an integer factor. Used before shrinking by a large ratio: a plain
+ * bilinear resize samples only a few source pixels per output pixel and aliases badly.
+ * @param {Float32Array} src - HWC, 0-255
+ */
+export function boxDownscale(src, srcW, srcH, k, channels = 3) {
+	if (k <= 1) return { data: src, w: srcW, h: srcH };
+	const w = Math.floor(srcW / k);
+	const h = Math.floor(srcH / k);
+	const out = new Float32Array(w * h * channels);
+	const inv = 1 / (k * k);
+	for (let y = 0; y < h; y++) {
+		for (let x = 0; x < w; x++) {
+			for (let c = 0; c < channels; c++) {
+				let sum = 0;
+				for (let dy = 0; dy < k; dy++) {
+					const row = ((y * k + dy) * srcW + x * k) * channels + c;
+					for (let dx = 0; dx < k; dx++) sum += src[row + dx * channels];
+				}
+				out[(y * w + x) * channels + c] = sum * inv;
+			}
+		}
+	}
+	return { data: out, w, h };
+}
+
+/**
+ * Puts an image, scaled by `scale`, in the top-left corner of a size x size canvas filled
+ * with the detector's pad grey, so that a letterbox of the canvas changes nothing. This is
+ * how an image smaller than a tile is shown to the detector at the scale the tile would
+ * have given it (see tiling.js detectTiled).
+ * @returns {{data: Float32Array, w: number, h: number, scaleX: number, scaleY: number}}
+ *   scaleX/scaleY: canvas pixels per source pixel (the real scale after rounding)
+ */
+export function scaleOntoCanvas(src, srcW, srcH, scale, size = 640, padValue = 114) {
+	let data = src;
+	let w = srcW;
+	let h = srcH;
+	if (scale < 0.5) {
+		({ data, w, h } = boxDownscale(src, srcW, srcH, Math.floor(1 / scale)));
+	}
+	const outW = Math.max(1, Math.min(size, Math.round(srcW * scale)));
+	const outH = Math.max(1, Math.min(size, Math.round(srcH * scale)));
+	const resized = bilinearResize(data, w, h, outW, outH, 3);
+	const canvas = new Float32Array(size * size * 3).fill(padValue);
+	for (let y = 0; y < outH; y++) {
+		canvas.set(resized.subarray(y * outW * 3, (y + 1) * outW * 3), y * size * 3);
+	}
+	return { data: canvas, w: size, h: size, scaleX: outW / srcW, scaleY: outH / srcH };
+}
+

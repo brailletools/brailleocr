@@ -49,7 +49,8 @@ import yaml
 import angelina_data
 import braille_natural_data
 import dsbi_data
-from dot_pattern_utils import (MIN_NATIVE_TILE, TARGET_CELL_PX, TILE_SIZE, canonical_boxes,
+from dot_pattern_utils import (BOX_SHAPES, DEFAULT_BOX_SHAPE, MIN_NATIVE_TILE, TARGET_CELL_PX,
+                               TILE_SIZE, canonical_boxes,
                                make_tile_boxes, unique_stem)
 
 N_CLASSES = 64
@@ -190,7 +191,11 @@ def main():
                          '(0 reproduces the old behaviour of dropping them)')
     ap.add_argument('--no-negatives', action='store_true',
                     help='leave out the Angelina not_braille images')
+    ap.add_argument('--box-shape', default=DEFAULT_BOX_SHAPE, choices=[*BOX_SHAPES, 'none'],
+                    help="label box shape: 'wide' (default), 'narrow', or 'none' for the labels "
+                         'as each dataset drew them (the old behaviour)')
     args = ap.parse_args()
+    box_shape = None if args.box_shape == 'none' else args.box_shape
 
     out_dir = Path(args.out) if args.out else Path(
         '/tmp/braille-yolo-dataset-singleclass' if args.single_class else '/tmp/braille-yolo-dataset'
@@ -214,7 +219,7 @@ def main():
             with PIL.Image.open(img_path) as img:
                 img.load()
                 img_w, img_h = img.size
-                cells = canonical_boxes(load_cells(ann_path, img_path), img_w, img_h)
+                cells = canonical_boxes(load_cells(ann_path, img_path), img_w, img_h, box_shape)
                 tiles = tile_image(img, cells, img_w, img_h, args.empty_tile_frac, rng)
                 background += sum(1 for _, tc in tiles if not tc)
                 for i, (tile_img, tile_cells) in enumerate(tiles):

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { bootstrapMean, editDistance, matchCells, unturnCell } from '../eval/metrics.js';
+import { bootstrapMean, editDistance, matchCells, selectItems, unturnCell } from '../eval/metrics.js';
 import { rotateImage } from '../src/orientation.js';
 
 test('editDistance counts insertions, deletions and substitutions', () => {
@@ -39,4 +39,24 @@ test('bootstrapMean resamples items and brackets the mean', () => {
 	assert.ok(b.lo <= b.mean && b.mean <= b.hi);
 	assert.equal(b.n, 6);
 	assert.ok(Number.isNaN(bootstrapMean([]).mean));
+});
+
+const sample = [
+	{ set: 'a-val', role: 'dev' },
+	{ set: 'b-test', role: 'seen' },
+	{ set: 'c-final', role: 'held-out' }
+];
+const names = (r) => r.items.map((i) => i.set);
+
+test('selectItems leaves held-out sets alone unless the run is final', () => {
+	assert.deepEqual(names(selectItems(sample)), ['a-val', 'b-test']);
+	assert.match(selectItems(sample, { sets: ['c-final'] }).problem, /held out/);
+	assert.match(selectItems(sample, { role: 'held-out' }).problem, /held out/);
+	assert.deepEqual(names(selectItems(sample, { final: true })), ['a-val', 'b-test', 'c-final']);
+});
+
+test('selectItems refuses to try a tuning option on anything but development sets', () => {
+	assert.deepEqual(names(selectItems(sample, { tuning: true, role: 'dev' })), ['a-val']);
+	assert.match(selectItems(sample, { tuning: true }).problem, /development sets.*b-test/);
+	assert.match(selectItems(sample, { tuning: true, sets: ['b-test'] }).problem, /b-test/);
 });

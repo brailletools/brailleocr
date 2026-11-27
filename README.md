@@ -55,6 +55,9 @@ node eval/run.mjs --summarize /tmp/eval-results.json      # the table again, wit
 node eval/run.mjs --orientation ../eval/orientation.json  # photos with a known upright turn
 ```
 
+**Choosing anything** (a threshold, a model, a box shape): use `--role dev` and nothing else;
+see `AUDIT.md` section I. Held-out sets run only with `--final`.
+
 Add `--sets dsbi-test,angelina-uploaded` or `--limit 5` to run part of it, and
 `--detector` / `--classifier` to score other ONNX models. Every figure states its unit
 (cell, dot, page) and intervals resample pages.

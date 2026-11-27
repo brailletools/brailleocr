@@ -4,14 +4,18 @@
 //
 //   node eval/run.mjs --cells /tmp/eval-cells.json --out /tmp/eval-results.json \
 //        [--sets dsbi-test,angelina-uploaded] [--limit 5] [--rotation auto|0]
-//        [--detector PATH] [--classifier PATH] [--data ../../dataset/data]
+//        [--detector PATH] [--classifier PATH] [--data ../../dataset/data] [--iou 0.7]
+//        [--role dev|seen|test|held-out] [--final]
+//
+// Test discipline (AUDIT section I): a tuning option (--iou) only runs on 'dev' sets, and
+// held-out sets only run with --final.
 //   node eval/run.mjs --summarize /tmp/eval-results.json
 //   node eval/run.mjs --orientation ../eval/orientation.json
 //
 // Units are stated in every line of the summary. Intervals resample pages.
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
@@ -19,7 +23,7 @@ import { CellDetector } from '../src/detector.js';
 import { CellClassifier } from '../src/classifier.js';
 import { readPage } from '../src/orientation.js';
 import { layoutCellsIntoLines, layoutToUnicodeBraille } from '../src/lineLayout.js';
-import { bootstrapMean, editDistance, matchCells, unturnCell } from './metrics.js';
+import { bootstrapMean, editDistance, matchCells, selectItems, unturnCell } from './metrics.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -39,15 +43,23 @@ async function loadRgb(path) {
 
 const brailleOf = (cells) => layoutToUnicodeBraille(layoutCellsIntoLines(cells));
 
-async function scoreItem(item, image, models, rotationOpt) {
+async function scoreItem(item, image, models, rotationOpt, detectOpts = {}) {
 	const { detector, classifier } = models;
 	const t0 = Date.now();
-	const page = await readPage(detector, classifier, image, { rotation: rotationOpt, confThreshold: 0.15 });
+	const page = await readPage(detector, classifier, image, { rotation: rotationOpt, confThreshold: 0.15, ...detectOpts });
 	const seconds = (Date.now() - t0) / 1000;
 	const predicted = page.cells.map((c) => unturnCell(c, page.rotation, image.width, image.height));
 	const truth = item.cells;
 	const row = { id: item.id, set: item.set, kind: item.kind ?? null, rotation: page.rotation, predicted: predicted.length, truth: truth.length, seconds };
 
+	if (item.text !== undefined) {
+		// Text set (BrailleBench): keep the Braille the reader produced; experiments/score_text.py
+		// back-translates and scores it.
+		row.braille = brailleOf(predicted);
+		row.reference = item.text;
+		row.grade = item.grade;
+		return row;
+	}
 	if (item.set === 'not-braille') return row;
 	if (item.detection === false) {
 		row.detection = false;
@@ -93,6 +105,10 @@ function summarize(rows) {
 		lines.push(`\n${set}: ${rs.length} images, ${rs.reduce((s, r) => s + r.truth, 0)} labeled cells`);
 		const turned = rs.filter((r) => r.rotation !== 0).length;
 		lines.push(`  turned by orientation search: ${turned} of ${rs.length} images (these sets are upright, so each is a mistake)`);
+		if (rs.every((r) => r.braille !== undefined)) {
+			lines.push('  text set: run experiments/score_text.py on this results file for CER and exact match');
+			continue;
+		}
 		if (set === 'not-braille') {
 			lines.push(`  images with any detection: ${rs.filter((r) => r.predicted > 0).length} of ${rs.length}; detections: ${rs.reduce((s, r) => s + r.predicted, 0)}`);
 			continue;
@@ -161,7 +177,17 @@ const manifest = JSON.parse(readFileSync(a.cells, 'utf8'));
 const dataRoot = a.data ? resolve(a.data) : join(repos, manifest.data_root);
 const wanted = a.sets ? a.sets.split(',') : null;
 const rotationOpt = a.rotation === '0' ? 0 : 'auto';
-let items = manifest.items.filter((i) => !wanted || wanted.includes(i.set));
+const { items: chosen, problem } = selectItems(manifest.items, {
+	sets: wanted,
+	role: a.role,
+	tuning: Boolean(a.iou),
+	final: Boolean(a.final)
+});
+if (problem) {
+	console.error(problem);
+	process.exit(2);
+}
+let items = chosen;
 if (a.limit) {
 	const per = {};
 	items = items.filter((i) => (per[i.set] = (per[i.set] ?? 0) + 1) <= Number(a.limit));
@@ -169,14 +195,19 @@ if (a.limit) {
 
 const models = await loadModels(dataRoot);
 const rows = [];
+// Model paths are recorded relative to the folder holding the repositories, so a results file
+// that gets committed doesn't carry anyone's home directory.
+function results() {
+	return JSON.stringify({ detectorPath: relative(repos, detectorPath), classifierPath: relative(repos, classifierPath), rotation: rotationOpt, rows });
+}
 for (const [k, item] of items.entries()) {
-	const image = await loadRgb(join(dataRoot, item.image));
+	const image = await loadRgb(join(item.root ? join(repos, item.root) : dataRoot, item.image));
 	if (image.width !== item.width || image.height !== item.height) throw new Error(`${item.image}: size ${image.width}x${image.height} does not match the manifest ${item.width}x${item.height}`);
-	rows.push(await scoreItem(item, image, models, rotationOpt));
+	rows.push(await scoreItem(item, image, models, rotationOpt, a.iou ? { iouThreshold: Number(a.iou) } : {}));
 	if ((k + 1) % 10 === 0 || k + 1 === items.length) {
 		console.error(`${k + 1}/${items.length}`);
-		writeFileSync(a.out, JSON.stringify({ detectorPath, classifierPath, rotation: rotationOpt, rows }));
+		writeFileSync(a.out, results());
 	}
 }
-writeFileSync(a.out, JSON.stringify({ detectorPath, classifierPath, rotation: rotationOpt, rows }));
+writeFileSync(a.out, results());
 console.log(summarize(rows));

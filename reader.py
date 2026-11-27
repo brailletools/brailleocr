@@ -26,6 +26,7 @@ from dot_pattern_utils import MIN_NATIVE_TILE, TARGET_CELL_PX, TILE_SIZE, make_t
 LOW_CONF = 0.05                  # collect everything above this
 HIGH_CONF = 0.30                 # reliable detections
 CONTAINER_MIN_CANDIDATES = 3     # fewer detections than this are probably noise
+NMS_IOU = 0.3                    # detector overlap threshold; same as js/src/detector.js
 TILE_DEDUPE_IOU = 0.5            # merge threshold for cells seen in two overlapping tiles
 TILE_EDGE_MARGIN_FRAC = 0.05     # a cell touching the crop edge of a tile is only partly
                                  # seen (falsely narrow): drop it and rely on the
@@ -51,7 +52,7 @@ def run_detection(img, model, max_det):
     """Detect at LOW_CONF. Returns dicts with cx, cy, h, w, char, bits, conf, rescued."""
     with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
         img.save(tmp.name, quality=92)
-        results = model(tmp.name, verbose=False, max_det=max_det, conf=LOW_CONF)
+        results = model(tmp.name, verbose=False, max_det=max_det, conf=LOW_CONF, iou=NMS_IOU)
 
     cells = []
     if results[0].boxes is None:

@@ -2,6 +2,14 @@ import * as ort from 'onnxruntime-web';
 import { letterbox, hwcToChwNormalized } from './imageOps.js';
 import { nms } from './nms.js';
 
+// Two detections overlapping more than this (intersection over union) are one cell. Cells
+// don't overlap on a single-sided page, so this is far below the usual object-detection 0.7,
+// which let a full box and a partial one survive on the same cell. It must not go too low:
+// on two-sided pages the front and back cells do overlap, and at 0.1 the reader lost over a
+// quarter of the labeled cells on DSBI development pages (AUDIT G5). reader.py uses the same
+// value.
+export const NMS_IOU = 0.3;
+
 /**
  * Wraps the exported cell_detector.onnx (YOLOv8, single "cell" class,
  * exported with dynamic=True — see brailleocr/export_onnx.py for why that's
@@ -26,7 +34,7 @@ export class CellDetector {
 	 *   Boxes in original-image pixel coordinates.
 	 */
 	async detect(rgbHwc, srcW, srcH, opts = {}) {
-		const { confThreshold = 0.05, iouThreshold = 0.7, maxDet = 300 } = opts;
+		const { confThreshold = 0.05, iouThreshold = NMS_IOU, maxDet = 300 } = opts;
 
 		const lb = letterbox(rgbHwc, srcW, srcH, 640, 640);
 		const chw = hwcToChwNormalized(lb.data, lb.w, lb.h);

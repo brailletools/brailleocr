@@ -15,6 +15,7 @@ Output: /tmp/braille-crops/cell_classifier.pt  (state_dict)
 
 import argparse
 import csv
+import random
 from pathlib import Path
 import torch
 import torch.nn as nn
@@ -27,6 +28,12 @@ from PIL import Image
 # run rewriting the manifest another is reading.
 _ap = argparse.ArgumentParser(add_help=False)
 _ap.add_argument('--crop-dir', default='/tmp/braille-crops')
+_ap.add_argument('--epochs', type=int, default=30)
+_ap.add_argument('--seed', type=int, default=42, help='same seed for runs being compared')
+_ap.add_argument('--limit', type=int, default=0,
+                 help='use only this many crops per split (for smoke tests)')
+_ap.add_argument('--skip-test', action='store_true',
+                 help='do not score the test crops (they are not development data, AUDIT section I)')
 _args, _ = _ap.parse_known_args()
 
 CROP_DIR   = Path(_args.crop_dir)
@@ -34,7 +41,7 @@ MODEL_OUT  = CROP_DIR / 'cell_classifier.pt'
 LOG_OUT    = CROP_DIR / 'training_log.csv'
 CROP_SIZE  = 64
 BATCH      = 128
-EPOCHS     = 30
+EPOCHS     = _args.epochs
 LR         = 1e-3
 LR_PATIENCE = 5     # reduce LR after N epochs without val improvement
 EARLY_STOP  = 10    # stop after N epochs without val improvement
@@ -70,6 +77,8 @@ def load_manifest(split):
         for r in csv.DictReader(f):
             if r['split'] == split:
                 rows.append(r)
+    if _args.limit:
+        rows = random.Random(_args.seed).sample(rows, min(_args.limit, len(rows)))
     return rows
 
 
@@ -178,6 +187,8 @@ def evaluate(model, loader):
 # ── Training ─────────────────────────────────────────────────────────────────
 
 def main():
+    random.seed(_args.seed)
+    torch.manual_seed(_args.seed)
     # Load data
     train_rows = augment_with_hflip(load_manifest('train'))
     val_rows   = load_manifest('val')
@@ -248,9 +259,10 @@ def main():
             break
 
     # Final test evaluation
-    model.load_state_dict(torch.load(MODEL_OUT, map_location=device))
-    test_m = evaluate(model, test_dl)
-    print(f"\nTest set — dot_acc: {test_m['dot_acc']:.4f}  cell_acc: {test_m['cell_acc']:.4f}")
+    if not _args.skip_test:
+        model.load_state_dict(torch.load(MODEL_OUT, map_location=device))
+        test_m = evaluate(model, test_dl)
+        print(f"\nTest set — dot_acc: {test_m['dot_acc']:.4f}  cell_acc: {test_m['cell_acc']:.4f}")
 
     # Save log
     with open(LOG_OUT, 'w', newline='') as f:

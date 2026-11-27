@@ -16,6 +16,7 @@ Output: /tmp/braille-yolo-detector/train/weights/best.pt
 """
 
 import argparse
+from pathlib import Path
 
 import torch
 from ultralytics import YOLO
@@ -37,25 +38,49 @@ def main():
     ap.add_argument('--imgsz', type=int, default=640)
     ap.add_argument('--batch', type=int, default=16)
     ap.add_argument('--data', default=DATASET_YAML, help='dataset.yaml path')
-    ap.add_argument('--name', default='train', help='run name under ' + PROJECT)
+    ap.add_argument('--name', default='train', help='run name under --project')
+    ap.add_argument('--project', default=PROJECT,
+                    help='output folder; the default is under /tmp, which does not survive reboots')
+    ap.add_argument('--resume', action='store_true',
+                    help='continue an interrupted run of this --project/--name from its last.pt')
+    ap.add_argument('--fraction', type=float, default=1.0,
+                    help='share of the training tiles to use (for smoke tests)')
+    ap.add_argument('--eval-split', default='val', choices=['val', 'test'],
+                    help="split scored after training. 'val' is development data; 'test' holds "
+                         'sets that must not influence any choice (AUDIT section I)')
     args = ap.parse_args()
 
-    model = YOLO(args.base)
-    model.train(
-        data=args.data,
-        epochs=args.epochs,
-        imgsz=args.imgsz,
-        batch=args.batch,
-        device=device,
-        project=PROJECT,
-        name=args.name,
-        fliplr=0.0,   # see module docstring — do not flip braille cells
-        flipud=0.0,
-        degrees=0.0,  # dot positions are orientation-sensitive
-    )
+    run_dir = Path(args.project).resolve() / args.name
+    last = run_dir / 'weights' / 'last.pt'
+    finished = False
+    if args.resume and last.exists():
+        # ultralytics marks a completed run's checkpoint with epoch -1 and cannot resume it
+        finished = torch.load(last, map_location='cpu', weights_only=False).get('epoch', -1) == -1
+        model = YOLO(str(last))
+        if finished:
+            print(f'{run_dir} already finished training; only scoring it')
+        else:
+            model.train(resume=True)
+    else:
+        model = YOLO(args.base)
+        model.train(
+            data=args.data,
+            epochs=args.epochs,
+            imgsz=args.imgsz,
+            batch=args.batch,
+            device=device,
+            project=str(run_dir.parent),
+            name=run_dir.name,
+            exist_ok=True,   # so the weights are where --project/--name says, not name2, name3
+            fraction=args.fraction,
+            fliplr=0.0,   # see module docstring — do not flip braille cells
+            flipud=0.0,
+            degrees=0.0,  # dot positions are orientation-sensitive
+        )
 
-    metrics = model.val(data=args.data, split='test')
-    print(f"\nTest set: mAP50={metrics.box.map50:.4f}  mAP50-95={metrics.box.map:.4f}")
+    metrics = model.val(data=args.data, split=args.eval_split, device=device)
+    print(f"\n{args.eval_split} split: mAP50={metrics.box.map50:.4f}  mAP50-95={metrics.box.map:.4f}")
+    print(f"best weights: {run_dir / 'weights' / 'best.pt'}")
 
 
 if __name__ == '__main__':

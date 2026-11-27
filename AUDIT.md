@@ -65,10 +65,16 @@ pages (shared cell sequences): none of the 50 share over half.
 - [x] **B3. Identical DSBI scans are used twice with different labels.** 90 pages have
   byte-identical `+recto.jpg` and `+verso.jpg`; each copy labels only one side, so each
   copy teaches the detector that the other side's cells are background. (code, file hashes)
-- [x] **B4. Two box conventions are mixed.** Box width / cell pitch is ~0.54 in DSBI *and in
+- [x] **B4 (code done; the choice of shape is NOT settled). Two box conventions are mixed.** Box width / cell pitch is ~0.54 in DSBI *and in
   Angelina's user-upload photos* (so "Angelina" itself mixed both) and 0.73–0.77 in Angelina's
   books and handwriting and in `braille_natural`; height / width is 2.0 vs 1.5–1.6. Narrow
-  pages are now rescaled to the wide shape (`canonical_boxes`). The
+  pages are now rescaled to the wide shape (`canonical_boxes`). **Caution (measured with the July
+  models, which were trained on a mix):** classifying ground-truth boxes got worse on the wide
+  shape: Angelina uploads 97.0% -> 94.1%, DSBI front 92.1% -> 82.3%, back 75.7% -> 62.5%
+  (`bench/results/2026-11-27-shipped-july-models-*-boxes.txt`). That is partly because the old
+  classifier learned narrow crops, so it is not evidence that narrow is better, but it means
+  the choice needs an A/B retrain (classifier and detector on narrow vs wide) before anyone
+  claims wide is better. The crop padding in `extract_crops.py`/the readers is a second knob. The
   classifier sees whatever box the detector draws. (measured)
 - [ ] **B5. Back-side (verso) handling.** Angelina books are double-sided but only the front
   is labeled, so back-side dots are background. DSBI is the only labeled back-side source.
@@ -127,18 +133,160 @@ pages (shared cell sequences): none of the 50 share over half.
   `bench.py`, `run_ocr.sh`, `OCR_SETUP.md` (stale TensorFlow.js notes),
   `experiments/edge_cell_recall.py` and `crop_call_modes.py`, and their tests. The small part
   still needed is `reader.py` (tiled detection and classifier loading, for labeling and the JS
-  test fixtures). **Follow-up that needs network: `pixi.toml` still lists `scipy`,
-  `pyspellchecker` and the `liblouis-env` path dependency, none of which anything imports now,
-  and CI still clones `liblouis-env` (`test.yml`, `lint.yml`, `liblouis-env.version`,
-  `check-liblouis-env-release.yml`). Remove them together and run `pixi lock`; editing
-  `pixi.toml` alone would break CI's locked install.**
+  test fixtures). **Follow-up that needs network: `pixi.toml` still lists `scipy` and `pyspellchecker`, which
+  nothing imports now. Remove them with `pixi remove --pypi scipy pyspellchecker`, which updates
+  `pixi.lock` too (editing `pixi.toml` alone would break CI's locked install). `liblouis-env`
+  and its CI steps stay: `experiments/score_text.py` uses it.**
+
+## G. Ideas from the papers read on 2026-11-27 (all nine are in `../papers/`)
+
+Each is a proposal to test with `js/eval/run.mjs` and the frozen sets, not a result.
+
+- [~] **G1. BrailleBench (Jangra et al., arXiv 2610.36195, Oct 2026; code `github.com/kartik0806/BrailleBench`)
+  is the independent English real-photo test set we lack**: 259 manually verified photos (215
+  Grade 1, 44 Grade 2; signage, metal plates, books). It scores AngelinaReader at 3.26% exact
+  match on Grade 1 and 0% on Grade 2, general VLMs at 0–54%, an agentic harness with crop/enlarge
+  tools at 88% / 41%, and a fine-tuned 2B VLM at 87% / 61%. Check its licence, add it to
+  `eval/`, and score our reader with liblouis back-translation (CER and exact match, both
+  grades). Not to be confused with the text-only "BrailleBench" in `RESEARCH.md` (2608.27268).
+  **Done 2026-11-27:** downloaded to `../external/BrailleBench/` (outside all repos; the repo
+  declares no licence, so it is not redistributed), added as the `braillebench` set
+  (`experiments/export_eval_manifest.py`, `js/eval/run.mjs`, `experiments/score_text.py`). July
+  models: Grade 1 exact match 18.1% -> 29.8% after fixing scale normalization for small images
+  (below), Grade 2 15.9% (n = 44, interval 4.5-27.3). Results in `bench/results/`. Many images are
+  tiny crops (median 382 x 86 px) with blurred, magnified dots or white dots on black screens.
+  **Runaway outputs explained and fixed:** the detector drew two boxes on one cell, which
+  dragged the pitch estimate to about zero (one image: 13,716 blank cells). Layout now ignores
+  gaps under one cell width and caps blanks per gap at 5: Grade 1 pooled CER 10.0 -> 0.566
+  (exact match unchanged). With detector NMS 0.3 as well (G5): Grade 1 exact 35.8%
+  [29.3, 42.3], CER 0.439; Grade 2 18.2%, CER 0.316.
+  Still to do: the images with no output (15 Grade 1), and the 142-image `book-dataset` in the
+  same repo (text labels only).
+- [ ] **G2. Lighting direction is the orientation problem.** Ovodov 2021: front dots and
+  back dots look alike when the image is turned 180 degrees; JACIII 2026 (Yamashita et al.):
+  AngelinaReader collapses beyond about 60 degrees of lighting angle, and a detector trained
+  on 12 lighting angles holds mAP50 0.98 at all of them. Capture the same pages under varied
+  light on a tripod and copy registered annotations across the images (their labeling
+  trick), for the capture benchmark (D3) and for training.
+- [ ] **G3. Front/back separation (C1, B5):** (a) Ovodov reads a back side by flipping and
+  inverting the image and running the front-side reader again; (b) BraUNet (Li et al. 2020)
+  labels recto and verso characters as separate classes and gets F1 0.9966 / 0.9893 on DSBI.
+  Try a two-class detector (front/back) trained on DSBI union pages, and mirror-and-invert
+  back-side cells as extra front-side training data.
+- [ ] **G4. Augmentation.** Ovodov: random scale +/-30%, vertical stretch +/-10%, rotation
+  +/-5 degrees, horizontal flip with label swap, per-image mean/std normalization; trained on
+  DSBI+Angelina together (DSBI->Angelina alone F1 0.927; mixed 0.998). Our `train_detector.py`
+  sets `degrees=0` and `fliplr=0`; for the single-class detector a flip does not change any
+  label, and small rotations are what the tilt tests need. Try both, and per-image
+  normalization at train and inference.
+- [x] **G5. Detector NMS: default changed to 0.3 (2026-11-27)** in `js/src/detector.js` and
+  `reader.py`. AngelinaReader uses IoU 0.02 because cells never overlap; our JS
+  detector uses 0.7. On seen sets, lower values helped signage precision (80.8% -> 85.2% at
+  0.3) and BrailleBench (Grade 1 exact 29.8% -> 35.8% at 0.3). **On development sets only
+  (July models): 0.1 is clearly harmful** (DSBI val detection recall 98.8% -> 72.2%: on
+  two-sided pages, front and back cells overlap and one is suppressed); **0.3 is
+  indistinguishable from 0.7** (books and handwriting unchanged; DSBI val cell error rate 14.7%
+  -> 14.5%, 4 pages). Chosen 0.3: no measurable harm on development data, motivated
+  independently by AngelinaReader; its benefit has been seen only on seen sets, and the paper
+  must say so.
+- [ ] **G6. Match published metrics** in the scorer: character-level IoU >= 0.5 plus correct
+  class (Ovodov, Li) and dot-level precision/recall/F1, alongside ours.
+- [ ] **G7. Signage.** Sun et al. 2025 (improved YOLOv11) use a *different* natural-scene
+  dataset from `braille_natural`: Lu et al. 2023, 554 images annotated as Braille *regions*,
+  not cells (Baidu link, or request from the authors); they detect at 640 px with no tiling and
+  report P 0.942 / R 0.951 at region level, so not comparable to ours. A learned region
+  detector could replace the removed container detection and help our weakest set.
+- [ ] **G8. Do not rely on synthetic data for validation.** BrailleBench: a model at 96% on
+  synthetic validation images scored 3.26% on real photos. Synthetic pages (liblouis text,
+  paper textures, perspective, lighting) are fine as extra training data only if real photos
+  stay the test. Same paper: general LLMs fail silently with plausible wrong text, which
+  supports C2 (confidence reaching the reader); zero-shot LLM post-correction is unreliable
+  (also 2607.11893, Korean).
+- [ ] **G9. Not useful for us:** the Evetac tactile-sensor paper (2601.19079); ASAHI
+  (2604.19233, aerial imagery) beyond its Cluster-DIoU-NMS and "train on full images plus
+  slices" ideas (see G5; `RESEARCH.md` Novelty check already discusses slicing).
 
 ## F. Research backlog (from the original related-work notes)
 
-- [ ] Four papers could not be read in full (DSBI, AngelinaReader, improved-YOLOv11, the
-  CVPRW 2020 segmentation paper); the last two returned HTTP 403.
+- [x] The four papers that could not be read were read on 2026-11-27 (see G); the improved-YOLOv11 paper does
+  not ship a cell-level dataset, only the Lu 2023 region-level one (G7).
 - [ ] Compare our tiling with SAHI, including its full-image pass; classifier-head ablation
   (64-way softmax vs six sigmoids); detector-vs-classifier error attribution.
+
+## I. Test discipline (adopted 2026-11-27)
+
+**Rules.**
+
+1. Settings, thresholds, box shapes, augmentations and model choices are decided on
+   **development sets only**: `angelina-books-val`, `angelina-hand-val`, `dsbi-val` (4 fully
+   labeled pages held out from DSBI training by `dsbi_data.val_page_names()`), plus a small set
+   of our own photos set aside for development (to be made).
+2. **Held-out sets** are scored once, at the end: the 142 `braillebook` photos until the
+   capture benchmark (D3) exists, then the capture benchmark, which is photographed and frozen
+   before anyone runs the reader on it.
+3. **Seen sets** are reported, never optimized against, and called "seen during development"
+   wherever they appear. Report the first-run number next to the final one and list every
+   change in between.
+4. A bug found by looking at a seen set may be fixed (with a synthetic test), and is listed
+   as such.
+
+`eval/splits.json` records each set's role. `js/eval/run.mjs` refuses to try `--iou` (a tuning
+knob) on anything but development sets and will not touch held-out sets without `--final`. Any
+new tuning option must be added to that guard.
+
+**Contamination so far (cannot be undone).**
+
+| Change | What was looked at |
+|---|---|
+| Orientation thresholds | the 10 sample pages and 5 failed photos; checked on `angelina-uploaded`, `dsbi-test`, signage |
+| Lower-quartile pitch (review fix) | the same 15 photos |
+| Box shape set to wide | measured on all evaluation sets |
+| Small-image scaling fix | found on BrailleBench (bug, synthetic test) |
+| Pitch floor and blank-cell cap | found on BrailleBench (bug, synthetic test) |
+| NMS default changed 0.7 -> 0.3 | checked harmless on development sets; benefit observed on signage and BrailleBench (seen) |
+| NMS threshold trials | `angelina-uploaded`, signage, `not-braille`, BrailleBench; part of a `dsbi-test` run was started and stopped, its numbers unused. Repeated on development sets only (G5) |
+
+BrailleBench's first run (Grade 1 exact 18.1%) is the only figure from before any change
+motivated by it.
+
+**Limit.** The development pages are flat, mostly Russian books and Chinese scans. They will not
+show problems with tiny crops, sideways or tilted phone photos, which is why a development
+set of our own photos is needed. The July models were probably trained on some development
+pages, so development scores of those models are optimistic.
+
+## H. Retraining experiment 1: box shape (needs GPU time; not yet run)
+
+Same data (with the B1-B3 fixes), same settings, two box shapes. The July models are only a
+reference point: they differ in data too, so they cannot answer the box question. Do not add the
+augmentation changes (G4) to this experiment; test them afterwards, one at a time.
+Run it with `caffeinate -i bash experiments/retrain_box_shape.sh` (in a normal terminal; it
+resumes if interrupted, and writes to `../retrain/box-shape`). For each of `wide` and `narrow`
+the script does the following (`$R` = its output folder):
+
+```bash
+python prepare_yolo_dataset.py --single-class --box-shape $S --out $R/yolo-$S
+python train_detector.py --data $R/yolo-$S/dataset.yaml --name $S     # prints where best.pt is
+python extract_crops.py --sources angelina,dsbi --box-shape $S --out $R/crops-$S
+python train_classifier.py --crop-dir $R/crops-$S
+pixi run -e export python export_onnx.py --detector <best.pt for $S> \
+    --classifier $R/crops-$S/cell_classifier.pt --out-dir $R/onnx-$S
+
+python experiments/export_eval_manifest.py --box-shape $S --splits-out $R/splits-$S.json \
+    --cells-out $R/cells-$S.json
+cd js && node eval/run.mjs --cells $R/cells-$S.json --out $R/eval-$S.json --iou 0.3 \
+    --detector $R/onnx-$S/cell_detector.onnx --classifier $R/onnx-$S/cell_classifier.onnx
+cd .. && python experiments/score_text.py $R/eval-$S.json        # BrailleBench rows
+```
+
+Decide on the **development sets only** (section I; add `--role dev` to the `run.mjs` line when
+deciding): cell error rate and per-cell accuracy on *detected* boxes (the real pipeline),
+paired by page, with intervals. Run the seen sets afterwards, for the chosen shape and for the
+record; skip the BrailleBench line until then. "Classifier on ground-truth boxes" differs between S by construction (different
+crops), so compare it only within a shape. Both models of a shape must be used together.
+
+The script scores development sets only and ends with a paired comparison
+(`experiments/compare_results.py`). One training seed per shape: a small difference could be
+run-to-run variation, so repeat with another seed before claiming one.
 
 ## Suggested order
 

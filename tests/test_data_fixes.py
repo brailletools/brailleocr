@@ -115,3 +115,32 @@ def test_an_empty_or_missing_split_list_is_an_error_not_an_empty_source(tmp_path
         angelina_data._listed(tmp_path / 'train.txt')
     with pytest.raises(FileNotFoundError):
         angelina_data._listed(tmp_path / 'absent.txt')
+
+
+def test_both_shapes_can_be_targeted_and_none_leaves_labels_alone():
+    for shape, (tw, th) in (('wide', (0.75, 1.16)), ('narrow', (0.54, 1.08))):
+        for start in (grid(0.54, 1.08), grid(0.75, 1.16)):
+            out = canonical_boxes(start, W, H, shape)
+            w_over, h_over = box_shape_over_pitch(out, W, H)
+            assert w_over == pytest.approx(tw, abs=0.02)
+            assert h_over == pytest.approx(th, abs=0.02)
+    original = grid(0.54, 1.08)
+    assert canonical_boxes(original, W, H, None) is original
+    with pytest.raises(KeyError):
+        canonical_boxes(original, W, H, 'square')
+
+
+@needs_dataset
+def test_dsbi_validation_pages_come_from_training_pages_and_are_fully_labeled():
+    names = dsbi_data.val_page_names()
+    assert len(names) == dsbi_data.VAL_PAGES
+    assert names <= set(dsbi_data._page_names('train.txt'))
+    assert not names & set(dsbi_data._page_names('test.txt'))
+    assert dsbi_data.val_page_names() == names, 'the same pages every time'
+    val = [p for p in dsbi_data.collect_pages() if p['split'] == 'val']
+    assert len(val) == dsbi_data.VAL_PAGES
+    assert all(p['kind'] in ('union', 'single') for p in val)
+    # the detector and the classifier must hold out the same pages
+    import extract_crops
+    crop_val = {jpg.name.rsplit('+', 1)[0] for jpg, _, split, _, _ in extract_crops.dsbi_entries() if split == 'val'}
+    assert crop_val == {p['page'] for p in val}

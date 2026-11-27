@@ -96,3 +96,57 @@ test('resolveOverlaps leaves genuinely distinct, non-overlapping cells untouched
 	const result = resolveOverlaps(cells);
 	assert.equal(result.length, cells.length);
 });
+
+// ---- images smaller than the tile they are read at -------------------------------
+
+import { detectTiled } from '../src/tiling.js';
+import { boxDownscale, scaleOntoCanvas } from '../src/imageOps.js';
+
+test('scaleOntoCanvas puts the scaled image top-left on a grey 640 canvas and reports the real scale', () => {
+	const w = 100, h = 50;
+	const src = new Float32Array(w * h * 3).fill(200);
+	const c = scaleOntoCanvas(src, w, h, 0.5);
+	assert.equal(c.w, 640);
+	assert.equal(c.h, 640);
+	assert.equal(c.scaleX, 0.5);
+	assert.equal(c.scaleY, 0.5);
+	assert.equal(c.data[0], 200, 'top-left pixel is the image');
+	assert.equal(c.data[(24 * 640 + 49) * 3], 200, 'last image pixel');
+	assert.equal(c.data[(24 * 640 + 60) * 3], 114, 'beyond the image is pad grey');
+});
+
+test('boxDownscale averages blocks', () => {
+	// 4x2 image, one grey value per pixel: row 0 = 0 100 40 60, row 1 = 200 0 20 80
+	const gray = [0, 100, 40, 60, 200, 0, 20, 80];
+	const src = Float32Array.from(gray.flatMap((v) => [v, v, v]));
+	const { data, w, h } = boxDownscale(src, 4, 2, 2);
+	assert.deepEqual([w, h], [2, 1]);
+	assert.deepEqual(Array.from(data.slice(0, 3)), [75, 75, 75]);   // (0+100+200+0)/4
+	assert.deepEqual(Array.from(data.slice(3, 6)), [50, 50, 50]);   // (40+60+20+80)/4
+});
+
+test('a small image with big cells is shown to the detector at the density a full tile would give', async () => {
+	// 1000 x 200 image whose cells are 170 px wide: native tile = 170 * 640 / 30 = 3627 px, far
+	// larger than the image. The detector must see the cell at about 30 px on a 640 canvas.
+	const seen = [];
+	const detector = {
+		async detect(rgb, w, h) {
+			seen.push([w, h]);
+			// pretend there is one cell, 30 canvas-px wide, centred at (100, 50) on the canvas
+			return [{ cx: 100, cy: 50, w: 30, h: 46, conf: 0.9 }];
+		}
+	};
+	const rgb = new Float32Array(1000 * 200 * 3).fill(120);
+	const cells = await detectTiled(detector, rgb, 1000, 200, 3627);
+	assert.deepEqual(seen, [[640, 640]]);
+	const scale = 640 / 3627;
+	assert.ok(Math.abs(cells[0].w - 30 / scale) < 3, `cell width back in native pixels: ${cells[0].w}`);
+	assert.ok(Math.abs(cells[0].cx - 100 / scale) < 3);
+});
+
+test('an image at least as large as the tile is passed through unchanged', async () => {
+	const seen = [];
+	const detector = { async detect(rgb, w, h) { seen.push([w, h]); return []; } };
+	await detectTiled(detector, new Float32Array(600 * 400 * 3), 600, 400, 600);
+	assert.deepEqual(seen, [[600, 400]]);
+});

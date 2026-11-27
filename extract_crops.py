@@ -6,10 +6,9 @@ prepare_yolo_dataset.py), so detection and dot-finding are trained and tested on
 the same pages and a paper can describe one protocol instead of two:
 
   train  each source's own train split
-  val    each source's own val split; DSBI publishes none, so a deterministic
-         slice of its train PAGES is held out (by page, never by cell — cells
-         from one page are near-duplicates, and splitting within a page would
-         leak).
+  val    each source's own val split; DSBI publishes none, so dsbi_data holds
+         out a few of its train PAGES (by page, never by cell — cells from one
+         page are near-duplicates, and splitting within a page would leak).
   test   each source's own test split. For DSBI that is the 88-page test.txt,
          the shared holdout both stages are evaluated on. Never trained or
          tuned on.
@@ -31,14 +30,13 @@ Output:
 
 import argparse
 import csv
-import random
 from pathlib import Path
 
 import PIL.Image
 
 import angelina_data
 import dsbi_data
-from dot_pattern_utils import bits6_to_label, canonical_boxes, unique_stem
+from dot_pattern_utils import BOX_SHAPES, DEFAULT_BOX_SHAPE, bits6_to_label, canonical_boxes, unique_stem
 
 OUT_DIR   = Path('/tmp/braille-crops')
 CROP_SIZE = (64, 64)   # (w, h) — square, MobileNetV2-friendly
@@ -60,29 +58,14 @@ PADDING   = 0.10       # extra fraction of cell dim added on each side
 # (RESEARCH.md, "Train/inference preprocessing parity").
 RESAMPLE  = PIL.Image.BILINEAR   # must match torchvision transforms.Resize
 CROP_EXT  = 'png'                # lossless; JPEG artifacts are dot-sized
-VAL_FRAC  = 0.15       # of DSBI train PAGES, since DSBI publishes no val split
-SEED      = 42         # fixed so the val carve-out is reproducible across runs
 
 
 def dsbi_entries():
-    """(img, ann, split, source, side) for DSBI, carving a val set by page."""
-    by_page = {}
-    for jpg, txt, split in dsbi_data.collect_images():
-        by_page.setdefault((split, jpg.name.rsplit('+', 1)[0]), []).append((jpg, txt))
-
-    train_pages = sorted(k for k in by_page if k[0] == 'train')
-    rng = random.Random(SEED)
-    rng.shuffle(train_pages)
-    n_val = max(1, round(len(train_pages) * VAL_FRAC))
-    val_pages = set(train_pages[:n_val])
-
-    out = []
-    for key, sides in sorted(by_page.items()):
-        split = 'val' if key in val_pages else key[0]
-        for jpg, txt in sides:
-            side = 'verso' if '+verso' in txt.name else 'recto'
-            out.append((jpg, txt, split, 'dsbi', side))
-    return out
+    """(img, ann, split, source, side) for DSBI. The train/val/test split, including the
+    pages held out for development, comes from dsbi_data so that the detector and the
+    classifier agree on which pages are never trained on."""
+    return [(jpg, txt, split, 'dsbi', 'verso' if '+verso' in txt.name else 'recto')
+            for jpg, txt, split in dsbi_data.collect_images()]
 
 
 def angelina_entries():
@@ -92,14 +75,14 @@ def angelina_entries():
             for jpg, csv_path, split in angelina_data.collect_images()]
 
 
-def load_cells(ann_path, img, source):
+def load_cells(ann_path, img, source, box_shape=DEFAULT_BOX_SHAPE):
     # Boxes are brought to one shape across sources (dot_pattern_utils.canonical_boxes), so
     # the classifier is trained on the crops a detector trained on that shape will produce.
     if source == 'dsbi':
         cells = dsbi_data.load_txt(ann_path, img.width, img.height)
     else:
         cells = angelina_data.load_csv(ann_path)
-    return canonical_boxes(cells, img.width, img.height)
+    return canonical_boxes(cells, img.width, img.height, box_shape)
 
 
 def main():
@@ -108,7 +91,10 @@ def main():
     ap.add_argument('--out', default=str(OUT_DIR))
     ap.add_argument('--sources', default='angelina,dsbi',
                     help='comma-separated subset of: angelina, dsbi')
+    ap.add_argument('--box-shape', default=DEFAULT_BOX_SHAPE, choices=[*BOX_SHAPES, 'none'],
+                    help="box shape crops are cut from: 'wide' (default), 'narrow', or 'none'")
     args = ap.parse_args()
+    box_shape = None if args.box_shape == 'none' else args.box_shape
 
     out_dir = Path(args.out)
     for split in ('train', 'val', 'test'):
@@ -130,7 +116,7 @@ def main():
             img = img.convert('RGB')
             root = (dsbi_data.DSBI if source == 'dsbi' else angelina_data.ANGELINA)
             base = f'{source}_{unique_stem(img_path, root)}'
-            for idx, cell in enumerate(load_cells(ann_path, img, source)):
+            for idx, cell in enumerate(load_cells(ann_path, img, source, box_shape)):
                 left, top, right, bottom = cell['frac_bbox']
                 x0, y0 = left * img.width, top * img.height
                 x1, y1 = right * img.width, bottom * img.height

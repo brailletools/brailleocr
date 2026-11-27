@@ -76,3 +76,30 @@ export function bootstrapMean(values, resamples = 2000, seed = 1) {
 	means.sort((a, b) => a - b);
 	return { mean, lo: means[Math.floor(0.025 * resamples)], hi: means[Math.floor(0.975 * resamples)], n };
 }
+
+/**
+ * Which manifest items a run may score, enforcing the test discipline: held-out sets need
+ * `final`, and a run that varies a tuning knob may only score development sets (unless it
+ * is the final, one-time measurement).
+ * @param {Array<{set: string, role?: string}>} items
+ * @param {{sets?: string[]|null, role?: string, tuning?: boolean, final?: boolean}} opts
+ * @returns {{items: object[], problem: string|null}}
+ */
+export function selectItems(items, { sets = null, role, tuning = false, final = false } = {}) {
+	let chosen = items.filter((i) => (!sets || sets.includes(i.set)) && (!role || i.role === role));
+	if (!final) {
+		const held = chosen.filter((i) => i.role === 'held-out');
+		if (held.length && (sets || role === 'held-out')) {
+			return { items: [], problem: `${[...new Set(held.map((i) => i.set))]} is held out; it runs only with --final` };
+		}
+		chosen = chosen.filter((i) => i.role !== 'held-out');
+		const notDev = [...new Set(chosen.filter((i) => i.role !== 'dev').map((i) => i.set))];
+		if (tuning && notDev.length) {
+			return {
+				items: [],
+				problem: `tuning options may only be tried on development sets (--role dev); this run includes ${notDev.join(', ')}`
+			};
+		}
+	}
+	return { items: chosen, problem: null };
+}
