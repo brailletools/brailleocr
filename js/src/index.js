@@ -21,7 +21,10 @@ export {
 	NEIGHBOR_QUALITY_CONF,
 	SLOT_FIT_TOLERANCE_FRAC
 } from './tiling.js';
+export { readPage, rotateImage, confidentShare, topBottomRatio } from './orientation.js';
 export {
+	estimateSkew,
+	estimatePitch,
 	groupIntoLines,
 	insertSpaces,
 	layoutCellsIntoLines,

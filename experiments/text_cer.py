@@ -86,8 +86,10 @@ def reference_text(txt_paths, img_w, img_h, lang):
         return ''
     avg_w = statistics.median(c['w'] for c in cells)
     lines = []
-    for line in pipeline.group_into_lines(cells):
-        lines.append(''.join(c['char'] for c in pipeline.insert_spaces(line, avg_w)))
+    grouped = pipeline.group_into_lines(cells)
+    pitch = pipeline.estimate_pitch(grouped, avg_w)
+    for line in grouped:
+        lines.append(''.join(c['char'] for c in pipeline.insert_spaces(line, pitch)))
     return '\n'.join(pipeline.braille_to_text(lines, lang))
 
 

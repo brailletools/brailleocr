@@ -26,6 +26,7 @@ Detection strategy:
      cyan = rescued by grid fill, grey outlines = inferred spaces.
 """
 import argparse
+import math
 import re
 import statistics
 import subprocess
@@ -558,21 +559,94 @@ def run_detection_tiled(img, model, max_det, native_tile_size):
     return _dedupe_cells(all_cells)
 
 
+# Line layout. Mirrors js/src/lineLayout.js -- change both together.
+LINE_BAND_FRAC = 0.55            # of median cell height, around a line's predicted y
+SLOPE_WINDOW = 6                 # recent cells used to estimate local slope
+MIN_SLOPE_SPAN_CELLS = 3         # cell widths a run must span before its slope counts
+MAX_LOCAL_SLOPE = 0.15           # residual slope after de-tilting (perspective, curl)
+SPACE_GAP_PITCHES = 1.5          # gaps this wide contain at least one blank cell
+MIN_GAPS_FOR_LINE_PITCH = 5
+LINE_PITCH_TOLERANCE = 0.25
+
+
+def estimate_skew(cells):
+    """Page tilt in radians: median direction to each cell's nearest right neighbour."""
+    angles = []
+    for c in cells:
+        nearest, angle = math.inf, None
+        for o in cells:
+            dx, dy = o['cx'] - c['cx'], o['cy'] - c['cy']
+            if dx <= 0 or abs(dy) > 0.5 * dx:
+                continue
+            dist = dx * dx + dy * dy
+            if dist < nearest:
+                nearest, angle = dist, math.atan2(dy, dx)
+        if angle is not None:
+            angles.append(angle)
+    return statistics.median(angles) if angles else 0.0
+
+
+def _predict_y(points, cx, cell_w):
+    recent = points[-SLOPE_WINDOW:]
+    mean_x = sum(x for x, _ in recent) / len(recent)
+    mean_y = sum(y for _, y in recent) / len(recent)
+    slope = 0.0
+    if recent[-1][0] - recent[0][0] >= MIN_SLOPE_SPAN_CELLS * cell_w:
+        num = sum((x - mean_x) * (y - mean_y) for x, y in recent)
+        den = sum((x - mean_x) ** 2 for x, _ in recent)
+        slope = max(-MAX_LOCAL_SLOPE, min(MAX_LOCAL_SLOPE, num / den))
+    return mean_y + slope * (cx - mean_x) if slope else points[-1][1]
+
+
 def group_into_lines(cells):
+    """
+    Remove the page-wide tilt, then walk cells left to right, each joining the
+    line whose predicted position it is closest to, so lines can bend gradually.
+    Returns lines top to bottom, holding the original cells (image coordinates).
+    """
     if not cells:
         return []
-    avg_h = statistics.median(c['h'] for c in cells)
-    thresh = avg_h * 0.55
-    sorted_y = sorted(cells, key=lambda c: c['cy'])
-    lines, cur = [], [sorted_y[0]]
-    for cell in sorted_y[1:]:
-        if abs(cell['cy'] - cur[-1]['cy']) < thresh:
-            cur.append(cell)
-        else:
-            lines.append(cur)
-            cur = [cell]
-    lines.append(cur)
-    return lines
+    angle = estimate_skew(cells)
+    cos, sin = math.cos(angle), math.sin(angle)
+    # (x, y) in the de-tilted frame, plus the cell it came from
+    level = [(c['cx'] * cos + c['cy'] * sin, c['cy'] * cos - c['cx'] * sin, c)
+             for c in cells]
+    thresh = statistics.median(c['h'] for c in cells) * LINE_BAND_FRAC
+    cell_w = statistics.median(c['w'] for c in cells)
+
+    lines = []  # (points, cells)
+    for x, y, cell in sorted(level, key=lambda p: p[:2]):
+        best, best_dist = None, thresh
+        for line in lines:
+            dist = abs(y - _predict_y(line[0], x, cell_w))
+            if dist < best_dist:
+                best, best_dist = line, dist
+        if best is None:
+            best = ([], [])
+            lines.append(best)
+        best[0].append((x, y))
+        best[1].append(cell)
+    lines.sort(key=lambda ln: statistics.median(y for _, y in ln[0][:SLOPE_WINDOW]))
+    return [ln[1] for ln in lines]
+
+
+def _gaps(sorted_line):
+    return [b['cx'] - a['cx'] for a, b in zip(sorted_line, sorted_line[1:])]
+
+
+PITCH_QUANTILE = 0.25  # see js/src/lineLayout.js
+
+
+def estimate_pitch(lines, avg_cell_w):
+    """
+    Page-wide horizontal distance between neighbouring cells in a word. Word
+    spaces and missed cells make some gaps two or more pitches wide, so this reads
+    the lower quartile rather than the median, which pages of short words would
+    pull up (wide gaps are then half or more of all gaps).
+    """
+    gaps = sorted(g for ln in lines for g in _gaps(sorted(ln, key=lambda c: c['cx'])))
+    return gaps[int(PITCH_QUANTILE * (len(gaps) - 1))] if gaps else avg_cell_w * 1.4
+
 
 def _char_spacing(line_x, avg_w):
     """
@@ -685,23 +759,27 @@ def grid_fill(all_cells):
 
 # ─── space inference ─────────────────────────────────────────────────────────
 
-def insert_spaces(line_cells, avg_cell_w):
+def insert_spaces(line_cells, page_pitch):
     """
-    Insert synthetic space cells where a gap exceeds the per-line median
-    inter-character spacing by more than half a cell width.
+    Insert a blank cell for every empty cell position in a gap. Counted in cell
+    pitches (see estimate_pitch), not cell widths: boxes are narrower than the
+    pitch, so dividing by width turned one blank cell into two.
     """
     if len(line_cells) < 2:
         return line_cells
     line = sorted(line_cells, key=lambda c: c['cx'])
-    gaps = [line[i+1]['cx'] - line[i]['cx'] for i in range(len(line)-1)]
-    median_gap = statistics.median(gaps)
-    space_thresh = median_gap + avg_cell_w * 0.5
+    gaps = _gaps(line)
+    pitch = page_pitch
+    if len(gaps) >= MIN_GAPS_FOR_LINE_PITCH:
+        own = statistics.median(gaps)
+        if abs(own - page_pitch) <= page_pitch * LINE_PITCH_TOLERANCE:
+            pitch = own
 
     result = [line[0]]
     for i in range(1, len(line)):
         gap = line[i]['cx'] - line[i-1]['cx']
-        if gap > space_thresh:
-            n_sp = max(1, round((gap - median_gap) / avg_cell_w))
+        if gap >= pitch * SPACE_GAP_PITCHES:
+            n_sp = max(1, round(gap / pitch) - 1)
             for _ in range(n_sp):
                 result.append({'cx': None, 'cy': line[i]['cy'],
                                'h': line[i]['h'], 'char': '⠀',
@@ -1103,8 +1181,9 @@ def process_container(img, stem, model, lang_table, search_contrast,
         lines = [_strip_markout_runs(line) for line in lines]
     cells_with_spaces = []
     braille_lines = []
+    pitch = estimate_pitch(lines, avg_cell_w)
     for line in lines:
-        lws = insert_spaces(line, avg_cell_w)
+        lws = insert_spaces(line, pitch)
         cells_with_spaces.extend(lws)
         braille_lines.append(''.join(c['char'] for c in lws))
 
