@@ -7,7 +7,7 @@ Usage:
   pixi run -e export onnx
 
 Requires the `export` pixi environment (onnx + onnxruntime), separate from
-the default environment so these aren't a runtime dependency of pipeline.py.
+the default environment so these aren't a runtime dependency of reader.py.
 """
 
 import torch
@@ -36,7 +36,7 @@ def export_detector():
 
 def export_classifier():
     """
-    Rebuilds the exact architecture from pipeline.py's load_cell_classifier()
+    Rebuilds the exact architecture from reader.py's load_cell_classifier()
     — the .pt file is a bare state_dict, not a scriptable checkpoint, so the
     module structure has to match exactly or load_state_dict silently fails
     to load some/all layers depending on strictness.

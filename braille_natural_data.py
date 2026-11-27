@@ -35,6 +35,9 @@ def collect_images():
             jp = base / 'JPEGImages' / f'{xp.stem}.jpg'
             if jp.exists():
                 entries.append((jp, xp, split))
+    if not entries:
+        # An empty source looks exactly like "contributed nothing important" (AUDIT B7).
+        raise FileNotFoundError(f'no braille_natural images found under {BRAILLE_NATURAL}')
     return entries
 
 

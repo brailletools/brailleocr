@@ -38,14 +38,14 @@ import PIL.Image
 
 import angelina_data
 import dsbi_data
-from dot_pattern_utils import unique_stem, bits6_to_label
+from dot_pattern_utils import bits6_to_label, canonical_boxes, unique_stem
 
 OUT_DIR   = Path('/tmp/braille-crops')
 CROP_SIZE = (64, 64)   # (w, h) — square, MobileNetV2-friendly
 PADDING   = 0.10       # extra fraction of cell dim added on each side
 
 # TRAIN/INFERENCE PARITY. A saved crop must be pixel-identical to what
-# pipeline.reclassify_cells() hands the model at inference, or the classifier is
+# reader.reclassify_cells() hands the model at inference (and the JS classifier), or the classifier is
 # trained on images it will never see. Two things have to match:
 #
 #   filter   inference resizes with torchvision transforms.Resize, which is
@@ -86,21 +86,20 @@ def dsbi_entries():
 
 
 def angelina_entries():
-    if not angelina_data.ANGELINA.exists():
-        print(f'  angelina: not found at {angelina_data.ANGELINA} — skipping. '
-              'Clone AngelinaDataset alongside this repo to include it.')
-        return []
+    # collect_images() raises if the dataset or a listed file is missing. Skipping a
+    # requested source quietly once cost 231 training images (AUDIT B7).
     return [(jpg, csv_path, split, 'angelina', 'recto')
             for jpg, csv_path, split in angelina_data.collect_images()]
 
 
 def load_cells(ann_path, img, source):
+    # Boxes are brought to one shape across sources (dot_pattern_utils.canonical_boxes), so
+    # the classifier is trained on the crops a detector trained on that shape will produce.
     if source == 'dsbi':
-        return dsbi_data.load_txt(ann_path, img.width, img.height)
-    cells = angelina_data.load_csv(ann_path)
-    for c in cells:                       # angelina carries label, not bits6 key parity
-        c.setdefault('bits6', c['bits6'])
-    return cells
+        cells = dsbi_data.load_txt(ann_path, img.width, img.height)
+    else:
+        cells = angelina_data.load_csv(ann_path)
+    return canonical_boxes(cells, img.width, img.height)
 
 
 def main():

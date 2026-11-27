@@ -46,7 +46,7 @@ from ultralytics import YOLO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pipeline                                      # noqa: E402
+import reader                                        # noqa: E402
 from braille_natural_data import BRAILLE_NATURAL     # noqa: E402
 from dot_pattern_utils import REPOS_ROOT             # noqa: E402
 from label_tool import build_page, predict           # noqa: E402
@@ -68,7 +68,7 @@ def classify_boxes(img, cells):
     global _CLF
     import torch
     if _CLF is None:
-        _CLF = pipeline.load_cell_classifier(resolve_classifier_path())
+        _CLF = reader.load_cell_classifier(resolve_classifier_path())
     clf, dev, tf = _CLF
     crops = []
     for c in cells:
@@ -179,7 +179,7 @@ def main():
                 source_note = 'no boxes in annotation'
         else:
             cells = predict(img, model, args.max_det, True)
-            source_note = f'{len(cells)} cells predicted at conf >= {pipeline.HIGH_CONF}'
+            source_note = f'{len(cells)} cells predicted at conf >= {reader.HIGH_CONF}'
         page = build_page(
             img, cells, jpg.name, out_dir / f'{jpg.stem}.label.html',
             prev_href=(f'{stems[i-1]}.label.html' if i > 0 else None),

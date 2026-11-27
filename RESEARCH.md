@@ -5,6 +5,52 @@ pipeline works, what data we train and evaluate on, and the prior work we're
 building on. This is a lab notebook, not documentation — see `README.md` for
 how to actually run things.
 
+## Corrections (2026-11-27)
+
+A from-scratch audit (`AUDIT.md`) found that several conclusions below rest on faulty
+evaluation. They are left in place for the record; read them with these corrections.
+
+1. **"Verso accuracy tracks scan faintness (r = 0.82)" is wrong.** DSBI's `+recto.jpg` and
+   `+verso.jpg` are the same file on 90 of 114 pages but different images (deskewed by
+   different angles) on the others, including all ten test pages `M+11`–`M+20`.
+   `experiments/classifier_on_gt.py` scored each page's back-side labels on the *front*
+   image, so the labels sat a few pixels off the dots. Re-scored on the correct image
+   (July classifier, 4,782 cells): 69.5% instead of 52.6%; M+19 goes from 18% to 73%.
+   These are exactly the pages the faintness story was built on. The "Error concentration"
+   section and the contrast-normalization to-do should be disregarded; the per-side numbers
+   need re-measuring (`js/eval/run.mjs` does this correctly).
+2. **The text-level CER (0.48) is not a quality measure and the "gap" it creates is not an
+   open question.** `experiments/text_cer.py` translates *Chinese* Braille with an *English*
+   table, spell-corrects only the prediction, merges both page sides, and (for the pages in
+   point 1) uses labels from the wrong image. The 97.4%-per-cell vs 0.48-CER "mystery" is
+   explained by those, not by line grouping or Grade 2 amplification. The with/without
+   `crop_recover` CER delta (Experiment 6) is therefore unreliable too; the decision to remove
+   `crop_recover` still stands on Experiments 1 and 5 (every accepted cell at confidence
+   <= 0.0063; none matched a real cell). Text-level error is only meaningful on English
+   data. The replacement is a cell error rate over Unicode Braille.
+3. **"Candidate datasets we don't have: NSBD" is wrong.** `braille_natural` *is* NSBD
+   (212 images, 164 train / 48 test, same download link as in the NSBD paper and in
+   DotNeuralNet's README).
+4. **The training-bug suspicion in `WELCOME.md` is confirmed.** `prepare_yolo_dataset.py`
+   writes the identical recto and verso scans as two training images, each labeling only
+   one side, so each copy tells the detector that the other side's cells are background
+   (AUDIT B3).
+5. **The "unified protocol" leaks test data.** The Angelina loader re-splits the authors' 50
+   designated test photos (`uploaded/test.txt`) into 34 train, 8 val, 8 test (AUDIT B1).
+   Detector training also drops tiles with no cells, so it never sees background (B2), and
+   the three sources use different box shapes (B4).
+6. **"Detection is solved" (99.7% recall) was measured on four pages.** It is not a claim
+   about the shipped detector across the 88 test pages or about phone photos; see
+   `eval/` for the held-out sets and `js/eval/run.mjs` for the scorer.
+7. **`pipeline.py` and the recovery stages no longer exist.** The Python reader described under
+   "Process we've developed" and "Pipeline flow" (container detection, contrast search,
+   grid-fill, crop and pixel recovery, spell-correction) was removed on 2026-11-27; it is in git
+   history. The shipped reader is the JavaScript one: orientation search, scale-normalized
+   tiling, the detector, the classifier and line layout. `bench.py` and the timing and recovery
+   experiments went with it; their conclusions stay recorded here.
+8. **Orientation and tilt were not considered.** Most real phone photos arrive sideways or
+   upside down; the shipped web pipeline read them as noise (fixed in v0.2.0 of this repo).
+
 ## Problem
 
 Read embossed Braille from ordinary **phone photos** — pages, signage, elevator

@@ -37,11 +37,11 @@ import PIL.ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pipeline                                      # noqa: E402
+import reader                                        # noqa: E402
 from dsbi_data import collect_images, load_txt       # noqa: E402
 from model_fetch import resolve_classifier_path      # noqa: E402
 
-PAD = 0.10   # matches pipeline._CLASSIFIER_CROP_PAD and extract_crops.py
+PAD = 0.10   # matches reader.CLASSIFIER_CROP_PAD and extract_crops.py
 
 
 def pct(a, b):
@@ -52,7 +52,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--limit', type=int, default=4,
-                    help='physical pages; 0 = all 88 DSBI test pages')
+                    help='physical pages (both sides each); 0 = all 88 DSBI test pages')
     ap.add_argument('--classifier', default=None,
                     help='path to a cell_classifier.pt (default: resolved copy)')
     ap.add_argument('--batch', type=int, default=256)
@@ -61,31 +61,35 @@ def main():
 
     import torch
 
+    # One entry per (side image, its labels). DSBI ships a +recto.jpg and a +verso.jpg
+    # for each page; on 19 of 114 pages they are NOT the same file (each side is
+    # deskewed by its own angle), so a side's labels only line up with its own image.
+    # Scoring the back-side labels on the front image made good pages look faint.
     pages = {}
     for jpg, txt, split in collect_images():
         if split == 'test':
-            pages.setdefault(jpg.name.rsplit('+', 1)[0], [jpg, []])[1].append(txt)
-    entries = list(pages.values())[:args.limit or None]
+            pages.setdefault(jpg.name.rsplit('+', 1)[0], []).append((jpg, txt))
+    entries = [side for sides in list(pages.values())[:args.limit or None]
+               for side in sides]
     if not entries:
         raise SystemExit('No DSBI test-split images found.')
 
     clf_path = args.classifier or resolve_classifier_path()
     print(f'  classifier: {clf_path}')
-    clf, dev, tf = pipeline.load_cell_classifier(clf_path)
+    clf, dev, tf = reader.load_cell_classifier(clf_path)
     tot = {k: 0 for k in ('cells', 'cell_ok', 'dots', 'dot_ok',
                           'recto', 'recto_ok', 'verso', 'verso_ok', 'off_by_one')}
     per_page = []
 
-    for jpg, txts in entries:
+    for jpg, txt in entries:
         img = PIL.ImageOps.exif_transpose(PIL.Image.open(jpg)).convert('RGB')
+        side = 'verso' if '+verso' in txt.name else 'recto'
         cells = []
-        for txt in txts:
-            side = 'verso' if '+verso' in txt.name else 'recto'
-            for c in load_txt(txt, img.width, img.height):
-                left, top, right, bottom = c['frac_bbox']
-                cells.append({'box': (left * img.width, top * img.height,
-                                      right * img.width, bottom * img.height),
-                              'bits6': c['bits6'], 'side': side})
+        for c in load_txt(txt, img.width, img.height):
+            left, top, right, bottom = c['frac_bbox']
+            cells.append({'box': (left * img.width, top * img.height,
+                                  right * img.width, bottom * img.height),
+                          'bits6': c['bits6'], 'side': side})
         if not cells:
             continue
 

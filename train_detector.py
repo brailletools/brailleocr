@@ -4,8 +4,8 @@ dataset (see prepare_yolo_dataset.py).
 
 Base model is chosen to be small enough for a browser export (yolov8n by
 default; pass --base yolov8s.pt for the mid-sized option) while the existing
-pipeline.py / HF snoop2head/yolov8m-braille model stays available as the
-higher-accuracy CLI option.
+HF snoop2head/yolov8m-braille model remains the larger third-party model to compare
+against.
 
 IMPORTANT: fliplr is forced to 0. A horizontally-flipped braille cell is a
 *different*, still-valid-looking dot pattern (e.g. dot1 <-> dot4), so the

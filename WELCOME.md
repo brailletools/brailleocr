@@ -1,5 +1,12 @@
 # Welcome
 
+> **Read `AUDIT.md` first.** A review on 2026-11-27 found that several conclusions in this
+> file and in `RESEARCH.md` rest on faulty evaluation (see `RESEARCH.md` "Corrections").
+> The to-do list in section 7 is replaced by `AUDIT.md`; `PAPER_PLAN.md` covers validation
+> and the workshop paper. `pipeline.py` (the Python command-line reader that sections 1–3
+> describe), `bench.py` and the recovery-stage experiments were removed on 2026-11-27; the
+> reader that ships is `js/src`. `README.md` has the current layout.
+
 The Braille OCR project handoff doc. The goal is to read embossed Braille from ordinary phone photos — pages, signage, elevator buttons — and turn it into text.
 
 This file covers how to run everything, what we found, what
@@ -68,13 +75,9 @@ lets `braille_natural` contribute.
 
 | Command | Purpose |
 |---|---|
-| `python pipeline.py <image\|dir>` | End-to-end OCR |
-| `python bench.py --limit 6 --repeats 1 --bootstrap 2000` | Per-stage cost with confidence intervals |
-| `python evaluate.py --dataset <dir>` | Cell-level precision/recall (Angelina-format labels) |
+| `cd js && npm test` | JavaScript reader tests |
+| `node js/eval/run.mjs --cells <manifest> --out <file>` | Score the shipped reader on the held-out sets (see README) |
 
-| `python experiments/crop_call_modes.py` | Batching / disk-transport micro-benchmark |
-| `python experiments/edge_cell_recall.py --limit 4` | Edge vs interior recall; recovery precision |
-| `python experiments/text_cer.py --limit 4` | End-to-end text CER (regression test; baseline 0.4961) |
 | `python experiments/label_batch.py --source braille_natural --limit 212` | Build the labeling queue |
 | `python experiments/merge_corrections.py labels/corrections --out labels/csv` | Corrections → training data |
 | `pixi run -e export onnx` | Export models for the browser path |
@@ -129,7 +132,6 @@ protocol"), so both stages are measured on identical pages:
 python extract_crops.py --sources angelina,dsbi --out /tmp/braille-crops
 python train_classifier.py --crop-dir /tmp/braille-crops
 python experiments/classifier_on_gt.py --limit 0 --classifier /tmp/braille-crops/cell_classifier.pt
-python experiments/text_cer.py          --limit 0 --classifier /tmp/braille-crops/cell_classifier.pt
 ```
 
 Nothing has been promoted into `../dataset/models/` — the pipeline still loads
@@ -197,30 +199,12 @@ decisions, so per-cell accuracy is roughly per-dot to the sixth power. It is pos
 
 ## 7. To do
 
-- [ ] **Sweep the sigmoid decision threshold** on the val split (18,330 crops,
-      `extract_crops.py` writes it). Every dot is hard-thresholded at 0.5 and
-      that number has never been tuned; about half of all wrong cells are wrong
-      by exactly *one* dot, which is the signature of a miscalibrated threshold
-      rather than a model that cannot see. Costs one evaluation pass, no
-      retraining. Tune on val, report on the 88 test pages — never tune on test.
-      → `RESEARCH.md` "Future work" item 2
-- [ ] **Chase the verso-faintness deficit.** Recto is 98.6–100% on every test
-      page; all the loss is verso, concentrated in the `Massage` book (M+19 is
-      99.8% recto / 26.8% verso). Verso accuracy tracks how faint that page's
-      scan is (r = 0.82 against local contrast in the dot boxes), and the errors
-      are missed dots, not hallucinated ones. Try contrast normalization at
-      train+inference time. Do the threshold sweep first — it is cheaper and
-      addresses the same symptom. → `RESEARCH.md` "Error concentration"
-- [ ] **Explain the 97.4%-per-cell vs 0.48-CER gap.** These describe the same
-      pipeline and cannot both be the whole story. Suspects are line-grouping
-      divergence and Grade 2 back-translation amplifying single-cell errors --
-      both unverified. Cheap first cut: CER against a reference built from
-      *detected* positions with ground-truth dot patterns, which shares layout
-      and so isolates dot errors from layout errors. This decides whether
-      further classifier work is worth anything at all.
-      -> `RESEARCH.md` "End-to-end text CER after the parity re-run"
-- [ ] Verify the DSBI recto/verso training question 
-- [ ] Decide whether `labels/` belongs here or in the `dataset` repo
+Superseded by [`AUDIT.md`](AUDIT.md) (what is wrong, what is fixed, what is left) and
+[`PAPER_PLAN.md`](PAPER_PLAN.md) (validation and the workshop paper). The three items that
+used to be here rested on the faulty evaluation described there: the threshold sweep is
+still worth doing but must be measured with the corrected scorer; the "verso faintness"
+item and the "CER gap" item are explained (AUDIT A1, A2); and the DSBI duplicate-scan
+question is confirmed (AUDIT B3). Whether `labels/` belongs here or in `dataset` is AUDIT D2.
 
 ---
 

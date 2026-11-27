@@ -20,3 +20,14 @@ jobs:
 
       - name: Run tests
         run: pixi run -e dev test
+
+      # The editor ships js/src, and until now no workflow ran its tests. Tests that
+      # need the sibling `dataset` checkout (sample photos, models) skip themselves.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+
+      - name: JS tests
+        run: cd js && npm ci && npm test

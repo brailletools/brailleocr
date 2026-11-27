@@ -1,0 +1,2862 @@
+{
+ "data_root": "dataset/data",
+ "sets": {
+  "angelina-uploaded": [
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16208199091213172220599072788385.labeled.jpg",
+    "image": "angelina/uploaded/test2/16208199091213172220599072788385.labeled.jpg",
+    "sha256": "8c3c67011e47f3ecbf12a1f1eab0fc3b7069d9a1dfec65c229ac2235acf037c9",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 366
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_893.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_893.labeled.jpg",
+    "sha256": "d8da0099fb5e22b0aa9fe30cb5d0e314ada427c233faeec981e7cf132e52cb8a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 57
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16149297430347959904043812835237.labeled.jpg",
+    "image": "angelina/uploaded/test2/16149297430347959904043812835237.labeled.jpg",
+    "sha256": "8ed1498498ccd252f867770f2891ddbe1e946f93fdf1d965a86781bcae3bee2d",
+    "width": 1024,
+    "height": 768,
+    "n_cells": 176
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16133680849224939776977609910946.labeled.jpg",
+    "image": "angelina/uploaded/test2/16133680849224939776977609910946.labeled.jpg",
+    "sha256": "67ff0355d7b8953da1745daa6f97db55380536dd6545399d64dd63d79b530168",
+    "width": 1024,
+    "height": 2240,
+    "n_cells": 150
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_1104.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_1104.labeled.jpg",
+    "sha256": "3cc192598f5f8f7713a63962529a7cd574a7a3e588cc85101ae37ac3a60b47a7",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 364
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16158293792985296089064141415508.labeled.jpg",
+    "image": "angelina/uploaded/test2/16158293792985296089064141415508.labeled.jpg",
+    "sha256": "0335976bd5db2734ada762a86291706b9c715ff5be60aa2df93049834c16c53c",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 247
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16212558309825739935733992080657.labeled.jpg",
+    "image": "angelina/uploaded/test2/16212558309825739935733992080657.labeled.jpg",
+    "sha256": "58217a96434a51a8fb311ed31538629d2f2fdfcad7fab2dadeb06dd4d80f627f",
+    "width": 1024,
+    "height": 1824,
+    "n_cells": 403
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_757.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_757.labeled.jpg",
+    "sha256": "8393a2bb445824c3b523b3515cc1c2ef050981a2a0b583c2022766a2c5b423d1",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 227
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16176160088617889824558606265568.labeled.jpg",
+    "image": "angelina/uploaded/test2/16176160088617889824558606265568.labeled.jpg",
+    "sha256": "ef53f2800dddf6078116101d1c34331389edbf092aff019ec920001c1e8b8d40",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 255
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16175620075383318290172083202563.labeled.jpg",
+    "image": "angelina/uploaded/test2/16175620075383318290172083202563.labeled.jpg",
+    "sha256": "9744ed8772e5bf75d265b6c5cbb92927d28b4cd6f91a3a744a483b3bb9ac7b49",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 180
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/WhatsApp_Image_2021-02-03_at_15.28.58.labeled.jpg",
+    "image": "angelina/uploaded/test2/WhatsApp_Image_2021-02-03_at_15.28.58.labeled.jpg",
+    "sha256": "8ae8cc2fd46265febaefe6d9556945487020db3657f035dfbd4e30668b3e7ed5",
+    "width": 1024,
+    "height": 1312,
+    "n_cells": 171
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16214103262132543716715191555641.labeled.jpg",
+    "image": "angelina/uploaded/test2/16214103262132543716715191555641.labeled.jpg",
+    "sha256": "054eb5cf9c1eaa8be7df0bcea1a8f1ae808d89a2c61f123d3d76fd4f2e11fcea",
+    "width": 1024,
+    "height": 2240,
+    "n_cells": 355
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16196980837743756197191329946704.labeled.jpg",
+    "image": "angelina/uploaded/test2/16196980837743756197191329946704.labeled.jpg",
+    "sha256": "fe87ff169a3d1a9bbe06e0e80a2e1eca3edc48a224460ed3444e69e93cb8e699",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 340
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16123469868604291475964485342376.labeled.jpg",
+    "image": "angelina/uploaded/test2/16123469868604291475964485342376.labeled.jpg",
+    "sha256": "cf901ff91669bdfc12f81629490d5a873003360f3f058b53fa2948291a0fdfaf",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 201
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16208094668749062583560245145727.labeled.jpg",
+    "image": "angelina/uploaded/test2/16208094668749062583560245145727.labeled.jpg",
+    "sha256": "3454f043c6237b536f2d85e3b73746401565ccee31be7ef1a0beca589c19b8c4",
+    "width": 1024,
+    "height": 768,
+    "n_cells": 88
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_768.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_768.labeled.jpg",
+    "sha256": "aa835e0ce0b210476dad38c4f473426c92177c87095baeb2896c7e49feecc453",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 325
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/3_8.labeled.jpg",
+    "image": "angelina/uploaded/test2/3_8.labeled.jpg",
+    "sha256": "e1ab42b0539bf2026981e0b6ad80fc5a49ddb073e8123f1bc945b7ad3ebf209a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 299
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16163497582185916133037327975287.labeled.jpg",
+    "image": "angelina/uploaded/test2/16163497582185916133037327975287.labeled.jpg",
+    "sha256": "5273a746c22e7a3115675d93a0fe4b73ba05bd88fecabc413a52ca2efbedb289",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 286
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/pic1615798032090.labeled.jpg",
+    "image": "angelina/uploaded/test2/pic1615798032090.labeled.jpg",
+    "sha256": "77f996db4b32a3accecfd113ebbb97b1ca258d595b8610792cf29d630bde6463",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 473
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16207179832707389675765890422772.labeled.jpg",
+    "image": "angelina/uploaded/test2/16207179832707389675765890422772.labeled.jpg",
+    "sha256": "5e16e33f8f64e2b3882d96ded5734c532e5cb4593027111495d2d52192f904e7",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 388
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_1330.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_1330.labeled.jpg",
+    "sha256": "7bc0a604b3abc9c121683b74a609e99791f925da73046d3586f7fd0e6de465b3",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 570
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_1821.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_1821.labeled.jpg",
+    "sha256": "33101b44f1bbbc460b7d1d0ca6d6113f255a5ac17d2b8d1fdeed02e3856fe455",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 326
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/image_264.labeled.jpg",
+    "image": "angelina/uploaded/test2/image_264.labeled.jpg",
+    "sha256": "fe00d13f9222066dc4b43d0c6dd5035aa56110983681d5502f9ca1b3e4cfe6a6",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 165
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16166167545185647725257998309614.labeled.jpg",
+    "image": "angelina/uploaded/test2/16166167545185647725257998309614.labeled.jpg",
+    "sha256": "b056c3c88063dcdaa9625f783bab559f60e059d4017912371563792f9914778c",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 511
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/pic1617087696042.labeled.jpg",
+    "image": "angelina/uploaded/test2/pic1617087696042.labeled.jpg",
+    "sha256": "7da03c03f23022912f9a3408634b6b81a5e5aaad65e45765e08eec88e38ebc3a",
+    "width": 1024,
+    "height": 768,
+    "n_cells": 212
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16187743941276670750846468527301.labeled.jpg",
+    "image": "angelina/uploaded/test2/16187743941276670750846468527301.labeled.jpg",
+    "sha256": "d8742fbb5ac57cd9fa67dba024c50a8e188bae55229f36fd0cfc23de788d6d13",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 306
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/1613636025206..labeled.jpg",
+    "image": "angelina/uploaded/test2/1613636025206..labeled.jpg",
+    "sha256": "cc93bc6bfef79cd4898b59f57a77bab931f9b8be251aa6a3684a64c68f53b011",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 254
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/1614564047878-1850303651.labeled.jpg",
+    "image": "angelina/uploaded/test2/1614564047878-1850303651.labeled.jpg",
+    "sha256": "03811567341576a5e679cff9fcf9c2666f31b39ee4627b5bc062aa415757d074",
+    "width": 1024,
+    "height": 1824,
+    "n_cells": 283
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/0c62b07dc3ff44e4982cbb573f3b6d95.labeled.jpg",
+    "image": "angelina/uploaded/test2/0c62b07dc3ff44e4982cbb573f3b6d95.labeled.jpg",
+    "sha256": "266c065553d14d0fe342c502a59c415a8dbc54bc1c256f6b5a5d43166d4d1c7c",
+    "width": 1024,
+    "height": 768,
+    "n_cells": 92
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/0fefa93494664df3b677a9b36ac4660f.labeled.jpg",
+    "image": "angelina/uploaded/test2/0fefa93494664df3b677a9b36ac4660f.labeled.jpg",
+    "sha256": "850692c82952e3d80951481d54102d014446f0af4cd51958982498c19d66c71f",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 130
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/1557DB84-0324-4C67-8F98-EF9C5862F669.labeled.jpg",
+    "image": "angelina/uploaded/test2/1557DB84-0324-4C67-8F98-EF9C5862F669.labeled.jpg",
+    "sha256": "2b019436c6b0f659384fbe4d9607df59a911077e08ca14abb8cf19e55650b961",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 49
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16117401078905499179755929287133.labeled.jpg",
+    "image": "angelina/uploaded/test2/16117401078905499179755929287133.labeled.jpg",
+    "sha256": "baa699e411f229fbdfda07b41a7eb18f40f9b9253e61964e92151607ba15ee85",
+    "width": 1024,
+    "height": 1408,
+    "n_cells": 333
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/16119077073007616661040361423621.labeled.jpg",
+    "image": "angelina/uploaded/test2/16119077073007616661040361423621.labeled.jpg",
+    "sha256": "d893b1675c110ed447dbddffb327c30b18446a5fb2fb8a2c0795c4962c3b30f5",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 221
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/20936b0a999745edb5853b017d9602a7.labeled.jpg",
+    "image": "angelina/uploaded/test2/20936b0a999745edb5853b017d9602a7.labeled.jpg",
+    "sha256": "e899c373e2c06dd2e278a9df5778184657fca418420788c04c7274bde03aa79b",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 494
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/3397e0e8762f4e02a10de0647f0799c5.labeled.jpg",
+    "image": "angelina/uploaded/test2/3397e0e8762f4e02a10de0647f0799c5.labeled.jpg",
+    "sha256": "6cc7bf0611bd68a4262cbbf094abe4df87a97d2f2558a97f4c96924e5cffe581",
+    "width": 1024,
+    "height": 1824,
+    "n_cells": 221
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/34adf8a76fb848688b020a1622f959fe.labeled.jpg",
+    "image": "angelina/uploaded/test2/34adf8a76fb848688b020a1622f959fe.labeled.jpg",
+    "sha256": "042affbe1906d2bb83e32f18c1e794d09d3393053294aabc9cf3ef3c62d566a3",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 89
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/3b23872d176e473d845af27fe791c886.labeled.jpg",
+    "image": "angelina/uploaded/test2/3b23872d176e473d845af27fe791c886.labeled.jpg",
+    "sha256": "fc357ccc52ae9de7b094fa6762a9232d999dc32ba4fb9067ad1c77a2708d07ba",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 252
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/3cbd0fff5fa64efda15a1fee5eee4a8f.labeled.jpg",
+    "image": "angelina/uploaded/test2/3cbd0fff5fa64efda15a1fee5eee4a8f.labeled.jpg",
+    "sha256": "f98861edc74c9847cd9f819a5621e2d4b905bbd6d1fb7ea064fa5254021bc04f",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 135
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/433ce4ded21b44f780920e3b2f463543.labeled.jpg",
+    "image": "angelina/uploaded/test2/433ce4ded21b44f780920e3b2f463543.labeled.jpg",
+    "sha256": "0f625448941791a441bc05ef0238372df21b7f8c9e136a76f27ef703e0d93c33",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 261
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/4661bc1cddc64d9386f912234a3bbec9.labeled.jpg",
+    "image": "angelina/uploaded/test2/4661bc1cddc64d9386f912234a3bbec9.labeled.jpg",
+    "sha256": "105be95e5c2c55f4aa525a590c9b17724c2b88d9ce27e5db41aed133b3f0aa14",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 165
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/51540f5a38b84ed4b92367897569c565.labeled.jpg",
+    "image": "angelina/uploaded/test2/51540f5a38b84ed4b92367897569c565.labeled.jpg",
+    "sha256": "77493c92be6265300fbd740e8050b639a8584fa3c46f30da1d9e23ce7eb13474",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 252
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/592644964b764e4090a3c8b35ea042c7.labeled.jpg",
+    "image": "angelina/uploaded/test2/592644964b764e4090a3c8b35ea042c7.labeled.jpg",
+    "sha256": "9ca8bebde639009bd8eab7aeb8a9f71150807294717aeeef43e7e28968585f53",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 163
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/828bc57f3ebe45feaa6fde7e51bab570.labeled.jpg",
+    "image": "angelina/uploaded/test2/828bc57f3ebe45feaa6fde7e51bab570.labeled.jpg",
+    "sha256": "e57544d8766381f99fd56b7c4978e5ed860cd64694cf1c06fc4e5b373ea90133",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 166
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/af3d648e88464c7bad4bc334bb2c16a4.labeled.jpg",
+    "image": "angelina/uploaded/test2/af3d648e88464c7bad4bc334bb2c16a4.labeled.jpg",
+    "sha256": "40a15bc7218d91a0959fed4781e60718fa47b3d435c08c528a5f7198273fe2b3",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 203
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/b5a96649882440b7b7c189349da0dd12.labeled.jpg",
+    "image": "angelina/uploaded/test2/b5a96649882440b7b7c189349da0dd12.labeled.jpg",
+    "sha256": "2b6aa455b373c7517ad251356c4d8342f174683959ae8e6423ddc940b851304a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 332
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/e60588dd418f473e8c6ba0ce9bfcbab0.labeled.jpg",
+    "image": "angelina/uploaded/test2/e60588dd418f473e8c6ba0ce9bfcbab0.labeled.jpg",
+    "sha256": "70dbb55f8d88d3a9b78e2e288dbeecebf1ae4cd3c7e28556876ba9fa0d6b614a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 223
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/eda9f16c8aca4aa3ad6ca74116dbbe72.labeled.jpg",
+    "image": "angelina/uploaded/test2/eda9f16c8aca4aa3ad6ca74116dbbe72.labeled.jpg",
+    "sha256": "f234eae4013e6190a584c1ce649386d08d9e1e09368c4e4bec017c6804437456",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 455
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/f271f266efc0417b90ec62a86874121e.labeled.jpg",
+    "image": "angelina/uploaded/test2/f271f266efc0417b90ec62a86874121e.labeled.jpg",
+    "sha256": "5e886ae0327538b5858c633067b8c545367b19bc5ce91d7b8c6215f3f72dbda9",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 228
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/f4f053aebc60433882a6d534e9cd8afe.labeled.jpg",
+    "image": "angelina/uploaded/test2/f4f053aebc60433882a6d534e9cd8afe.labeled.jpg",
+    "sha256": "a1f78ff419aa2309b3871a95bc80f7023b0650ca58ece7d6e2aec98638ac2da7",
+    "width": 1024,
+    "height": 1824,
+    "n_cells": 363
+   },
+   {
+    "set": "angelina-uploaded",
+    "id": "angelina-uploaded:angelina/uploaded/test2/f77b3332e0034c29807a841515b98142.labeled.jpg",
+    "image": "angelina/uploaded/test2/f77b3332e0034c29807a841515b98142.labeled.jpg",
+    "sha256": "cef6684543f43ff8d3eaea541167099f4eb31532946bc0c5325b36d54fc316e6",
+    "width": 1024,
+    "height": 768,
+    "n_cells": 208
+   }
+  ],
+  "angelina-books-val": [
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/chudo_derevo_redmi/IMG_20190715_112936.labeled.jpg",
+    "image": "angelina/books/chudo_derevo_redmi/IMG_20190715_112936.labeled.jpg",
+    "sha256": "fab4d002130330c7a527c6c52fbf9bcddbe7574fcf5b684da774b66d56bf48ea",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 169
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/chudo_derevo_redmi/IMG_20190715_112953.labeled.jpg",
+    "image": "angelina/books/chudo_derevo_redmi/IMG_20190715_112953.labeled.jpg",
+    "sha256": "51fa6bca5730cf1b205217b4c976368bc6f614152a86babe7dda91125ad7527e",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 200
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/chudo_derevo_redmi/IMG_20190715_113023.labeled.jpg",
+    "image": "angelina/books/chudo_derevo_redmi/IMG_20190715_113023.labeled.jpg",
+    "sha256": "18f258eab72765614ce33ef718d1949feebb34f34f20d0ac61568ea57c8a713a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 173
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd-redmi1/10.labeled.jpg",
+    "image": "angelina/books/mdd-redmi1/10.labeled.jpg",
+    "sha256": "c068b1e8b9777ac6865b8c4fefecadbf022e501272425c5f530d1f9fe0a0b2db",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 261
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd-redmi1/11.labeled.jpg",
+    "image": "angelina/books/mdd-redmi1/11.labeled.jpg",
+    "sha256": "ca11f3c7b6aa42efb6ba55ac383c3ff0dd0d64c15f9b147dceea32bbe7e6e6ac",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 314
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd-redmi1/12.labeled.jpg",
+    "image": "angelina/books/mdd-redmi1/12.labeled.jpg",
+    "sha256": "bc499b824e49e1503d0c6258e67d53a5a94d679dbc8e9bf19e069236218aff74",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 298
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd_cannon1/10.labeled.jpg",
+    "image": "angelina/books/mdd_cannon1/10.labeled.jpg",
+    "sha256": "71b5705f0ba85703d0d51bd71cf5c27ee45dcd391e1068529473f5b2f15bbe7f",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 261
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd_cannon1/11.labeled.jpg",
+    "image": "angelina/books/mdd_cannon1/11.labeled.jpg",
+    "sha256": "f03dcca51b2cd4740888eb7f88ec6ab29abbb2bf207e2f9a1c24439e3abc7858",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 314
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/mdd_cannon1/12.labeled.jpg",
+    "image": "angelina/books/mdd_cannon1/12.labeled.jpg",
+    "sha256": "28281ae772a29afa799e69fbf13871a9e035f7930fc0b0b33f65711aaf8bfcf1",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 298
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/ola/IMG_5201.labeled.jpg",
+    "image": "angelina/books/ola/IMG_5201.labeled.jpg",
+    "sha256": "5679be43c38f8104378f286a737704aab0211123d90a31d5dada8014872cf39f",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 377
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/ola/IMG_5370.labeled.jpg",
+    "image": "angelina/books/ola/IMG_5370.labeled.jpg",
+    "sha256": "25179bea930869997704e3d5557ebcfce8fce125b17de2375d54413348601650",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 185
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/ola/IMG_5374.labeled.jpg",
+    "image": "angelina/books/ola/IMG_5374.labeled.jpg",
+    "sha256": "a97524c37be5dd8ee7478c2af082d4f046eee327f697bbff76f265da82d8163c",
+    "width": 1024,
+    "height": 1536,
+    "n_cells": 200
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121126.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121126.labeled.jpg",
+    "sha256": "1e57cb0558a75a291294e979548498f62a024475990be579a513e8164a6be5c2",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 216
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121142.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121142.labeled.jpg",
+    "sha256": "295ed5cbbd73f34cbcc67b0941d7bb609cddcab047fd9dcd41b71c71d41d13f9",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 313
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121215.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121215.labeled.jpg",
+    "sha256": "7138d80de7dbffb64dd75de13bfdcdc5dc5ca1ea53c79f71d13fda097de9870e",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 296
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121314.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121314.labeled.jpg",
+    "sha256": "45eccf3f2c12f49417665fd3fa0b3965013e8a74ae8013ce2193f6679535ce42",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 393
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121317.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121317.labeled.jpg",
+    "sha256": "786e7675d28f27abe7329ad5f2f2689cc76175e67e7b7069e919f82aacc36d6b",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 335
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121346.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121346.labeled.jpg",
+    "sha256": "63793c881e815a64cb6b73bc7f98426151ebe219fcfc5bdc1dc90fd9b60b3a05",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 311
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121351.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121351.labeled.jpg",
+    "sha256": "efbb9ef1a26093dee26095db08440ee4523980bd12ff6bb1ad0d14c0f3765e14",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 440
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121413.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121413.labeled.jpg",
+    "sha256": "46268de5320bd7836059760b9a79e1fa9f80cad6e2f5c385e9f5495d3002641a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 487
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121426.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121426.labeled.jpg",
+    "sha256": "479f2dd3fa8f95001a4c74aea977981f69ec0cf8ef58e18a6c374f09c30fb4e7",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 489
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121513.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121513.labeled.jpg",
+    "sha256": "12c4fa94a278ae0d19185f1dc98c6bc8b239e6e3008e503670f322d2eaf7cdcd",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 399
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121611.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121611.labeled.jpg",
+    "sha256": "3336f4f62b94b1b0c0d45ae96ec718fd491052f8de6c0211a5b07c3dbd27091d",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 476
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121631.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121631.labeled.jpg",
+    "sha256": "86a1357028096836aed4dadc0f0ec9d2ad202ee378544ee19931464e198a624a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 390
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121634.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121634.labeled.jpg",
+    "sha256": "4ce5d5809318d24c353b691873034b657178e50a0e9cfa49a4293877757e2f1e",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 354
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121643.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121643.labeled.jpg",
+    "sha256": "26a74dba2b7a5f24b7c8eaa46318322b3c02b24c71ac846316934bfcb4c6b292",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 305
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121751.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121751.labeled.jpg",
+    "sha256": "b0f90b2bd76afd4b7a13bca323e8cdb35ca3f9d64869dd028e899c38cf25b2da",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 312
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121813.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121813.labeled.jpg",
+    "sha256": "e376382e75eec72c71c913e155af0c855050c323de4832b17b358ded598a362d",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 323
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121902.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121902.labeled.jpg",
+    "sha256": "51c1b1720e352835520adab17f046b879d0288b0177e6cbcc3279d6bc751c738",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 259
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121915.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121915.labeled.jpg",
+    "sha256": "247b25eccbe8caa9f7b14b873f8f255e9fe1d142c06c1c36c52e7bf3f8a9dd71",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 397
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121928.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121928.labeled.jpg",
+    "sha256": "c9c60beaa8f06325074c8cbc3f9873b9f4bc3450e9dde02257ceb8c0ae54da3d",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 297
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_121956.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_121956.labeled.jpg",
+    "sha256": "67be6e7c10b140034c33f5b93ebd39f87a4900b9e32eb7769bd3c39a2157a23f",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 375
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122409.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122409.labeled.jpg",
+    "sha256": "a047814ca545114d9caa6ccf278433fe79a3af4e884b47476c13d73b16ccdd2c",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 342
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122431.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122431.labeled.jpg",
+    "sha256": "3339750ea2762f1e0bcafaf9c3eb18fed2834b25ac5b6e97225e5c0d7c475a42",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 309
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122448.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122448.labeled.jpg",
+    "sha256": "4f8cffff9339aff86ce57682beed68af9882c4ec245b66bd7462a781a95e4ec7",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 345
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122451.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122451.labeled.jpg",
+    "sha256": "e58b0ff0e305f7a264175fbbf7f0225bed611df56ed4b274e060de79e74c793a",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 438
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122759.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122759.labeled.jpg",
+    "sha256": "ee7530d6d5a095d902fe6c1d469bdce0e5407c0944f35634082e837b0ec60d88",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 414
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/skazki/IMG_20190715_122846.labeled.jpg",
+    "image": "angelina/books/skazki/IMG_20190715_122846.labeled.jpg",
+    "sha256": "99dc6a52321229bee238099af43f785d3c78e75a302e440acbbf453780d90b32",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 209
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/telefon/IMG_20190715_123145.labeled.jpg",
+    "image": "angelina/books/telefon/IMG_20190715_123145.labeled.jpg",
+    "sha256": "278f66e302007159cc8492775f8d57b0d66e40aefd19788a86e3545ac89879f5",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 246
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/telefon/IMG_20190715_123148.labeled.jpg",
+    "image": "angelina/books/telefon/IMG_20190715_123148.labeled.jpg",
+    "sha256": "28c9174c3ad08c5eda0b3edac60aa09c7066cab6aba4431cd7a69ca58b3e5bc0",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 206
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/telefon/IMG_20190715_123223.labeled.jpg",
+    "image": "angelina/books/telefon/IMG_20190715_123223.labeled.jpg",
+    "sha256": "b0267db3a25ccdb77f067b0cf91fb79d825d23d75dbbae43d150e6d48edf5a04",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 154
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/telefon/IMG_20190715_123250.labeled.jpg",
+    "image": "angelina/books/telefon/IMG_20190715_123250.labeled.jpg",
+    "sha256": "ed8b1b6656385c61504045942dff6458b5707396123bda77ce589d57d044701d",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 206
+   },
+   {
+    "set": "angelina-books-val",
+    "id": "angelina-books-val:angelina/books/telefon/IMG_20190715_123336.labeled.jpg",
+    "image": "angelina/books/telefon/IMG_20190715_123336.labeled.jpg",
+    "sha256": "d85e350f24ccf94c06e1e6628a3649067b20c669a5a4e09fe2ff956a32cbda88",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 200
+   }
+  ],
+  "angelina-hand-val": [
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/kov/ccc6c288-2a73-49d8-98b3-de518e3c9779-inv.labeled.jpg",
+    "image": "angelina/handwritten/kov/ccc6c288-2a73-49d8-98b3-de518e3c9779-inv.labeled.jpg",
+    "sha256": "377695aae60ecd594076e18ccd9508666df13b42fcf842646acceef6912efd75",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 235
+   },
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/kov/d5cbb2a0-8acc-494b-be10-13e0cfc4c09f.labeled.jpg",
+    "image": "angelina/handwritten/kov/d5cbb2a0-8acc-494b-be10-13e0cfc4c09f.labeled.jpg",
+    "sha256": "68de4485ede0ba72cccdfa82df2909ab3e450ad1e5edca3b7db5359c5835c8d4",
+    "width": 1024,
+    "height": 1024,
+    "n_cells": 221
+   },
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/kov/f8033abf-f1ee-4081-b875-c459c6d2cc0d-inv.labeled.jpg",
+    "image": "angelina/handwritten/kov/f8033abf-f1ee-4081-b875-c459c6d2cc0d-inv.labeled.jpg",
+    "sha256": "ee82db6c3880a3c42fdd8bba1eac1fe718c5f765ba9097d8a05b7ff34e3b4a38",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 246
+   },
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/uploaded/15644761794711589864614.labeled.jpg",
+    "image": "angelina/handwritten/uploaded/15644761794711589864614.labeled.jpg",
+    "sha256": "beb3094d0f2accc0332ae203310a7c160c83cc5a0caa4d82b2759c80b5b6ab87",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 228
+   },
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/uploaded/15660462156041370045416.labeled.jpg",
+    "image": "angelina/handwritten/uploaded/15660462156041370045416.labeled.jpg",
+    "sha256": "195c41ce1a65b073b0b17bfd578f661c86f5702045b177d66e07cade9c3eba13",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 265
+   },
+   {
+    "set": "angelina-hand-val",
+    "id": "angelina-hand-val:angelina/handwritten/uploaded/IMG_20190822_182350.labeled.jpg",
+    "image": "angelina/handwritten/uploaded/IMG_20190822_182350.labeled.jpg",
+    "sha256": "eaf6f9e2a6498055ca77663b80db5753253fd3934494b7205cfdf7363546a380",
+    "width": 1024,
+    "height": 1376,
+    "n_cells": 218
+   }
+  ],
+  "dsbi-test": [
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+1+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+1+recto.jpg",
+    "sha256": "2e2cd0473cf7f909fa8db6736f89d3318c1a62165f276ab90223484728731fad",
+    "width": 1732,
+    "height": 2361,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 450
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+10+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+10+recto.jpg",
+    "sha256": "ede9d5d2adbbac39a70dc9625fac6cdf701630d5806bb79b3cae42898176909e",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 983
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+11+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+11+recto.jpg",
+    "sha256": "0b2d98f65c7dcfda1877a9ed268c976e548da1eb9e42853be48f3ab905b193f8",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1119
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+12+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+12+recto.jpg",
+    "sha256": "4f5fa1bc73250332d979fbbd171ab76b1708d45aaf901bfd24cbd20472b66b02",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1119
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+13+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+13+recto.jpg",
+    "sha256": "b7a9e45206ede97ebb15ee6881732eea665d1c51e6c88f8e4362f24ea1a56a84",
+    "width": 1704,
+    "height": 2340,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 46
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+14+verso.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+14+verso.jpg",
+    "sha256": "aee4d933f04a71b41f00aaa7fe594244dd086f542bc59b62741fcd9f2b7d6aaf",
+    "width": 1700,
+    "height": 2338,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 46
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+15+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+15+recto.jpg",
+    "sha256": "411afa271e7ae01b79ab828674facbf5d0c9ea2c2de1c3cdc71e79c5a8e3b930",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1111
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+16+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+16+recto.jpg",
+    "sha256": "ae863212549697440ce60cc5d1fc94b5be91b2a4f18ae4af44e276463f40e41b",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1111
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+17+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+17+recto.jpg",
+    "sha256": "63697cdfbae8615bb113b97e3a567ffea7b164ddef67c5e6518e7958ce749299",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1223
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+18+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+18+recto.jpg",
+    "sha256": "3b55de328616ec14addf62c823e82dfb83f5787ac56621a3e969032cfd70c11b",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1223
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+19+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+19+recto.jpg",
+    "sha256": "67bae5b6eaf7e0a9a290e72f0bece5e5c8d62f0ef322c421ae7a2f6ef8127da1",
+    "width": 1700,
+    "height": 2338,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 784
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+2+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+2+recto.jpg",
+    "sha256": "012bfe70b8bc50de481a000c921e99c68ecefa1c2dc4c5e29b0ed8f415fe878c",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 450
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+20+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+20+recto.jpg",
+    "sha256": "7d0a9ac7d611269c85ce3851b2a9eef09765f7dffbae13f8bfc65685b05423ed",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 784
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+3+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+3+recto.jpg",
+    "sha256": "47d90089dec08a785f0ea7e8f84b2fd51d03a46603b63a7bc6d7e44818f5fc74",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 820
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+4+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+4+recto.jpg",
+    "sha256": "c0f33b531aa82c20226803f7126e9935a4c2aebaffd6908eb7eb288bd3220cb2",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 820
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+5+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+5+recto.jpg",
+    "sha256": "b1e9d7364e981b32ceb73fe1954c3ca2333657b8c0ece6fcd39bdf370f3fef4f",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 397
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+6+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+6+recto.jpg",
+    "sha256": "b9ff7b8d8681a6b30e80d8bfaad95a1e6d431340225c2b19771d32d6b33e8fb1",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 398
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+7+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+7+recto.jpg",
+    "sha256": "14d7c469ebc81923e5daf45dc839d6535223c147311cc8193f012d94c5e14236",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1144
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+8+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+8+recto.jpg",
+    "sha256": "53e520e0fdd80fc41f08e8a7f2b26011a65ebef90ef02ede8118f443a9b35b59",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1144
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Fundamentals of Massage/FM+9+recto.jpg",
+    "image": "dsbi/data/Fundamentals of Massage/FM+9+recto.jpg",
+    "sha256": "70b8a20b21cfb76971368ab1b7f4ea1ee12cfcf818ed1d96a89f0ff8b31903aa",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 983
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+11+recto.jpg",
+    "image": "dsbi/data/Massage/M+11+recto.jpg",
+    "sha256": "d7d7247f1aafebf07eebcf7c6509bd4c5cd69c6f458e08aa6109c07c115b23e2",
+    "width": 1704,
+    "height": 2340,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 502
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+11+verso.jpg",
+    "image": "dsbi/data/Massage/M+11+verso.jpg",
+    "sha256": "abdd9c31180fe049d7b24316e0c7f93988a2b2f205a18f354714f540e9fbf639",
+    "width": 1708,
+    "height": 2343,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 507
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+12+recto.jpg",
+    "image": "dsbi/data/Massage/M+12+recto.jpg",
+    "sha256": "44bf42e676bb54c45d4a91d7fdfcffab9ceb4ef5ff1e7f84d9e2cfc186d21daf",
+    "width": 1724,
+    "height": 2355,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 507
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+12+verso.jpg",
+    "image": "dsbi/data/Massage/M+12+verso.jpg",
+    "sha256": "7b4ba417e776141e80a246ce12751ef459e1daa49d6c56c820652e9dcf474b47",
+    "width": 1736,
+    "height": 2364,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 502
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+13+recto.jpg",
+    "image": "dsbi/data/Massage/M+13+recto.jpg",
+    "sha256": "9ac9787b3e5f1f3f318778406b652f28ade586ce7df9fc84b0424faf386a6db3",
+    "width": 1704,
+    "height": 2340,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 505
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+13+verso.jpg",
+    "image": "dsbi/data/Massage/M+13+verso.jpg",
+    "sha256": "e5fda4a59677baf27fb507804b7504d945186942fc7d10a6a6d496181eecb6f0",
+    "width": 1704,
+    "height": 2340,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 451
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+14+recto.jpg",
+    "image": "dsbi/data/Massage/M+14+recto.jpg",
+    "sha256": "481a756e181f954baab7b8bd78f920eb57feeb1be9edd4b43f402dfcea51e6f3",
+    "width": 1712,
+    "height": 2346,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 451
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+14+verso.jpg",
+    "image": "dsbi/data/Massage/M+14+verso.jpg",
+    "sha256": "bc41e5fb383a3f182ea7229e690cfb0a30df689ecde4a6bf839ef9c1470517d2",
+    "width": 1724,
+    "height": 2355,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 505
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+15+recto.jpg",
+    "image": "dsbi/data/Massage/M+15+recto.jpg",
+    "sha256": "20891269e89449f5af505aeeb79d7683458157850a6f255f7aad1f3e8162f3fe",
+    "width": 1704,
+    "height": 2340,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 494
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+15+verso.jpg",
+    "image": "dsbi/data/Massage/M+15+verso.jpg",
+    "sha256": "5302c5af35b5c6a55f10f63ed52ab0f6a16b5f761b982379edf28ad05d386974",
+    "width": 1712,
+    "height": 2346,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 473
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+16+recto.jpg",
+    "image": "dsbi/data/Massage/M+16+recto.jpg",
+    "sha256": "64c4da7198adad8e3aaebb34279cbd92c552a22b0fc26e7317e43276594b2830",
+    "width": 1720,
+    "height": 2352,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 473
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+16+verso.jpg",
+    "image": "dsbi/data/Massage/M+16+verso.jpg",
+    "sha256": "7f8bad59de3351f1126819cf78afeeec68a5d1ae653d8ff0e9e6d48c87840229",
+    "width": 1732,
+    "height": 2361,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 494
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+17+recto.jpg",
+    "image": "dsbi/data/Massage/M+17+recto.jpg",
+    "sha256": "15e1db0539b82a9296d0b89de747c0078cf9601c14772dbee2a07c5e3820641c",
+    "width": 1752,
+    "height": 2375,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 457
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+17+verso.jpg",
+    "image": "dsbi/data/Massage/M+17+verso.jpg",
+    "sha256": "8f78296bf8ba03d7cc86eb7079fbe871bd8875f398a1ee144e5178d8806d3d21",
+    "width": 1760,
+    "height": 2381,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 466
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+18+recto.jpg",
+    "image": "dsbi/data/Massage/M+18+recto.jpg",
+    "sha256": "9a6971fd336bc05716e371ff4fbbebff8ccc93e7923b4bde5663a28fc2474090",
+    "width": 1704,
+    "height": 2340,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 466
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+18+verso.jpg",
+    "image": "dsbi/data/Massage/M+18+verso.jpg",
+    "sha256": "609e9311041a6200db74e7df69bb6285304123f3ce08d38447a7236ce61f180b",
+    "width": 1708,
+    "height": 2343,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 457
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+19+recto.jpg",
+    "image": "dsbi/data/Massage/M+19+recto.jpg",
+    "sha256": "03b2a007184f68baed65272b03ce579a2918e3bd52624efca0ea423a5a3707fd",
+    "width": 1724,
+    "height": 2355,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 465
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+19+verso.jpg",
+    "image": "dsbi/data/Massage/M+19+verso.jpg",
+    "sha256": "7e37a644a0f6ac6d600ae9d72e214545205ca6628cbf0b5987859a528a83c1b0",
+    "width": 1712,
+    "height": 2346,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 462
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+20+recto.jpg",
+    "image": "dsbi/data/Massage/M+20+recto.jpg",
+    "sha256": "e8a38b9396929ab1dff9184b105d551d034c216ce7bbdc37342aaf40dd4ead20",
+    "width": 1720,
+    "height": 2352,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 462
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Massage/M+20+verso.jpg",
+    "image": "dsbi/data/Massage/M+20+verso.jpg",
+    "sha256": "4ef3cdfe86a897d26bac209db34e4adb8175f116f0536a7833b2c19102c2f62e",
+    "width": 1732,
+    "height": 2361,
+    "kind": "side",
+    "detection": false,
+    "n_cells": 465
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+11+recto.jpg",
+    "image": "dsbi/data/Math/math+11+recto.jpg",
+    "sha256": "2c8aa927fb0516218162d694ea3f2a11fcfa2752e3601470a09df1b10a70d145",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 849
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+12+recto.jpg",
+    "image": "dsbi/data/Math/math+12+recto.jpg",
+    "sha256": "a68e85b1ddf23afa3062f9c823ea9aca24b2aed2701eafe409fd5bd5bfc86949",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 849
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+13+recto.jpg",
+    "image": "dsbi/data/Math/math+13+recto.jpg",
+    "sha256": "6e2f999e5bfecceb493663ef1c369dfd77c3cfb1f692ec128d372aae7a0b58a4",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 903
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+14+recto.jpg",
+    "image": "dsbi/data/Math/math+14+recto.jpg",
+    "sha256": "edc866335637285877690cdd1667b3e2e15c5acff236efa727a5602303772520",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 903
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+15+recto.jpg",
+    "image": "dsbi/data/Math/math+15+recto.jpg",
+    "sha256": "2f279444ec4e2af846003f706af8ab16b30a8e310131577c74e5979bafdd20ce",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 816
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+16+recto.jpg",
+    "image": "dsbi/data/Math/math+16+recto.jpg",
+    "sha256": "dea833c473270e6ff7decd0c521953941f96afc242e26a4a14db24b74213e1b9",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 816
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+17+recto.jpg",
+    "image": "dsbi/data/Math/math+17+recto.jpg",
+    "sha256": "087ded38c99f875fd8dac526f52267601c56ffccae31f32ccfb713af403fc95d",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 706
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+18+recto.jpg",
+    "image": "dsbi/data/Math/math+18+recto.jpg",
+    "sha256": "7cf2f796cf8de1511a58983bbb0d1971721ca7918ed259244f074860eeb6ad52",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 706
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+19+recto.jpg",
+    "image": "dsbi/data/Math/math+19+recto.jpg",
+    "sha256": "0c9dd9cd078b3ce633dbdd273f3ebd6e0903205bae43c56808b915fbf9e7f915",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 734
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+20+recto.jpg",
+    "image": "dsbi/data/Math/math+20+recto.jpg",
+    "sha256": "e47f8c5b9ee9fd5c29dac70f0080bd70a3e2c8c5b271cf388ce36d74fa150936",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 734
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+21+recto.jpg",
+    "image": "dsbi/data/Math/math+21+recto.jpg",
+    "sha256": "183c4276276b6efb2322229a553dad8e24d82cc697894f14adfe9f0cb4fd9579",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 859
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+22+recto.jpg",
+    "image": "dsbi/data/Math/math+22+recto.jpg",
+    "sha256": "59d8d59ba19da41ce6e62facbb1e6f10635e2e06a6645e040d71dd3acfcfc80c",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 859
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+23+recto.jpg",
+    "image": "dsbi/data/Math/math+23+recto.jpg",
+    "sha256": "7383717b4e3c85fddf1126318c29bc1c8e21a531749d75d19a4eada8d03833c1",
+    "width": 1716,
+    "height": 2349,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 914
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+24+recto.jpg",
+    "image": "dsbi/data/Math/math+24+recto.jpg",
+    "sha256": "b9892f484efcf973ab6569b981663a63739cf5fa04eb1087d104415c4d97f300",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 914
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+25+recto.jpg",
+    "image": "dsbi/data/Math/math+25+recto.jpg",
+    "sha256": "80b5310b917fd1203f297a6ba7b7e992a6a3eabb811bd73c7e1d0d6a86816128",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 918
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+26+recto.jpg",
+    "image": "dsbi/data/Math/math+26+recto.jpg",
+    "sha256": "a4ca47330dbba1c1c31dcc7982fe7f8ab8496ac47471aa2b8aeda7f791f002e1",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 918
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+27+recto.jpg",
+    "image": "dsbi/data/Math/math+27+recto.jpg",
+    "sha256": "06761898d471a0e6db06c7dc8c2c353d754f65373e21f7dd27178e3b7aed19ea",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 784
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+28+recto.jpg",
+    "image": "dsbi/data/Math/math+28+recto.jpg",
+    "sha256": "7c11488b82a99ee137bff6adaefd0c7af0a3ee490fcfa4750dcdf30520fd6ec8",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 784
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+29+recto.jpg",
+    "image": "dsbi/data/Math/math+29+recto.jpg",
+    "sha256": "267823a4c0de36ba72f9029524c18c31006ad2270d439e6e931c3512cfe0ef12",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 826
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+30+recto.jpg",
+    "image": "dsbi/data/Math/math+30+recto.jpg",
+    "sha256": "e75d3c60f5c3a5bed0bc68214ca6721b1ab43b9a3e0457c1e09bb9a6ec9a5bb6",
+    "width": 1700,
+    "height": 2338,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 826
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+31+recto.jpg",
+    "image": "dsbi/data/Math/math+31+recto.jpg",
+    "sha256": "86e11aefb0202df80ff815601db3aabd88919a61295145278dbcff05cbf821a1",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 911
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Math/math+32+recto.jpg",
+    "image": "dsbi/data/Math/math+32+recto.jpg",
+    "sha256": "14adbb0026e9bd70ddaaf1a2fb8fb4b5b5698ab81d3b5507ff6f2499afb32569",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 911
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Ordinary Printed Document/OPD+4+recto.jpg",
+    "image": "dsbi/data/Ordinary Printed Document/OPD+4+recto.jpg",
+    "sha256": "5eed377d8566bc89944a4284cc8294f8f6517f2ba3ab46e7562fa105903e7307",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 853
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Ordinary Printed Document/OPD+5+recto.jpg",
+    "image": "dsbi/data/Ordinary Printed Document/OPD+5+recto.jpg",
+    "sha256": "77d63960f8d84ec1001a653a9463e2d5f68bd157c405d0b017070e7885c5e9c2",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 870
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Ordinary Printed Document/OPD+6+recto.jpg",
+    "image": "dsbi/data/Ordinary Printed Document/OPD+6+recto.jpg",
+    "sha256": "c9f4ecf51458368e45b167babf1bf0ae98d5d2a25bf20201034d9ac8a23a59fa",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 870
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Shaver Yang Fengting/SYF+6+recto.jpg",
+    "image": "dsbi/data/Shaver Yang Fengting/SYF+6+recto.jpg",
+    "sha256": "0dbbd062065d7c14d1bdd5f2ea9cdea88d6ccf6fe6d47dc3940354a1e20438fc",
+    "width": 1698,
+    "height": 2334,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1020
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Shaver Yang Fengting/SYF+7+recto.jpg",
+    "image": "dsbi/data/Shaver Yang Fengting/SYF+7+recto.jpg",
+    "sha256": "f70aa9bd06625088a512b97f4662d35301a9dc44ac5f33bd3af7c2b118c6a638",
+    "width": 1714,
+    "height": 2347,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1106
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/Shaver Yang Fengting/SYF+8+recto.jpg",
+    "image": "dsbi/data/Shaver Yang Fengting/SYF+8+recto.jpg",
+    "sha256": "b4f0be00d5fcdc7f442ea8e33c3941a9c3f00e77b50474962c9fb415d594537f",
+    "width": 1718,
+    "height": 2350,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1106
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+1+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+1+recto.jpg",
+    "sha256": "0c5aad4ced64eb53f09c11dd5622ca060f02260934488b0bd9eb98574e7f3d72",
+    "width": 1720,
+    "height": 2352,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 95
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+10+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+10+recto.jpg",
+    "sha256": "398de582f398906660e68b93e896f1f4a6744d894190a641486385266beb167e",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 702
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+11+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+11+recto.jpg",
+    "sha256": "5f5b5b74b44a860ef7e0cd1696d1615a3d4ce710dea88464c6051e03623f97eb",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 705
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+12+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+12+recto.jpg",
+    "sha256": "9a7a51401e2c62ca15f3dfb63e0159b950257b9812e6e614f909330d896d648b",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 705
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+13+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+13+recto.jpg",
+    "sha256": "d23545f3718aa09b88d440e7e9ca8453259c828877439f4402b982d6935ceec8",
+    "width": 1740,
+    "height": 2367,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 799
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+14+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+14+recto.jpg",
+    "sha256": "e29ce9bec4da2b32e55b5721329914470609dfcd5034d4e68e531c9ead0a9df5",
+    "width": 1720,
+    "height": 2352,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 799
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+15+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+15+recto.jpg",
+    "sha256": "d2d5ba47d4f3e96499fab2597c17a252bfc49bf2abeb8370218dc0bb48e98309",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 654
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+16+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+16+recto.jpg",
+    "sha256": "5a34bb2835b5a811494e6a1587dab0d12bccf6778a3018f1bf50c1aba0e27fb3",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 654
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+17+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+17+recto.jpg",
+    "sha256": "f7bbae0f037faf7795db5922279561ff61d6b50e47a37519404ff1ae4b8c7061",
+    "width": 1712,
+    "height": 2346,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 796
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+18+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+18+recto.jpg",
+    "sha256": "c4aefddedf4458d6cd63a2244b1fcaae4d00be75bae99002352d12212ea747c5",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 796
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+19+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+19+recto.jpg",
+    "sha256": "140b46e71976c81944931b1c350fb2398ec425743b8f262a7101ed666c6df868",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 739
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+2+verso.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+2+verso.jpg",
+    "sha256": "c297ede4b690a3494eeb0656f83d107d040098b0a08053dfc848f3289cfb8cf7",
+    "width": 1700,
+    "height": 2338,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 95
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+20+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+20+recto.jpg",
+    "sha256": "d6499dea5268b276751408e9772a3b7f586ac3cae0a8a5927e17f60313fd032a",
+    "width": 1724,
+    "height": 2355,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 739
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+3+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+3+recto.jpg",
+    "sha256": "86dbbe421f04390bc239a1b03506c8bee21420ae085a4fd661b8e5c169db4f82",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1035
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+4+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+4+recto.jpg",
+    "sha256": "979b7b7e335682cfcf4dd5cb10810d7443e66141a19778ba224519fe5a57b296",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1035
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+5+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+5+recto.jpg",
+    "sha256": "2d217469322090c9088e64204db6ac612fdc0a4838b85eccb1da316910a138cb",
+    "width": 1716,
+    "height": 2349,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 714
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+6+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+6+recto.jpg",
+    "sha256": "740aa58e4a523426f035df6cf4a48c0e7bebd97db6f406e7b111eee46f7f16eb",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 714
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+7+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+7+recto.jpg",
+    "sha256": "cadde14a7592279d75ecee8fa8fe1dbecd23c8b24976209bfc66a2150bd28a91",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 766
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+8+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+8+recto.jpg",
+    "sha256": "a992ddc5121cd6134680b9c22ec7a4c32ba81b87962e2ec5215367abb7122bbc",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 766
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+9+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 1/SVNGCB1+9+recto.jpg",
+    "sha256": "0620da91ab1a390b4265208279343b71657661c7a108a675dbf238f7df5fa531",
+    "width": 1716,
+    "height": 2349,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 702
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+1+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+1+recto.jpg",
+    "sha256": "3c7d3b0d09923abe269e2bf4cb322f77fc105dbf239a28435ded62d41701689f",
+    "width": 1704,
+    "height": 2340,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 96
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+10+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+10+recto.jpg",
+    "sha256": "e0826567e5bd45b6ee4dc248c3194823a2476978b1a29c33cdd5785e3803bc0e",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1005
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+2+verso.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+2+verso.jpg",
+    "sha256": "33e8caec589b78c500240a6cbbcfec149f96b7513e65398da95d001a6adf6c01",
+    "width": 1700,
+    "height": 2338,
+    "kind": "single",
+    "detection": true,
+    "n_cells": 96
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+3+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+3+recto.jpg",
+    "sha256": "51284af10979f80b05482c7ceb8ff3415cc965bada9633bc393994f3980ae924",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 539
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+4+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+4+recto.jpg",
+    "sha256": "bc526c702871c09540c0464da49a31629fa7e5336a3c491ed331f4f9615816d9",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 539
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+5+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+5+recto.jpg",
+    "sha256": "20789695f22a12b1fbed528173873c3398433fc70ab8595c6bbdd0935550e595",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 844
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+6+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+6+recto.jpg",
+    "sha256": "884c6590ec118da460b34210fc2cf8ddce8bbf6339e21a4760b5d6e130998d63",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 844
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+7+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+7+recto.jpg",
+    "sha256": "b8e93bb7921268033d5eb50f82cc92b6c1ef3e673a429ad96fd02f8b0d6d546a",
+    "width": 1708,
+    "height": 2343,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1144
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+8+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+8+recto.jpg",
+    "sha256": "ced86ac4c71149c6f8a1ff6ef97787a1bd4eb4f3f1444d0b3429c3eaaa8064b4",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1144
+   },
+   {
+    "set": "dsbi-test",
+    "id": "dsbi-test:dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+9+recto.jpg",
+    "image": "dsbi/data/The Second Volume of Ninth Grade Chinese Book 2/SVNGCB2+9+recto.jpg",
+    "sha256": "62f73a9998f4e4853e683fc7ba8bc675814a16559189206904b3d1aa3eeae41d",
+    "width": 1704,
+    "height": 2340,
+    "kind": "union",
+    "detection": true,
+    "n_cells": 1005
+   }
+  ],
+  "braille-natural-test": [
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_10.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_10.jpg",
+    "sha256": "82e136cc979efafa5f49c0931a972dbbb18adfae4e9e869b977d9cf025e44178",
+    "width": 658,
+    "height": 1011,
+    "labels": "boxes-only",
+    "n_cells": 36
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_102.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_102.jpg",
+    "sha256": "8e72daf2c2198fa8731119c293c391c9e8b7136ed6189d2dfac1812e8d62060b",
+    "width": 180,
+    "height": 175,
+    "labels": "boxes-only",
+    "n_cells": 12
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_105.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_105.jpg",
+    "sha256": "31ef432ffd866936ddbf9ebd225b1f11e19bc9de4179b3dedc5cceb948750d69",
+    "width": 427,
+    "height": 322,
+    "labels": "boxes-only",
+    "n_cells": 2
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_108.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_108.jpg",
+    "sha256": "3bd2caae7891e646316f1cc80820ea4a1b284bed9366153161efc8ef55f6666a",
+    "width": 307,
+    "height": 396,
+    "labels": "boxes-only",
+    "n_cells": 2
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_112.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_112.jpg",
+    "sha256": "09170c5891fa616f6423ae0d938741762b90d2b5eca317decfeef3cdac49dd5c",
+    "width": 352,
+    "height": 576,
+    "labels": "boxes-only",
+    "n_cells": 8
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_114.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_114.jpg",
+    "sha256": "112574f7e6345e8d732b35f880a4874ea77b7f4bd9453bcb673543a6c49ed50d",
+    "width": 268,
+    "height": 132,
+    "labels": "boxes-only",
+    "n_cells": 11
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_118.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_118.jpg",
+    "sha256": "f07888f2f67a6417dbcc55783bcf1259995809b483e2b4bdcfbc496a6392ba82",
+    "width": 454,
+    "height": 587,
+    "labels": "boxes-only",
+    "n_cells": 26
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_121.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_121.jpg",
+    "sha256": "6a77d00f6d479e6c60ad54ed2791ca5055de164711556c43eb28bd3d1d59b1aa",
+    "width": 114,
+    "height": 84,
+    "labels": "boxes-only",
+    "n_cells": 4
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_124.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_124.jpg",
+    "sha256": "3b734ad1ffbd6d37c24cd3a761d402232beea6e6d669c4def14abec7636ad40c",
+    "width": 312,
+    "height": 46,
+    "labels": "boxes-only",
+    "n_cells": 12
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_129.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_129.jpg",
+    "sha256": "d99d75720c18601a4278c6c486e1d600f0345c0dcf670b2d95564ad2da97a2ae",
+    "width": 742,
+    "height": 378,
+    "labels": "boxes-only",
+    "n_cells": 74
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_13.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_13.jpg",
+    "sha256": "5986fe8072affcd5c130219f5c49da186de5a07493e8ab8d9163efff575b0ab4",
+    "width": 292,
+    "height": 242,
+    "labels": "boxes-only",
+    "n_cells": 3
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_132.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_132.jpg",
+    "sha256": "a16c27c35adf1aa316f45b32fd687577fbe8644c725f690921fd9e415ae60c60",
+    "width": 291,
+    "height": 206,
+    "labels": "boxes-only",
+    "n_cells": 18
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_136.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_136.jpg",
+    "sha256": "36f440b59f77dc55b757febed8be2a9667915231714215c0083101d577c6fbd3",
+    "width": 673,
+    "height": 323,
+    "labels": "boxes-only",
+    "n_cells": 14
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_139.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_139.jpg",
+    "sha256": "893ea4fe9d00e31e67592b3f32d6007c3499d1bf5236a9b48016f19f4a5d11dc",
+    "width": 724,
+    "height": 105,
+    "labels": "boxes-only",
+    "n_cells": 4
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_142.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_142.jpg",
+    "sha256": "fb99df2ccc488f061941c553d91c0d113a302636366de916d9ef52529720c7ed",
+    "width": 683,
+    "height": 508,
+    "labels": "boxes-only",
+    "n_cells": 46
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_146.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_146.jpg",
+    "sha256": "16f1c31b8838ae3e400d94b242392a5f42e1fde0575f409027a4b3b3d660ec5d",
+    "width": 689,
+    "height": 504,
+    "labels": "boxes-only",
+    "n_cells": 14
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_148.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_148.jpg",
+    "sha256": "203ede94e7fc6d9911ac4ad82166255c7976939236a1fe4802f28a9cf08d0136",
+    "width": 457,
+    "height": 459,
+    "labels": "boxes-only",
+    "n_cells": 3
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_150.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_150.jpg",
+    "sha256": "37250e315e77994d2da7a9a1b1c4faf75b98456c1c163df5b900ece9fb0db1db",
+    "width": 762,
+    "height": 226,
+    "labels": "boxes-only",
+    "n_cells": 26
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_157.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_157.jpg",
+    "sha256": "b0fbb24b0f308d7419281884257cba565c703bc10a18c470d76d6cbf438db7a0",
+    "width": 172,
+    "height": 172,
+    "labels": "boxes-only",
+    "n_cells": 4
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_17.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_17.jpg",
+    "sha256": "b4e251eed0053b7607b79d506b68cd2c001c5cd6376429127caf743bf9f0da90",
+    "width": 499,
+    "height": 526,
+    "labels": "boxes-only",
+    "n_cells": 42
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_174.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_174.jpg",
+    "sha256": "14c75ac637859f33c49b2a752daba0ff0f9c2c4df5637b5a335c6cf1795a2b5b",
+    "width": 245,
+    "height": 219,
+    "labels": "boxes-only",
+    "n_cells": 2
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_179.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_179.jpg",
+    "sha256": "5ed2a956a6e72417c8d6dcc877d7fe34fa56ef436c173dc18ef7eaa38fd8a841",
+    "width": 4032,
+    "height": 3024,
+    "labels": "boxes-only",
+    "n_cells": 7
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_184.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_184.jpg",
+    "sha256": "72ab0834853f976ba7ce4cc6232c4104d96566ffd75fc2268796b04a48d5e103",
+    "width": 3024,
+    "height": 3024,
+    "labels": "boxes-only",
+    "n_cells": 132
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_196.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_196.jpg",
+    "sha256": "46b7cf4b67fae63d30f0638b8473120d4e49ec2516a0dceec7e06413799c2813",
+    "width": 3024,
+    "height": 3024,
+    "labels": "boxes-only",
+    "n_cells": 172
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_2.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_2.jpg",
+    "sha256": "151ce2eb158426117244af41f8d3d670dcc29f8652806be31f3cecc85bf04d7a",
+    "width": 500,
+    "height": 500,
+    "labels": "boxes-only",
+    "n_cells": 24
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_201.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_201.jpg",
+    "sha256": "0294a88479941348cdd4936bee3b04d8520492cd0d8c297c64542056000b56b7",
+    "width": 3024,
+    "height": 3024,
+    "labels": "boxes-only",
+    "n_cells": 212
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_206.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_206.jpg",
+    "sha256": "316d0b83673de52f4e8dd07dba9ccf84ba3dda1ee50d970a845c867c7a4170e9",
+    "width": 3024,
+    "height": 3024,
+    "labels": "boxes-only",
+    "n_cells": 214
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_21.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_21.jpg",
+    "sha256": "5c8d7bc8f2086d8de7deec1c90b0c0e08892b41aeffbd9b551c8ba50bafee01f",
+    "width": 838,
+    "height": 416,
+    "labels": "boxes-only",
+    "n_cells": 8
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_211.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_211.jpg",
+    "sha256": "7fc57d366534d2f7652bc0817815b65633665b6f1c70af2f607c2b44620af0eb",
+    "width": 799,
+    "height": 648,
+    "labels": "boxes-only",
+    "n_cells": 12
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_219.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_219.jpg",
+    "sha256": "b9b4053267da06f62ecdd65880f17300826016d751313e377fd440e81bb1cb6d",
+    "width": 165,
+    "height": 155,
+    "labels": "boxes-only",
+    "n_cells": 2
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_222.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_222.jpg",
+    "sha256": "72688e325b05e350e32483da77e75c16f186e298b971fbba32518c53c6188bb4",
+    "width": 640,
+    "height": 424,
+    "labels": "boxes-only",
+    "n_cells": 2
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_27.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_27.jpg",
+    "sha256": "7af753496ba8b151f5c1f0d43757969c5e7be60ab7569afa382a34296878b7df",
+    "width": 457,
+    "height": 129,
+    "labels": "boxes-only",
+    "n_cells": 14
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_30.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_30.jpg",
+    "sha256": "a94e87a0caefbe50bba4cfb64d9ff5b5b480c8c94df5219d1981fb757866479c",
+    "width": 298,
+    "height": 233,
+    "labels": "boxes-only",
+    "n_cells": 7
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_36.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_36.jpg",
+    "sha256": "b4402af22bc4019ebdd9f2d9db7bdbcdb63e8a9b469af97965f8c3eacbd9f0af",
+    "width": 180,
+    "height": 189,
+    "labels": "boxes-only",
+    "n_cells": 7
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_38.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_38.jpg",
+    "sha256": "43a217993a208ed52aa045bd02f788a2ab02eeac1fd6c876ffad480e92d760ff",
+    "width": 1065,
+    "height": 542,
+    "labels": "boxes-only",
+    "n_cells": 16
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_41.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_41.jpg",
+    "sha256": "a7ea2c23ea3378514023b510e7b6d70c59753653d7146db1dca7b2c5550b411a",
+    "width": 1124,
+    "height": 816,
+    "labels": "boxes-only",
+    "n_cells": 11
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_48.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_48.jpg",
+    "sha256": "683e09b37825eaf4e2c5dd87f4ae55073bbbc01664e3a8932e1c5fb62cb7413b",
+    "width": 1138,
+    "height": 851,
+    "labels": "boxes-only",
+    "n_cells": 13
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_5.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_5.jpg",
+    "sha256": "6917ceb8ddecb325d62d157a021a2967298253f9b6eea3beda09ff42e7699bf6",
+    "width": 799,
+    "height": 450,
+    "labels": "boxes-only",
+    "n_cells": 8
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_52.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_52.jpg",
+    "sha256": "c6cb875f1c70b6cfe4e055b0bb379a826f57ae113f2a1c60b57631a9e7c980bd",
+    "width": 1069,
+    "height": 799,
+    "labels": "boxes-only",
+    "n_cells": 9
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_57.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_57.jpg",
+    "sha256": "7564bc1804ca279dbf7096ee32cfaa4aab0ea31570041228772e05d9b3b6ccda",
+    "width": 1800,
+    "height": 933,
+    "labels": "boxes-only",
+    "n_cells": 28
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_63.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_63.jpg",
+    "sha256": "0eb56ec7fd178bf120340f707666953eeafefb2fdc110e513ab43c0f481eef34",
+    "width": 815,
+    "height": 748,
+    "labels": "boxes-only",
+    "n_cells": 6
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_71.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_71.jpg",
+    "sha256": "e55d4457ecc300474a085734c8137f3b794f0a0c66ef7fc131f44fd2000c9bdc",
+    "width": 1920,
+    "height": 1277,
+    "labels": "boxes-only",
+    "n_cells": 240
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_74.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_74.jpg",
+    "sha256": "25c19103e01f43b090a502763f44c6e5a141854e849b167ddf89d9a54b7aaa70",
+    "width": 396,
+    "height": 400,
+    "labels": "boxes-only",
+    "n_cells": 12
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_8.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_8.jpg",
+    "sha256": "140a7826f936f7166cf0e4ca229d81e3f78657e0e676e104e401b808b67a4c53",
+    "width": 459,
+    "height": 301,
+    "labels": "boxes-only",
+    "n_cells": 48
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_80.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_80.jpg",
+    "sha256": "d184f26be2f0a3781e38dcc59d7c66b4bbfc2052d33232e7a5a60aa041131332",
+    "width": 800,
+    "height": 1015,
+    "labels": "boxes-only",
+    "n_cells": 111
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_86.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_86.jpg",
+    "sha256": "8d231e60b3502fb3f9fecdb1a16bc4ee442ca17a463305ff276dc3191d557486",
+    "width": 252,
+    "height": 231,
+    "labels": "boxes-only",
+    "n_cells": 4
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_91.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_91.jpg",
+    "sha256": "e95c6f73a5442386b07bf6b0d4cd66b813b304e229abe03aa23381211607d952",
+    "width": 1920,
+    "height": 1440,
+    "labels": "boxes-only",
+    "n_cells": 10
+   },
+   {
+    "set": "braille-natural-test",
+    "id": "braille-natural-test:braille_natural/VOC_Braille/natural_test/JPEGImages/img_97.jpg",
+    "image": "braille_natural/VOC_Braille/natural_test/JPEGImages/img_97.jpg",
+    "sha256": "675fded06a1af920058df90029dbb37f0632e1fe89d4b8f46d081d115e4618cb",
+    "width": 902,
+    "height": 818,
+    "labels": "boxes-only",
+    "n_cells": 4
+   }
+  ],
+  "not-braille": [
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/016.jpg",
+    "image": "angelina/not_braille/misc/016.jpg",
+    "sha256": "d1db9c302ad374cb719b547b1c4d2e935b566f6b237e0738c752ba7d136f8103",
+    "width": 813,
+    "height": 600,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/1-1-771x1024.jpg",
+    "image": "angelina/not_braille/misc/1-1-771x1024.jpg",
+    "sha256": "91c1bd7af049cf64381a8a08112d2665e3834dde9314c663798cf322b3ff7aa8",
+    "width": 771,
+    "height": 1024,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/1.jpg",
+    "image": "angelina/not_braille/misc/1.jpg",
+    "sha256": "8d69d825d6986ae8adc4acec30d966328771b497ac226de7eb735786cbada3cc",
+    "width": 609,
+    "height": 842,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/100_3.jpg",
+    "image": "angelina/not_braille/misc/100_3.jpg",
+    "sha256": "30055b6c594e879263ff62bea95af207bab6dde84acb879f620e5aac20f55156",
+    "width": 800,
+    "height": 537,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/1075031.jpg",
+    "image": "angelina/not_braille/misc/1075031.jpg",
+    "sha256": "58dd12778dcc541d5867a5d3abf3b4277080691dbee4f4bd731b66aa277c7c50",
+    "width": 800,
+    "height": 506,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/110.jpg",
+    "image": "angelina/not_braille/misc/110.jpg",
+    "sha256": "aa42f4ccff1be99cd0c7d65ad2fd5009661fbf13164031202c63117e2250aaf4",
+    "width": 1500,
+    "height": 1137,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/12.jpg",
+    "image": "angelina/not_braille/misc/12.jpg",
+    "sha256": "0669505df615ddfaba51006abb86571f381c16c0d2e59150b00725d5a565af6d",
+    "width": 750,
+    "height": 590,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/136_137.jpg",
+    "image": "angelina/not_braille/misc/136_137.jpg",
+    "sha256": "73b6f10272693fdf2786d833212dc0f26a84a5fc0bd4eb85f6d196cbf0cfd7e0",
+    "width": 1095,
+    "height": 852,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/1425477228.jpg",
+    "image": "angelina/not_braille/misc/1425477228.jpg",
+    "sha256": "382a3170a850d7332bf188973ff3c19d8c71a115099bfffef8bb987fa59e37e1",
+    "width": 816,
+    "height": 600,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/150721051064641325.jpg",
+    "image": "angelina/not_braille/misc/150721051064641325.jpg",
+    "sha256": "9753c57800f55928a515f5f85d70ce9e464ebe9209c64b155c168a161a917764",
+    "width": 800,
+    "height": 1250,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/16-1071-56-02.jpg",
+    "image": "angelina/not_braille/misc/16-1071-56-02.jpg",
+    "sha256": "e5a338fd1317f8b6141cf4243942070ba914c40b4584b3a2af44c442a62a4723",
+    "width": 828,
+    "height": 1134,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/18.jpg",
+    "image": "angelina/not_braille/misc/18.jpg",
+    "sha256": "c9a7b58f4f0ab0d4e03044348cb49ba80aa6c8953456eb72915c5b9681777e0b",
+    "width": 750,
+    "height": 555,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/2345678-500x500.jpg",
+    "image": "angelina/not_braille/misc/2345678-500x500.jpg",
+    "sha256": "062f5cff2b03be27c388ce24d2230d029a1e3a0f4f4dd376425ea1dce9d1efc4",
+    "width": 500,
+    "height": 500,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/241-2630-8-461.jpg",
+    "image": "angelina/not_braille/misc/241-2630-8-461.jpg",
+    "sha256": "9e347ec59eff35effbb5fdf21dd067a166b113767808256ace348fb28b3f9845",
+    "width": 843,
+    "height": 1134,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/2439_7414_1554326116.jpg",
+    "image": "angelina/not_braille/misc/2439_7414_1554326116.jpg",
+    "sha256": "13d4f53cdad6d18e9f5e96e304a635b2c2ccfd811bc6c68e9857c167ad9d5a1f",
+    "width": 1200,
+    "height": 898,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/3_78360.jpg",
+    "image": "angelina/not_braille/misc/3_78360.jpg",
+    "sha256": "6443d356cc733d2e2acd9d1d0276e359d34bd81f7b60f3fbf4d20dcc7340d138",
+    "width": 828,
+    "height": 650,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/421050149.jpg",
+    "image": "angelina/not_braille/misc/421050149.jpg",
+    "sha256": "16736aa8442cc42ed597d57fd2c956749f3cc9e1ec44e0a96eea2a72ebbdfba6",
+    "width": 755,
+    "height": 488,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/4526DE1B.jpg",
+    "image": "angelina/not_braille/misc/4526DE1B.jpg",
+    "sha256": "f47055df3754ef66624674d326dd3cce286e0de098968e54e76b3e1bb43f3aa4",
+    "width": 1427,
+    "height": 1472,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/4531173_900.jpg",
+    "image": "angelina/not_braille/misc/4531173_900.jpg",
+    "sha256": "4948ad3643bf60483df67fc526be5b0bd26d1aa21f4744531baccdb367652dde",
+    "width": 900,
+    "height": 691,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/6.jpg",
+    "image": "angelina/not_braille/misc/6.jpg",
+    "sha256": "97c99c13b0b12c26cbba69407ac5eb117dc22c55c6a0225ca5c4dbdb6cb5072b",
+    "width": 960,
+    "height": 720,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/754450.jpg",
+    "image": "angelina/not_braille/misc/754450.jpg",
+    "sha256": "a6c64c4b7c70321d2f1b1888fb3727bcb268bb80f19528a7a831969760a1dc9d",
+    "width": 700,
+    "height": 982,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/754452.jpg",
+    "image": "angelina/not_braille/misc/754452.jpg",
+    "sha256": "55fc1a4c90a84e54a5a862e3ee36412f5bec45d926c14b941d1a3d55cbdbaf12",
+    "width": 700,
+    "height": 982,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/7636_1464_1554326122.jpg",
+    "image": "angelina/not_braille/misc/7636_1464_1554326122.jpg",
+    "sha256": "bd6d21ec199c1f1fd2d5f3aa3fcda21529d16736e22c5c7b320861c8de78a97d",
+    "width": 1200,
+    "height": 898,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/93970_640.jpg",
+    "image": "angelina/not_braille/misc/93970_640.jpg",
+    "sha256": "26dae2c0a3b4a9f8deeed401ec6da961d236dae6833d8d9dadf6ec9b60fb14aa",
+    "width": 640,
+    "height": 467,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/B-VOd48sS2g.jpg",
+    "image": "angelina/not_braille/misc/B-VOd48sS2g.jpg",
+    "sha256": "7635ec9b1d15b7b05bb9e8795b3d37bc35757ec3978196e618323ab76af517e5",
+    "width": 810,
+    "height": 1080,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/BBPiFKnzACqInOtJ.jpg",
+    "image": "angelina/not_braille/misc/BBPiFKnzACqInOtJ.jpg",
+    "sha256": "be4d46240e0655888bb6e229fe15f8fcd85ed68eb6bd30da2041f0684f751c5f",
+    "width": 1108,
+    "height": 722,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/_06.jpg",
+    "image": "angelina/not_braille/misc/_06.jpg",
+    "sha256": "72c0167e53c9953870eada810877a88e6563f1c0f65fae129ea59b26294b60a6",
+    "width": 552,
+    "height": 440,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/a1a996e8641f.jpg",
+    "image": "angelina/not_braille/misc/a1a996e8641f.jpg",
+    "sha256": "e96d0813cc07f2458590e1cfc367a6eb77b3077d8864a84aa850087e39474eef",
+    "width": 2105,
+    "height": 1529,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/avtomobilnyh-ts_soderzhanie.jpg",
+    "image": "angelina/not_braille/misc/avtomobilnyh-ts_soderzhanie.jpg",
+    "sha256": "cdd42ee6cb931c84693e2a040c251c37804b4c3ba17321022afcb0985806003a",
+    "width": 1136,
+    "height": 900,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/f19ffeceaa1658.jpg",
+    "image": "angelina/not_braille/misc/f19ffeceaa1658.jpg",
+    "sha256": "59c2a006cbeae1f6d2e7487122a40502cc845d9fbb96fbece97714fa05fe31e6",
+    "width": 1200,
+    "height": 902,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/greek.jpg",
+    "image": "angelina/not_braille/misc/greek.jpg",
+    "sha256": "dd75e82c1c9aaabf817dbf0c7aed244c3e095c3b33c5615817a5c6feecebaf4a",
+    "width": 1152,
+    "height": 681,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/image017.jpg",
+    "image": "angelina/not_braille/misc/image017.jpg",
+    "sha256": "bc5f23b3ac38b37707c782f1a7ce248de32d1efda5bed0b70f28f03722b2795a",
+    "width": 2000,
+    "height": 1541,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/image018.jpg",
+    "image": "angelina/not_braille/misc/image018.jpg",
+    "sha256": "275d3950b0690e67932233e0e3aea8ff721ef28af766c659870285318cd6b596",
+    "width": 2000,
+    "height": 1749,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/image019.jpg",
+    "image": "angelina/not_braille/misc/image019.jpg",
+    "sha256": "56a3b2b41f2ecd282810c787fb008eaad4c550ee9a7d9166f88205621fd05d71",
+    "width": 2000,
+    "height": 1505,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/image050.jpg",
+    "image": "angelina/not_braille/misc/image050.jpg",
+    "sha256": "4a439b5b7622f46138d1db575b54260b13d867ddcdac6b0129775b9a7e9d8fbc",
+    "width": 1430,
+    "height": 1023,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/img.jpg",
+    "image": "angelina/not_braille/misc/img.jpg",
+    "sha256": "532d95277f9e6bd784be1ffb0186b2d0196b97c765f8a7a72a6501b32ea25fb6",
+    "width": 600,
+    "height": 422,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/kopt5.jpg",
+    "image": "angelina/not_braille/misc/kopt5.jpg",
+    "sha256": "199e9f12be8d81c8cb69f5c870d2e5a6d75ced12e9867a317119819988e65ab7",
+    "width": 2400,
+    "height": 3000,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/memuar-5.jpg",
+    "image": "angelina/not_braille/misc/memuar-5.jpg",
+    "sha256": "7915d55ae0163b87695d0c21ca9b6ee30cfced113c86f2b4ddf8f62884f88ce8",
+    "width": 600,
+    "height": 826,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/perevod.jpg",
+    "image": "angelina/not_braille/misc/perevod.jpg",
+    "sha256": "88f713f8c68a7bb6a2656d09d0af57c883185260b0bca8bdd942222e76b14e9a",
+    "width": 1000,
+    "height": 792,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/s-poslednjaja-400um.jpg",
+    "image": "angelina/not_braille/misc/s-poslednjaja-400um.jpg",
+    "sha256": "8bd1501a86cd183351d4042f5d0520b9c4a8d2dcdb343ef4d67bf62866cbd598",
+    "width": 600,
+    "height": 454,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/st01.jpg",
+    "image": "angelina/not_braille/misc/st01.jpg",
+    "sha256": "ebd510af18e18a3d7bf73468b4ef37281b9879c989369a014a9f83677ff764bf",
+    "width": 700,
+    "height": 351,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/twd03.jpg",
+    "image": "angelina/not_braille/misc/twd03.jpg",
+    "sha256": "4d64e8dbfa0b8d7907a1a0d4ace4067790caaabeb24254db66a46fe93c7b81bb",
+    "width": 706,
+    "height": 914,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/twd06.jpg",
+    "image": "angelina/not_braille/misc/twd06.jpg",
+    "sha256": "ed4bfa637d73767c0a676df8fd2e7c8f4958ff15c3ef4c1f14bef1ce6385a4e6",
+    "width": 640,
+    "height": 514,
+    "n_cells": 0
+   },
+   {
+    "set": "not-braille",
+    "id": "not-braille:angelina/not_braille/misc/ul.jpg",
+    "image": "angelina/not_braille/misc/ul.jpg",
+    "sha256": "1db8fda57793190c600da92d07e19d4a31547a3bb93971059091666034696acc",
+    "width": 600,
+    "height": 439,
+    "n_cells": 0
+   }
+  ]
+ }
+}

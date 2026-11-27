@@ -42,8 +42,7 @@ from ultralytics import YOLO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pipeline                                                 # noqa: E402
-from dot_pattern_utils import TILE_SIZE                         # noqa: E402
+import reader                                                   # noqa: E402
 from model_fetch import resolve_model, resolve_classifier_path  # noqa: E402
 
 MAX_EMBED_PX = 2400   # downscale for display only; coordinates stay in original px
@@ -53,20 +52,11 @@ def predict(img, model, max_det, use_classifier=True):
     """Core path only: scale-normalized tiled detection + classifier. No recovery
     stages — experiment 5 showed they contribute no real cells, and a labeler
     should not be asked to delete 50 invented cells per page."""
-    cells = pipeline.run_detection_tiled(img, model, max_det, TILE_SIZE)
-    if len(cells) >= pipeline.CONTAINER_MIN_CANDIDATES:
-        hi = [c for c in cells if c['conf'] >= pipeline.HIGH_CONF]
-        sample = hi if len(hi) >= pipeline.CONTAINER_MIN_CANDIDATES else cells
-        median_w = statistics.median(c['w'] for c in sample)
-        native = max(pipeline.MIN_NATIVE_TILE,
-                     round(median_w * TILE_SIZE / pipeline.TARGET_CELL_PX))
-        if not 0.67 <= native / TILE_SIZE <= 1.5:
-            cells = pipeline.run_detection_tiled(img, model, max_det, native)
-
-    cells = [c for c in cells if c['conf'] >= pipeline.HIGH_CONF]
+    cells = reader.detect_scale_normalized(img, model, max_det)
+    cells = [c for c in cells if c['conf'] >= reader.HIGH_CONF]
     if use_classifier and cells:
-        clf, dev, tf = pipeline.load_cell_classifier(resolve_classifier_path())
-        cells = pipeline.reclassify_cells(img, cells, clf, dev, tf)
+        clf, dev, tf = reader.load_cell_classifier(resolve_classifier_path())
+        cells = reader.reclassify_cells(img, cells, clf, dev, tf)
     return cells
 
 
@@ -569,7 +559,7 @@ def main():
     img = PIL.ImageOps.exif_transpose(PIL.Image.open(src)).convert('RGB')
     model = YOLO(str(resolve_model('cell_detector.pt')))
     cells = predict(img, model, args.max_det, not args.no_classifier)
-    print(f'  {len(cells)} cells predicted at conf >= {pipeline.HIGH_CONF}')
+    print(f'  {len(cells)} cells predicted at conf >= {reader.HIGH_CONF}')
 
     out = build_page(img, cells, src.name,
                      Path(args.out) / f'{src.stem}.label.html')
