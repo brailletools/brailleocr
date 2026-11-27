@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { estimateSkew, groupIntoLines, insertSpaces, layoutCellsIntoLines, bitsToBraille, layoutToUnicodeBraille } from '../src/lineLayout.js';
+import { estimatePitch, estimateSkew, groupIntoLines, insertSpaces, layoutCellsIntoLines, bitsToBraille, layoutToUnicodeBraille } from '../src/lineLayout.js';
 
 test('bitsToBraille matches pipeline.py bits_to_braille() literal codepoints', () => {
 	// Cross-checked by hand against chr(0x2800 + int(bits6[::-1], 2)) for each
@@ -87,6 +87,12 @@ test('groupIntoLines starts a new line once the gap from the previous cell excee
 	assert.equal(lines.length, 2);
 	assert.equal(lines[0].length, 2);
 	assert.equal(lines[1].length, 2);
+});
+
+test('estimatePitch ignores word spaces even when they are most of the gaps', () => {
+	// One-letter words: every other gap is a blank cell, so the median gap is the wide one.
+	const line = [0, 50, 150, 200, 300, 350, 450, 500, 600].map((cx) => cell(cx, 100));
+	assert.equal(estimatePitch([line], 25), 50);
 });
 
 test('insertSpaces leaves normally-spaced cells alone and fills a wide gap', () => {

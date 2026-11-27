@@ -142,6 +142,13 @@ function consecutiveGaps(sortedLine) {
 	return sortedLine.slice(1).map((c, i) => c.cx - sortedLine[i].cx);
 }
 
+// Word spaces and missed cells make some gaps two or more pitches wide, so the
+// pitch is read from the lower part of the gap distribution. The median would be
+// pulled up on pages of short words, where wide gaps are half or more of all gaps;
+// the lower quartile stays on ordinary letter-to-letter gaps until over three
+// quarters of the gaps are wide.
+const PITCH_QUANTILE = 0.25;
+
 /**
  * The page's cell pitch: the horizontal distance between neighboring cells in a
  * word. Falls back to a multiple of cell width when no two cells share a line.
@@ -149,8 +156,10 @@ function consecutiveGaps(sortedLine) {
  * @param {number} avgCellW
  */
 export function estimatePitch(lines, avgCellW) {
-	const gaps = lines.flatMap((line) => consecutiveGaps([...line].sort((a, b) => a.cx - b.cx)));
-	return gaps.length ? median(gaps) : avgCellW * 1.4;
+	const gaps = lines
+		.flatMap((line) => consecutiveGaps([...line].sort((a, b) => a.cx - b.cx)))
+		.sort((a, b) => a - b);
+	return gaps.length ? gaps[Math.floor(PITCH_QUANTILE * (gaps.length - 1))] : avgCellW * 1.4;
 }
 
 /**

@@ -57,6 +57,12 @@ def test_blank_cells_are_counted_in_pitches_not_cell_widths():
     assert sum(1 for c in result if c.get('is_space')) == 1
 
 
+def test_pitch_ignores_word_spaces_even_when_they_are_most_of_the_gaps():
+    # One-letter words: every other gap is a blank cell, so the median gap is the wide one.
+    line = [cell(cx, 100) for cx in (0, 50, 150, 200, 300, 350, 450, 500, 600)]
+    assert pipeline.estimate_pitch([line], 25) == 50
+
+
 def test_wide_gap_gets_several_blank_cells():
     line = [cell(cx, 100) for cx in (0, 30, 60, 210, 240)]
     result = pipeline.insert_spaces(line, 30)

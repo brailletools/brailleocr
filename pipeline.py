@@ -634,10 +634,18 @@ def _gaps(sorted_line):
     return [b['cx'] - a['cx'] for a, b in zip(sorted_line, sorted_line[1:])]
 
 
+PITCH_QUANTILE = 0.25  # see js/src/lineLayout.js
+
+
 def estimate_pitch(lines, avg_cell_w):
-    """Page-wide horizontal distance between neighbouring cells in a word."""
-    gaps = [g for ln in lines for g in _gaps(sorted(ln, key=lambda c: c['cx']))]
-    return statistics.median(gaps) if gaps else avg_cell_w * 1.4
+    """
+    Page-wide horizontal distance between neighbouring cells in a word. Word
+    spaces and missed cells make some gaps two or more pitches wide, so this reads
+    the lower quartile rather than the median, which pages of short words would
+    pull up (wide gaps are then half or more of all gaps).
+    """
+    gaps = sorted(g for ln in lines for g in _gaps(sorted(ln, key=lambda c: c['cx'])))
+    return gaps[int(PITCH_QUANTILE * (len(gaps) - 1))] if gaps else avg_cell_w * 1.4
 
 
 def _char_spacing(line_x, avg_w):
