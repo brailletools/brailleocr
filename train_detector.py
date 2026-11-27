@@ -78,7 +78,9 @@ def main():
             degrees=0.0,  # dot positions are orientation-sensitive
         )
 
-    metrics = model.val(data=args.data, split=args.eval_split, device=device)
+    # without project/name ultralytics writes its plots to ./runs, inside the repository
+    metrics = model.val(data=args.data, split=args.eval_split, device=device,
+                        project=str(run_dir.parent), name=f'{run_dir.name}-eval', exist_ok=True)
     print(f"\n{args.eval_split} split: mAP50={metrics.box.map50:.4f}  mAP50-95={metrics.box.map:.4f}")
     print(f"best weights: {run_dir / 'weights' / 'best.pt'}")
 

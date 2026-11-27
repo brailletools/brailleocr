@@ -6,3 +6,4 @@ CLAUDE.local.md
 *.pt
 node_modules/
 eval/private/
+runs/
