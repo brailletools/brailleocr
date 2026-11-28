@@ -80,8 +80,7 @@ DEFAULT_SCRATCH_CLASSIFIER = Path('/tmp/braille-crops/cell_classifier.pt')
 
 def resolve_classifier_path(scratch: Path = DEFAULT_SCRATCH_CLASSIFIER) -> Path:
     """
-    cell_classifier.pt resolution shared by pipeline.py and evaluate.py, in
-    the same priority order pipeline.py used before this module existed:
+    cell_classifier.pt resolution shared by reader.py and the experiments. Priority order:
     1. sibling `dataset` checkout (REPOS_ROOT/dataset/models/cell_classifier.pt)
        -- the published, versioned copy.
     2. `scratch` (default /tmp/braille-crops/cell_classifier.pt) -- a

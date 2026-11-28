@@ -148,6 +148,12 @@ function consecutiveGaps(sortedLine) {
 // the lower quartile stays on ordinary letter-to-letter gaps until over three
 // quarters of the gaps are wide.
 const PITCH_QUANTILE = 0.25;
+// Neighboring cells are at least this many cell-box widths apart (boxes are about 0.75 of the
+// pitch wide, so a real pitch is about 1.33 widths).
+const MIN_PITCH_OVER_CELL_W = 1.0;
+// A gap holds at most this many blank cells. More than a few is an indent or a stray
+// detection, and unbounded counts turned one bad box into thousands of spaces.
+const MAX_BLANK_CELLS = 5;
 
 /**
  * The page's cell pitch: the horizontal distance between neighboring cells in a
@@ -158,6 +164,10 @@ const PITCH_QUANTILE = 0.25;
 export function estimatePitch(lines, avgCellW) {
 	const gaps = lines
 		.flatMap((line) => consecutiveGaps([...line].sort((a, b) => a.cx - b.cx)))
+		// Two boxes closer than one cell width are the same cell drawn twice, not two cells.
+		// Left in, they drag the lower quartile toward zero and every real gap then looks like
+		// hundreds of blank cells (BrailleBench: one image produced 13,716 of them).
+		.filter((g) => g >= MIN_PITCH_OVER_CELL_W * avgCellW)
 		.sort((a, b) => a - b);
 	return gaps.length ? gaps[Math.floor(PITCH_QUANTILE * (gaps.length - 1))] : avgCellW * 1.4;
 }
@@ -177,17 +187,21 @@ export function insertSpaces(lineCells, pagePitch) {
 	if (line.length <= 1) return line;
 
 	const gaps = consecutiveGaps(line);
-	let pitch = pagePitch;
+	// Never trust a pitch below one cell width (see estimatePitch).
+	const cellW = median(line.map((c) => c.w));
+	let pitch = Math.max(pagePitch, MIN_PITCH_OVER_CELL_W * cellW);
 	if (gaps.length >= MIN_GAPS_FOR_LINE_PITCH) {
 		const own = median(gaps);
-		if (Math.abs(own - pagePitch) <= pagePitch * LINE_PITCH_TOLERANCE) pitch = own;
+		if (Math.abs(own - pagePitch) <= pagePitch * LINE_PITCH_TOLERANCE) {
+			pitch = Math.max(own, MIN_PITCH_OVER_CELL_W * cellW);
+		}
 	}
 
 	const result = [line[0]];
 	for (let i = 1; i < line.length; i++) {
 		const gap = line[i].cx - line[i - 1].cx;
 		if (gap >= pitch * SPACE_GAP_PITCHES) {
-			const nSpaces = Math.max(1, bankersRound(gap / pitch) - 1);
+			const nSpaces = Math.min(MAX_BLANK_CELLS, Math.max(1, bankersRound(gap / pitch) - 1));
 			for (let s = 0; s < nSpaces; s++) {
 				result.push({ cx: null, cy: line[i].cy, bits: '000000', isSpace: true });
 			}

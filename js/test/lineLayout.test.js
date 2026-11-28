@@ -155,3 +155,20 @@ test('layoutCellsIntoLines + layoutToUnicodeBraille produce two lines with a mid
 	assert.equal(renderedLine1, '⠁⠁⠁⠀⠀⠀⠀⠁⠁');
 	assert.equal(renderedLine2, '⠠⠠');
 });
+
+test('boxes drawn twice on one cell do not collapse the pitch or flood the line with blanks', () => {
+	// Four real cells 60 px apart, each detected twice (a full box and a partial one on top).
+	const cells = [];
+	for (let i = 0; i < 4; i++) {
+		cells.push(cell(100 + i * 60, 100, '100000'), cell(100 + i * 60 + 1, 96, '000000'));
+	}
+	const line = layoutCellsIntoLines(cells)[0];
+	assert.ok(line.filter((c) => c.isSpace).length <= 5, 'no runaway blank cells');
+	assert.ok(estimatePitch([[...cells]], 25) >= 25, 'pitch is never below a cell width');
+});
+
+test('one stray far-away detection adds a bounded number of blanks', () => {
+	const cells = [cell(0, 100), cell(35, 100), cell(70, 100), cell(100000, 100)];
+	const blanks = layoutCellsIntoLines(cells)[0].filter((c) => c.isSpace).length;
+	assert.equal(blanks, 5);
+});

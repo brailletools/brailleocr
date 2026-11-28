@@ -9,7 +9,7 @@
 // pipeline.py's own process_container() docstring, and the ~3x oversized
 // boxes this produced before this module existed).
 
-import { cropRgbHwc } from './imageOps.js';
+import { cropRgbHwc, scaleOntoCanvas } from './imageOps.js';
 import { nms, iou } from './nms.js';
 
 // Shared with prepare_yolo_dataset.py (see dot_pattern_utils.py) — the
@@ -229,6 +229,26 @@ export function resolveOverlaps(cells, iouThreshold = RESIDUAL_OVERLAP_IOU) {
 }
 
 /**
+ * An image smaller than the tile size it was asked to be read at. A tile of native size L
+ * is shown to the detector at 640/L of its native pixels; but the detector's own letterbox
+ * scales whatever it is given to fit 640, so a small image would be blown up to 640 and its
+ * cells would arrive far larger than the density the detector learned (cells of 170 px in a
+ * 1000 px image reach it at 110 px, not 30). Scaling the image by 640/L and placing it on a
+ * 640 canvas gives the detector exactly the density a full tile would have.
+ */
+async function detectSmallImage(detector, rgbHwc, imgW, imgH, nativeTileSize, opts) {
+	const canvas = scaleOntoCanvas(rgbHwc, imgW, imgH, 640 / nativeTileSize);
+	const cells = await detector.detect(canvas.data, canvas.w, canvas.h, opts);
+	return cells.map((c) => ({
+		...c,
+		cx: c.cx / canvas.scaleX,
+		cy: c.cy / canvas.scaleY,
+		w: c.w / canvas.scaleX,
+		h: c.h / canvas.scaleY
+	}));
+}
+
+/**
  * Direct port of pipeline.py's run_detection_tiled(): tiles the image at
  * nativeTileSize, runs `detector` on each tile (its own internal letterbox +
  * NMS already matches ultralytics' per-call behavior — see detector.js), drops
@@ -251,6 +271,9 @@ export function resolveOverlaps(cells, iouThreshold = RESIDUAL_OVERLAP_IOU) {
 export async function detectTiled(detector, rgbHwc, imgW, imgH, nativeTileSize, opts = {}) {
 	const boxes = makeTileBoxes(imgW, imgH, nativeTileSize);
 	if (boxes.length === 1) {
+		if (nativeTileSize > Math.max(imgW, imgH)) {
+			return detectSmallImage(detector, rgbHwc, imgW, imgH, nativeTileSize, opts);
+		}
 		return detector.detect(rgbHwc, imgW, imgH, opts);
 	}
 
@@ -293,6 +316,9 @@ export async function detectTiled(detector, rgbHwc, imgW, imgH, nativeTileSize, 
  * size if that measurement says it matters (more than 50% off either way).
  * @param {import('./detector.js').CellDetector} detector
  * @param {Float32Array} rgbHwc - HWC RGB, values 0-255, full (untiled) image
+ * @param {{targetCellPx?: number}} [opts] - plus the detector's own options. targetCellPx is
+ *   the box width the detector was trained to see; it defaults to TARGET_CELL_PX and only
+ *   differs for a model trained with another value.
  */
 export async function detectScaleNormalized(detector, rgbHwc, imgW, imgH, opts = {}) {
 	const initialCells = await detectTiled(detector, rgbHwc, imgW, imgH, TILE_SIZE, opts);
@@ -308,7 +334,8 @@ export async function detectScaleNormalized(detector, rgbHwc, imgW, imgH, opts =
 	// A tile of native size L resized to TILE_SIZE for the model scales a
 	// cell by TILE_SIZE/L; solving medianW * TILE_SIZE/L = TARGET_CELL_PX
 	// for L gives this.
-	const nativeTileSize = Math.max(MIN_NATIVE_TILE, Math.round((medianW * TILE_SIZE) / TARGET_CELL_PX));
+	const targetCellPx = opts.targetCellPx ?? TARGET_CELL_PX;
+	const nativeTileSize = Math.max(MIN_NATIVE_TILE, Math.round((medianW * TILE_SIZE) / targetCellPx));
 
 	const ratio = nativeTileSize / TILE_SIZE;
 	if (ratio > 1.5 || ratio < 0.67) {

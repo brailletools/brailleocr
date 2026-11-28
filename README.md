@@ -1,82 +1,49 @@
 # brailleocr
 
-Python OCR pipeline for phone photos of embossed Braille pages. Detects Braille cells with YOLOv8, optionally reclassifies them with a MobileNetV2 cell classifier, and back-translates the result to English text.
+Reads embossed Braille from phone photos. The reader that ships is JavaScript
+(`js/`, published to the web editor as `@brailletools/brailleocr-web`): it detects
+Braille cells with a small YOLOv8 model, classifies each cell's dots with a MobileNetV2
+model, and lays the cells out in lines. Both models run in the browser through
+onnxruntime-web. The Python here is a small second implementation of detection and classification,
+used for labeling and to generate test fixtures.
+
+Training, evaluation, labeling and experiments live in the separate, private
+`braille-research` repository, along with research notes, plans and result files:
+`AUDIT.md` there lists known bugs or unfinished validation, and `RESEARCH.md` is old
+and has errors (corrections are up front). Comments in this code that cite those files refer
+to that repository.
+
+## Organization
+
+| Path | What |
+|---|---|
+| `js/src/` | The reader: orientation search, scale-normalized tiled detection, classification, line layout |
+| `reader.py` | Python tiled detection and classification, used only by labeling and the JS test fixtures |
+| `dot_pattern_utils.py` | Tiling and box conventions that the readers and training must share |
+| `model_fetch.py` | Finds the trained models, or downloads the pinned release |
+
+The trained models live in the sibling `dataset` repo (`../dataset/models`).
 
 ## Setup
 
-Requires [pixi](https://pixi.sh).
+Python tools use [pixi](https://pixi.sh):
 
 ```bash
 pixi install
-pixi shell   # or prefix commands below with `pixi run`
+pixi shell          # or prefix commands with `pixi run`
 ```
 
-This also installs [liblouis-env](https://github.com/brailletools/liblouis-env), which
-fetches/locates the `lou_translate` binary for you (works on macOS, Linux, and Windows —
-see that repo for details). No manual liblouis install step needed.
-
-Download the YOLOv8 Braille model (first run will auto-download via ultralytics, or place manually):
+The JavaScript reader and the scorer need Node 22 or later:
 
 ```bash
-mkdir -p /tmp/yolov8-braille
-# The model is fetched automatically from HuggingFace on first use:
-#   snoop2head/yolov8m-braille
+cd js && npm ci && npm test
 ```
 
-Optional: download the MobileNetV2 cell classifier from the
-[brailletools/dataset](https://github.com/brailletools/dataset) repo
-(`models/cell_classifier.pt`) and place it at `/tmp/braille-crops/cell_classifier.pt`.
-The pipeline uses it automatically if found.
+## History
 
-## Run on an image
-
-```bash
-python pipeline.py path/to/braille_photo.jpg
-```
-
-Run on a whole directory:
-
-```bash
-python pipeline.py path/to/photos/
-```
-
-**Options:**
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--lang TABLE` | `en-ueb-g2.ctb` | liblouis table for back-translation |
-| `--classifier PATH` | auto-detect | Path to `cell_classifier.pt` |
-| `--no-contrast-search` | off | Skip multi-pass contrast tuning |
-| `--no-spellcheck` | off | Disable spell-correction of output |
-
-**Output files** are written to `/tmp/braille-yolo-results/`:
-
-- `*_annotated.jpg` — detected cells coloured by confidence (green/yellow/red = reliable, cyan = rescued)
-- `*_dots.jpg` — dot-level debug view
-
-## Sample script
-
-```bash
-./run_ocr.sh path/to/braille_photo.jpg
-```
-
-## Evaluate on a labelled dataset
-
-```bash
-python evaluate.py --dataset path/to/labeled_dataset/
-```
-
-The dataset directory should contain `.jpg` image files and matching `.json` annotation files
-(see `evaluate.py` `--help` for format details).
-
-## Training the cell classifier
-
-```bash
-# 1. Extract crops from the Angelina dataset (clone as a submodule first)
-python extract_crops.py
-
-# 2. Train
-python train_classifier.py
-```
-
-The trained model is saved to `/tmp/braille-crops/cell_classifier.pt`.
+Until 2026-11-27 this repo also had `pipeline.py`, a Python command-line reader with
+contrast search, container detection, "recovery" stages that guessed at missed cells,
+spell-correction and liblouis translation. Measurements showed the recovery stages only
+invented cells, the web editor never used it, and its evaluation scripts scored something
+other than what ships, so it was removed (see `AUDIT.md`). It remains in git history, and
+comments in `js/src` that say "port of pipeline.py" refer to it.
