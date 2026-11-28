@@ -150,3 +150,23 @@ test('an image at least as large as the tile is passed through unchanged', async
 	await detectTiled(detector, new Float32Array(600 * 400 * 3), 600, 400, 600);
 	assert.deepEqual(seen, [[600, 400]]);
 });
+
+import { detectScaleNormalized } from '../src/tiling.js';
+
+test('the tile size follows the box width the detector was trained to see', async () => {
+	// Cells 60 px wide in a 3000 px image. The first pass uses 640 px tiles; the second must
+	// use 60 * 640 / target px tiles, which the fake detector observes as the tile width.
+	const run = async (opts) => {
+		const widths = new Set();
+		const detector = {
+			async detect(rgb, w) {
+				widths.add(w);
+				return [100, 200, 300].map((cx) => ({ cx, cy: 100, w: 60, h: 90, conf: 0.9 }));
+			}
+		};
+		await detectScaleNormalized(detector, new Float32Array(3000 * 3000 * 3), 3000, 3000, opts);
+		return [...widths];
+	};
+	assert.deepEqual(await run({}), [640, 1280]); // default 30 px
+	assert.deepEqual(await run({ targetCellPx: 20 }), [640, 1920]);
+});

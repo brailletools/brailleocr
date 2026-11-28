@@ -52,3 +52,15 @@ def test_tiles_are_refined_only_when_the_cell_size_is_far_from_target(monkeypatc
     assert (len(sizes) == 2) == retiles
     if retiles:
         assert sizes[1] == round(cell_w * TILE_SIZE / TARGET_CELL_PX)
+
+
+def test_the_tile_size_follows_the_box_width_the_detector_was_trained_to_see(monkeypatch):
+    sizes = []
+
+    def fake(img, model, max_det, native):
+        sizes.append(native)
+        return [cell(i * 90, 10, w=60) for i in range(10)]
+
+    monkeypatch.setattr(reader, 'run_detection_tiled', fake)
+    reader.detect_scale_normalized(PIL.Image.new('RGB', (10, 10)), None, target_cell_px=20)
+    assert sizes == [TILE_SIZE, 1920]

@@ -316,6 +316,9 @@ export async function detectTiled(detector, rgbHwc, imgW, imgH, nativeTileSize, 
  * size if that measurement says it matters (more than 50% off either way).
  * @param {import('./detector.js').CellDetector} detector
  * @param {Float32Array} rgbHwc - HWC RGB, values 0-255, full (untiled) image
+ * @param {{targetCellPx?: number}} [opts] - plus the detector's own options. targetCellPx is
+ *   the box width the detector was trained to see; it defaults to TARGET_CELL_PX and only
+ *   differs for a model trained with another value.
  */
 export async function detectScaleNormalized(detector, rgbHwc, imgW, imgH, opts = {}) {
 	const initialCells = await detectTiled(detector, rgbHwc, imgW, imgH, TILE_SIZE, opts);
@@ -331,7 +334,8 @@ export async function detectScaleNormalized(detector, rgbHwc, imgW, imgH, opts =
 	// A tile of native size L resized to TILE_SIZE for the model scales a
 	// cell by TILE_SIZE/L; solving medianW * TILE_SIZE/L = TARGET_CELL_PX
 	// for L gives this.
-	const nativeTileSize = Math.max(MIN_NATIVE_TILE, Math.round((medianW * TILE_SIZE) / TARGET_CELL_PX));
+	const targetCellPx = opts.targetCellPx ?? TARGET_CELL_PX;
+	const nativeTileSize = Math.max(MIN_NATIVE_TILE, Math.round((medianW * TILE_SIZE) / targetCellPx));
 
 	const ratio = nativeTileSize / TILE_SIZE;
 	if (ratio > 1.5 || ratio < 0.67) {

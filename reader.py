@@ -5,10 +5,10 @@ What is left of the original `pipeline.py` command-line reader (retired 2026-11-
 AUDIT.md; it is in git history). The reader that ships is the JavaScript one in js/src,
 used by the web editor. This module exists for the two jobs that still need Python:
 
-  - experiments/label_tool.py and label_batch.py pre-fill a page with predictions, so a
+  - braille-research's experiments/label_tool.py and label_batch.py pre-fill a page with predictions, so a
     person only corrects them (needs the PyTorch detector and classifier);
   - js/test/fixtures/gen_detection_ref.py makes the reference outputs the JS tests compare
-    against, and experiments/classifier_on_gt.py loads the classifier from here.
+    against, and experiments/classifier_on_gt.py there loads the classifier from here.
 
 It deliberately has no recovery stages (grid-fill, crop and pixel recovery guessed at
 cells the detector had not found; every cell they added was invented, AUDIT.md / RESEARCH.md
@@ -118,9 +118,9 @@ def run_detection_tiled(img, model, max_det, native_tile_size):
     return _dedupe_cells(all_cells)
 
 
-def detect_scale_normalized(img, model, max_det=2000):
+def detect_scale_normalized(img, model, max_det=2000, target_cell_px=TARGET_CELL_PX):
     """Tile at the default size, measure the median cell width, and re-tile at the size
-    that lands cells at TARGET_CELL_PX if that differs by more than 50%. Returns every
+    that lands cells at target_cell_px if that differs by more than 50%. Returns every
     detection at or above LOW_CONF (filter on `conf` as needed), or [] if there are too
     few to size a tile from. Mirrors js/src/tiling.js detectScaleNormalized()."""
     cells = run_detection_tiled(img, model, max_det, TILE_SIZE)
@@ -129,7 +129,7 @@ def detect_scale_normalized(img, model, max_det=2000):
     hi = [c for c in cells if c['conf'] >= HIGH_CONF]
     sample = hi if len(hi) >= CONTAINER_MIN_CANDIDATES else cells
     median_w = statistics.median(c['w'] for c in sample)
-    native = max(MIN_NATIVE_TILE, round(median_w * TILE_SIZE / TARGET_CELL_PX))
+    native = max(MIN_NATIVE_TILE, round(median_w * TILE_SIZE / target_cell_px))
     if native / TILE_SIZE > 1.5 or native / TILE_SIZE < 0.67:
         return run_detection_tiled(img, model, max_det, native)
     return cells

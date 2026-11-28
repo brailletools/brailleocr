@@ -1,6 +1,6 @@
 """
-Utilities shared across every source dataset (angelina_data.py, dsbi_data.py,
-...): converting between dot-pattern representations, generating output
+Utilities shared by the readers here and the training code in braille-research
+(angelina_data.py, dsbi_data.py, prepare_yolo_dataset.py, ...): converting between dot-pattern representations, generating output
 filenames that stay unique when multiple datasets' images get flattened into
 one combined training set, and tiling a large image into overlapping
 native-pixel regions (shared between prepare_yolo_dataset.py, which tiles
