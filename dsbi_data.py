@@ -91,8 +91,11 @@ def collect_images():
     return entries
 
 
-def _same_file(a, b):
-    return hashlib.sha256(a.read_bytes()).digest() == hashlib.sha256(b.read_bytes()).digest()
+def _same_file(a, b, _cache={}):
+    key = (a, b)
+    if key not in _cache:
+        _cache[key] = hashlib.sha256(a.read_bytes()).digest() == hashlib.sha256(b.read_bytes()).digest()
+    return _cache[key]
 
 
 def collect_pages():
