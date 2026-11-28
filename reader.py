@@ -50,10 +50,14 @@ def yolo_class_to_bits6(model, cls):
 
 def run_detection(img, model, max_det):
     """Detect at LOW_CONF. Returns dicts with cx, cy, h, w, char, bits, conf, rescued."""
+    import os
     with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
         img.save(tmp.name, quality=92)
-        results = model(tmp.name, verbose=False, max_det=max_det, conf=LOW_CONF, iou=NMS_IOU)
-
+        tmp_path = tmp.name
+    try:
+        results = model(tmp_path, verbose=False, max_det=max_det, conf=LOW_CONF, iou=NMS_IOU)
+    finally:
+        os.unlink(tmp_path)
     cells = []
     if results[0].boxes is None:
         return cells
