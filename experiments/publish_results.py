@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Copy a results file into bench/results/ in a form that is safe to commit.
+Copy a results file into the braille-research repository in a form that is safe to commit.
 
 Removes what must not be published: transcriptions from third-party datasets whose licence
 does not allow redistribution (BrailleBench declares none), the Braille we read from their
@@ -9,7 +9,7 @@ so every score can still be compared per image. Keep the full file locally: scor
 needs the removed fields to rescore.
 
 Usage:
-  python experiments/publish_results.py FULL.json bench/results/NAME.json
+  python experiments/publish_results.py FULL.json ../braille-research/results/NAME.json
 """
 import json
 import sys

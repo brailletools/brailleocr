@@ -10,7 +10,7 @@
 // Test discipline (AUDIT section I): a tuning option (--iou) only runs on 'dev' sets, and
 // held-out sets only run with --final.
 //   node eval/run.mjs --summarize /tmp/eval-results.json
-//   node eval/run.mjs --orientation ../eval/orientation.json
+//   node eval/run.mjs --orientation ../../braille-research/eval/orientation.json
 //
 // Units are stated in every line of the summary. Intervals resample pages.
 
@@ -135,7 +135,7 @@ function summarize(rows) {
 	return lines.join('\n');
 }
 
-// Orientation check: photos with a known upright turn (eval/orientation.json).
+// Orientation check: photos with a known upright turn (braille-research/eval/orientation.json).
 async function checkOrientation(path) {
 	const { items } = JSON.parse(readFileSync(path, 'utf8'));
 	const base = resolve(dirname(path), '..');

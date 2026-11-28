@@ -7,7 +7,10 @@ model, and lays the cells out in lines. Both models run in the browser through
 onnxruntime-web. The Python in this repo trains and evaluates those models and supports
 labeling; it is not a second reader.
 
-`AUDIT.md` lists known bugs or unfinished validation. `RESEARCH.md` is old and has errors. Corrections are up front.
+Research notes, plans and result files are in the separate, private `braille-research`
+repository: `AUDIT.md` there lists known bugs or unfinished validation, and `RESEARCH.md` is old
+and has errors (corrections are up front). Comments in this code that cite those files refer
+to that repository.
 
 ## Organization
 
@@ -52,7 +55,8 @@ python experiments/export_eval_manifest.py --cells-out /tmp/eval-cells.json
 cd js
 node eval/run.mjs --cells /tmp/eval-cells.json --out /tmp/eval-results.json
 node eval/run.mjs --summarize /tmp/eval-results.json      # the table again, without rerunning
-node eval/run.mjs --orientation ../eval/orientation.json  # photos with a known upright turn
+# photos with a known upright turn (needs braille-research and its private images)
+node eval/run.mjs --orientation ../../braille-research/eval/orientation.json
 ```
 
 **Choosing anything** (a threshold, a model, a box shape): use `--role dev` and nothing else;
